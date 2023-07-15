@@ -43,7 +43,12 @@
             /* ios打包配置 */
             "ios" : {},
             /* SDK配置 */
-            "sdkConfigs" : {}
+            "sdkConfigs" : {},
+			/* 分包配置 */
+			"optimization": {
+			"subPackages": true
+			},
+			"runmode" : "liberate" // 开启分包优化后，必须配置资源释放模式
         }
     },
     /* 快应用特有相关 */
