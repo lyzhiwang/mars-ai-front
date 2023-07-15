@@ -25,6 +25,19 @@
 			}
 		}
 	],
+	"subPackages": [
+		{
+			"root": "pagesub",
+			"pages": [
+				{
+					"path": "sub1/index",
+					"style": {
+						"navigationBarTitleText": "话费充值"
+					}
+				}
+			]
+		}
+	],
 	"tabBar": {
 		"color": "#323333",
 		"selectedColor": "#323333",
