@@ -2,12 +2,14 @@
 export default {
   onLaunch: function () {
     console.log('App Launch', uni.$u.config.v)
+	const systemInfo = uni.getWindowInfo()
+	uni.setStorageSync('statusBarHeight', systemInfo.statusBarHeight);
   },
   onShow: function () {
-    console.log('App Show')
+    // console.log('App Show')
   },
   onHide: function () {
-    console.log('App Hide')
+    // console.log('App Hide')
   },
 }
 </script>

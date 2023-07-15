@@ -7,12 +7,46 @@
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/index/index",
+			"path": "tabber/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"transparentTitle": "always" //状态栏透明
+			}
+		},
+		{
+			"path": "tabber/live/index",
+			"style": {
+				"transparentTitle": "always" //状态栏透明
+			}
+		},
+		{
+			"path": "tabber/home/index",
+			"style": {
+				"transparentTitle": "always" //状态栏透明
 			}
 		}
 	],
+	"tabBar": {
+		"color": "#323333",
+		"selectedColor": "#323333",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [{
+			"pagePath": "tabber/index/index",
+			"iconPath": "static/tabber/index.png",
+			"selectedIconPath": "static/tabber/index_s.png",
+			"text": "首页"
+		}, {
+			"pagePath": "tabber/live/index",
+			"iconPath": "static/tabber/live.png",
+			"selectedIconPath": "static/tabber/live_s.png",
+			"text": "直播"
+		},{
+			"pagePath": "tabber/home/index",
+			"iconPath": "static/tabber/home.png",
+			"selectedIconPath": "static/tabber/home_s.png",
+			"text": "我的"
+		}]
+	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
 		<view class="header">
-			<text>火星AI无人直播1111</text>
+			<text>火星AI无人直播</text>
 		</view>
 		<u-button type="primary" text="确定"></u-button>
 		<u-swiper
@@ -12,20 +12,14 @@
 </template>
 
 <script setup>
-import { onLoad, onReady, onShow } from '@dcloudio/uni-app'
+import { onLoad, onReady } from '@dcloudio/uni-app'
 const title = ref('')
 const swiperList = ref(['https://cdn.uviewui.com/uview/swiper/swiper1.png',
                     'https://cdn.uviewui.com/uview/swiper/swiper2.png',
                     'https://cdn.uviewui.com/uview/swiper/swiper3.png'])
 
-onReady(()=>{
-	const systemInfo = uni.getStorageSync('statusBarHeight')
-	console.log(11111111, systemInfo)
-	
-})
-
-onShow(()=>{
-	console.log(11111111)
+onLoad(()=>{
+	// console.log(111)
 })
 
 const click = ()=>{
