@@ -1,10 +1,12 @@
 import uviewPlus from 'uview-plus'
 import { createSSRApp } from "vue";
+import * as Pinia from 'pinia';
 import App from "./App.vue";
+import piniaPersist from 'pinia-plugin-persist-uni'
 
 export function createApp() {
 	const app = createSSRApp(App);
-	app.use(uviewPlus)
+	app.use(Pinia.createPinia().use(piniaPersist)).use(uviewPlus)
 	uni.$u.setConfig({
 		// 修改$u.config对象的属性
 		config: {
@@ -23,5 +25,6 @@ export function createApp() {
 	})
 	return {
 		app,
+		Pinia,
 	};
 }

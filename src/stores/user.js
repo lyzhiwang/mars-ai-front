@@ -1,15 +1,20 @@
 import { defineStore } from 'pinia'
-import { getUserInfo } from '@/api/index'
+// import { getUserInfo } from '@/api/index'
 
 export const useUserStore = defineStore('user', {
-    persist: true, // 开启当前模块持久化
-    state: () => ({
-        token: '',
-        info: {
-            id: '',
-            username: '',
-        },
-    }),
+	persist: {
+	    enabled: true,
+		detached: true, // 设置订阅与组件分离
+	},
+    state: () => {
+		return {
+			token: '',
+			info: {
+			    id: '',
+			    username: '',
+			},
+		}
+    },
     getters: {
         isLogin: state => !!state.token,
     },
@@ -28,9 +33,9 @@ export const useUserStore = defineStore('user', {
         },
         async getUserInfo() {
             try {
-                const res = await getUserInfo()
-                this.setUserInfo(res.data)
-                return res
+                // const res = await getUserInfo()
+                // this.setUserInfo(res.data)
+                // return res
             } catch (error) {
                 throw error
             }

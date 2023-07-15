@@ -12,8 +12,9 @@
 </template>
 
 <script setup>
-import { useUserStore } from '@/stores'
 import { onLoad, onReady } from '@dcloudio/uni-app'
+import { useUserStore } from '@/stores/index'
+
 const user = useUserStore()
 const title = ref('')
 const swiperList = ref(['https://cdn.uviewui.com/uview/swiper/swiper1.png',
@@ -21,8 +22,7 @@ const swiperList = ref(['https://cdn.uviewui.com/uview/swiper/swiper1.png',
                     'https://cdn.uviewui.com/uview/swiper/swiper3.png'])
 
 onLoad(()=>{
-	// console.log(111)
-	console.log(111,user)
+	user.setUserToken('21451254121221')
 })
 
 const click = ()=>{
