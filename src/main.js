@@ -3,6 +3,7 @@ import { createSSRApp } from "vue";
 import * as Pinia from 'pinia';
 import App from "./App.vue";
 import piniaPersist from 'pinia-plugin-persist-uni'
+import '@/styles/main.scss'
 
 export function createApp() {
 	const app = createSSRApp(App);
