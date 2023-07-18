@@ -19,6 +19,9 @@ export function createApp() {
 			// 修改radio组件的size参数的默认值，相当于执行 uni.$u.props.radio.size = 30
 			radio: {
 				size: 15
+			},
+			icon:{
+				size: 28
 			}
 			// 其他组件属性配置
 			// ......

@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-		<view class="header" :style="{paddingTop: `${statusBarHeight}px`}">
+		<view class="header" :style="{paddingTop: `${config.statusBar}px`}">
 			<image src="/static/logo.png" class="logo"></image>
 			<text>火星AI无人直播1111</text>
 		</view>
@@ -24,7 +24,7 @@
 				</view>
 			</view>
 			<view class="flex-cc fcc-sb">
-				<view class="r-box">
+				<view class="r-box" @click="goTo('/pagesub/reply/list')">
 					<image src="/static/images/reply.png"></image>
 					<view class="name name1">
 						<view>智能回复</view>
@@ -46,19 +46,21 @@
 
 <script setup>
 import { onLoad, onReady } from '@dcloudio/uni-app'
+import { useConfigStore } from '@/stores'
+const config = useConfigStore()
 const title = ref('')
-const swiperList = ref(['/static/images/banner.png',
-                    '/static/images/banner.png',
-                    '/static/images/banner.png'])
-const statusBarHeight = ref()
+const swiperList = ref(['/static/images/banner.png','/static/images/banner.png','/static/images/banner.png'])
+
 onLoad(()=>{
-	statusBarHeight.value = uni.getStorageSync('statusBarHeight')
+
 })
 
 const click = ()=>{
 	
 }
-
+function goTo(url){
+	uni.navigateTo({url})
+}
 </script>
 
 <style lang="scss" scoped>

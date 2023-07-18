@@ -34,19 +34,38 @@
 			"root": "pagesub",
 			"pages": [
 				{
-					"path": "sub1/index",
-					"style": {
-						"navigationBarTitleText": "话费充值"
-					}
-				},
-				{
                     "path" : "live/create",
                     "style" :  {
-						"navigationBarBackgroundColor": "#1e64fe",
+						"transparentTitle": "auto",
+						// "navigationStyle": "custom",
 						"navigationBarTitleText": "创建新直播",
 						"navigationBarTextStyle": "white"
 					}
-                }
+                },
+				{
+				    "path" : "other/about",
+				    "style" :  {
+						"navigationBarTitleText": "关于我们"
+					}
+				},
+				{
+				    "path" : "other/feedback",
+				    "style" :  {
+						"navigationBarTitleText": "反馈"
+					}
+				},
+				{
+				    "path" : "reply/list",
+				    "style" :  {
+						"navigationBarTitleText": "智能回复"
+					}
+				},
+				{
+				    "path" : "reply/add",
+				    "style" :  {
+						"navigationBarTitleText": "创建新项目"
+					}
+				}
             ]
 		}
 	],
@@ -75,7 +94,7 @@
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"navigationBarBackgroundColor": "#ffffff",
+		"backgroundColor": "#f8f8f8"
 	}
 }

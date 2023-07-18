@@ -9,6 +9,7 @@ export const useConfigStore = defineStore('config', {
 		account: '',
 		password: '',
 		remeberPwd: false,
+		statusBar: 24, // 状态栏的高度
 	}),
 	actions: {
 		setRemeberPwd(val) {
@@ -18,5 +19,8 @@ export const useConfigStore = defineStore('config', {
 		  this.password = form.password
 		  this.account = form.account
 		},
+		setStatusBar(height){
+			this.statusBar = height
+		}
 	}
 })

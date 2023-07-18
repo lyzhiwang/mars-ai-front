@@ -78,9 +78,7 @@ onLoad(()=>{
 onShow(()=>{
 
 })
-const goTo = (url)=>{
-	uni.navigateTo({url})
-}
+const goTo = url => uni.navigateTo({url})
 </script>
 
 <style lang="scss" scoped>

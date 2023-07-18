@@ -1,17 +1,19 @@
-<script>
-export default {
-  onLaunch: function () {
-    console.log('App Launch', uni.$u.config.v)
+<script setup>
+import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
+import { useConfigStore } from '@/stores'
+
+const config = useConfigStore()
+
+onLaunch(()=>{
 	const systemInfo = uni.getWindowInfo()
-	uni.setStorageSync('statusBarHeight', systemInfo.statusBarHeight);
-  },
-  onShow: function () {
-    // console.log('App Show')
-  },
-  onHide: function () {
-    // console.log('App Hide')
-  },
-}
+	config.setStatusBar(systemInfo.statusBarHeight)
+})
+onShow(()=>{
+	 console.log('App Show')
+})
+onHide(()=>{
+	console.log('App Hide')
+})
 </script>
 
 <style lang="scss">
