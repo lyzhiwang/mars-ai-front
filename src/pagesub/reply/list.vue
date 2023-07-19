@@ -1,8 +1,8 @@
 <template>
 <view class="page2">
-	<button class="create" @click="goTo('/pagesub/reply/add')">
+	<button class="create" @click="goTo('/pagesub/reply/crt')">
 		<image src="/static/images/reply/icon-create.png" class="icon-crt"></image>
-		<text>创建新回复</text>
+		<text>创建新项目</text>
 	</button>
 	<view class="panel">
 		<view class="dele" @click="deleteItem"><u-icon name="trash" size="34rpx" color="#fff"></u-icon></view>
@@ -11,8 +11,21 @@
 			<u--text text="超级泰麻辣烫" :lines="1" size="30rpx" bold color="#333"></u--text>
 		</view>
 		<view class="con">
-			<view class="status">
+			<view class="status" @click="goTo('/pagesub/reply/add')">
 				<text class="r">未创建回复</text>
+				<u-icon name="arrow-right" size="34rpx" color="#999"></u-icon>
+			</view>
+		</view>
+	</view>
+	<view class="panel">
+		<view class="dele" @click="deleteItem"><u-icon name="trash" size="34rpx" color="#fff"></u-icon></view>
+		<view class="fir">
+			<view class="index">1</view>
+			<u--text text="超级泰麻辣烫" :lines="1" size="30rpx" bold color="#333"></u--text>
+		</view>
+		<view class="con">
+			<view class="status" @click="goTo('/pagesub/reply/detail')">
+				<text class="b">已上传回复</text>
 				<u-icon name="arrow-right" size="34rpx" color="#999"></u-icon>
 			</view>
 		</view>
@@ -102,6 +115,10 @@ const goTo = url => uni.navigateTo({url})
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
+		}
+		.b{
+			font-size: 28rpx;
+			color: #333;
 		}
 	}
 }

@@ -61,9 +61,21 @@
 					}
 				},
 				{
-				    "path" : "reply/add",
+				    "path" : "reply/crt",
 				    "style" :  {
 						"navigationBarTitleText": "创建新项目"
+					}
+				},
+				{
+				    "path" : "reply/add",
+				    "style" :  {
+						"navigationBarTitleText": "添加回复"
+					}
+				},
+				{
+				    "path" : "reply/detail",
+				    "style" :  {
+						"navigationBarTitleText": "回复列表"
 					}
 				}
             ]

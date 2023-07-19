@@ -3,9 +3,9 @@
 	<view class="bg"></view>
 	<view class="container">
 		<view class="panel">
-			<button class="create" @click="goTo('/pagesub/live/create')">
-				<image src="/static/images/live/collect.png" class="ion-crt"></image>
-				创建新直播间
+			<button class="create">
+				<image src="/static/images/live/crt.png" class="ion-crt"></image>
+				<text>创建新直播间</text>
 			</button>
 			<view class="h1">
 				<text>直播间</text>
@@ -114,7 +114,7 @@ const goTo = url => uni.navigateTo({url})
 			position: absolute;
 			right: 22rpx;
 			top: 20rpx;
-			width: 235rpx;
+			width: 236rpx;
 			height: 60rpx;
 			background: #1e64fe;
 			border-radius: 30rpx;
@@ -123,9 +123,11 @@ const goTo = url => uni.navigateTo({url})
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			padding: 0 10rpx;
 			.ion-crt{
 				width: 30rpx;
 				height: 26rpx;
+				margin-right: 6rpx;
 			}
 		}
 		.h1{
