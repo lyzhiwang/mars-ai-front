@@ -25,7 +25,7 @@
 		</view>
 		<view class="con">
 			<view class="status" @click="goTo('/pagesub/reply/detail')">
-				<text class="b">已上传回复</text>
+				<text class="b">已创建回复</text>
 				<u-icon name="arrow-right" size="34rpx" color="#999"></u-icon>
 			</view>
 		</view>

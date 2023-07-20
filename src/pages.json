@@ -37,6 +37,7 @@
                     "path" : "live/create",
                     "style" :  {
 						"transparentTitle": "auto",
+						"navigationBarBackgroundColor": "#519af8",
 						// "navigationStyle": "custom",
 						"navigationBarTitleText": "创建新直播",
 						"navigationBarTextStyle": "white"

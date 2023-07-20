@@ -4,7 +4,7 @@
 		<image src="/static/images/reply/icon-msg.png" class="icon-crt"></image>
 		<text>添加新回复</text>
 	</button>
-	<ReplyItem v-for="i in 6"></ReplyItem>
+	<ReplyItem v-for="i in 6" :index="i"></ReplyItem>
 </view>
 </template>
 

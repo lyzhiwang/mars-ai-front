@@ -3,7 +3,7 @@
 	<view class="bg"></view>
 	<view class="container">
 		<view class="panel">
-			<button class="create">
+			<button class="create" @click="goTo('/pagesub/live/create')">
 				<image src="/static/images/live/crt.png" class="ion-crt"></image>
 				<text>创建新直播间</text>
 			</button>
@@ -14,6 +14,7 @@
 			<text class="name">直播间名称：超级泰麻辣烫</text>
 			<view class="bottom">
 				<text class="mc">直播中</text>
+				<image src="/static/images/live/icon-playing.gif" class="playing"></image>
 				<u-icon name="play-circle-fill" size="50rpx" color="#1E64FE"></u-icon>
 				<text class="filename">这里是文件名称.xtx</text>
 			</view>
@@ -32,7 +33,7 @@
 						placeholder="暂无回复"
 						v-model="replyCon"
 						shape="circle"
-						clearable
+						readonly
 					></u--input>
 				</view>
 			</view>
@@ -168,6 +169,11 @@ const goTo = url => uni.navigateTo({url})
 			.filename{
 				color: #666;
 				margin-left: 20rpx;
+			}
+			.playing{
+				width: 48rpx;
+				height: 48rpx;
+				margin-right: 10rpx;
 			}
 		}
 		.tit{

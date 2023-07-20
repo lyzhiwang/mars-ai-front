@@ -2,10 +2,19 @@
 <view :class="['panel',{'expand': !showMore}]">
 	<view class="dele" @click="deleteItem"><u-icon name="trash" size="34rpx" color="#fff"></u-icon></view>
 	<view class="fir">
-		<view class="index">1</view>
+		<view class="index">{{ index }}</view>
 		<u--text text="超级泰麻辣烫" :lines="1" size="30rpx" bold color="#333"></u--text>
 	</view>
-	<view class="iptBox" v-for="(item, i) in list"><u--input v-model="list[i]" class="ipt" border="none" readonly></u--input></view>
+	<view class="iptBox vcenter">
+		<text class="keyword">{{data.keyword.join('/')}}</text>
+	</view>
+	<view class="iptBox between" v-for="(item, i) in list">
+		<view class="vcenter">
+			<u-icon name="play-circle-fill" size="50rpx" color="#1E64FE"></u-icon>&nbsp;
+			<u--text text="录音名字11111111录音名字录音名字录音名字录音名字录音名字录音名字录音名字" :lines="1" size="28rpx" color="#333"></u--text>
+		</view>
+		<u-icon name="trash-fill" size="50rpx" color="#1E64FE" @click="delReplyVoice"></u-icon>
+	</view>
 	<view class="btnGroup" v-if="!showMore">
 		<button class="btn">上传</button>
 		<button class="btn">录制</button>
@@ -20,17 +29,27 @@
 const props = defineProps({
     data: {
         type: Object,
-        require: {},
-    }
+        require: true,
+		default: {
+			keyword: ['地址','在哪','真的','假的','的是根深蒂固山豆根但是'],
+			replyVoice: [1,2,3,4]
+		}
+    },
+	index:{
+		type: Number,
+		require: true,
+	}
 });
 
 const showMore = ref(true)
-const detail = ref(['地址','在哪'])
 const list = computed(()=>{
-	return showMore.value ? detail.value.slice(0,1) : detail.value
+	return showMore.value ? props.data.replyVoice.slice(0,1) : props.data.replyVoice
 })
 
 function deleteItem(){
+	
+}
+function delReplyVoice(){
 	
 }
 function toggleExt(){
@@ -46,6 +65,11 @@ function toggleExt(){
 	padding: 30rpx 0;
 	font-size: 24rpx;
 	color: #999;
+}
+.between{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 .panel{
 	width: 710rpx;
@@ -91,13 +115,16 @@ function toggleExt(){
 	}
 	.iptBox{
 		width: 640rpx;
-		height: 80rpx;
+		min-height: 80rpx;
 		border: 2rpx solid #2281FE;
 		border-radius: 10rpx;
-		padding: 0 20rpx 0 30rpx;
 		position: relative;
 		z-index: 2;
 		margin: 20rpx 0 0;
+		padding: 20rpx;
+		.keyword{
+			line-height: 40rpx;
+		}
 	}
 	.ipt{
 		width: 100%;
