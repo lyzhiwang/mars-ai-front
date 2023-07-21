@@ -9,9 +9,9 @@
 </template>
 
 <script setup>
+import { goTo } from '@/utils/helper.js'
 import ReplyItem from '@/components/ReplyItem'
 
-const goTo = url => uni.navigateTo({url})
 </script>
 
 <style lang="scss" scoped>

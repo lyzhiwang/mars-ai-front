@@ -1,20 +1,48 @@
-import axios from 'axios'
-import { useUserStore } from '@/stores'
+import axios from 'axios';
+import { useUserStore } from '@/stores';
 
 // 设置全局的请求次数，请求的间隙
 axios.defaults.retry = 2
 axios.defaults.retryDelay = 1000
+axios.defaults.adapter = function (config) { //自己定义个适配器，用来适配uniapp的语法
+	return new Promise((resolve, reject) => {
+		var settle = require('axios/lib/core/settle');
+		var buildURL = require('axios/lib/helpers/buildURL');
+		var buildFullPath = require('axios/lib/core/buildFullPath');
+		let fullurl = buildFullPath(config.baseURL,config.url)
+		uni.request({
+			method: config.method.toUpperCase(),
+			// url: config.baseURL + buildURL(config.url, config.params, config.paramsSerializer),
+			url: buildURL(fullurl, config.params, config.paramsSerializer),
+			header: config.headers,
+			data: config.data,
+			dataType: config.dataType,
+			responseType: config.responseType,
+			sslVerify: config.sslVerify,
+			complete: function complete(response) {
+				response = {
+					data: response.data,
+					status: response.statusCode,
+					errMsg: response.errMsg,
+					header: response.header,
+					config: config
+				};
+				settle(resolve, reject, response);
+			}
+		})
+	})
+}
 const baseURL = (process.env.NODE_ENV === "development") ? "http://klt.zwstk.cn" : "https://api.klt.mudanma.com";
 // 创建axios实例
 const service = axios.create({
-  baseURL,
-  timeout: 30000, // 请求超时时间-
-  headers: {
-    'X-Requested-With': 'XMLHttpRequest',
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'oemid': 5
-  }
+	baseURL,
+	timeout: 30000, // 请求超时时间-
+	headers: {
+		'X-Requested-With': 'XMLHttpRequest',
+		'Content-Type': 'application/json',
+		'Accept': 'application/json',
+		'oemid': 5
+	}
 })
 
 // request拦截器
@@ -35,33 +63,6 @@ service.interceptors.request.use(
     Promise.reject(error)
   }
 )
-
-axios.defaults.adapter = function (config) { //自己定义个适配器，用来适配uniapp的语法
-  return new Promise((resolve, reject) => {
-    var settle = require('axios/lib/core/settle');
-    var buildURL = require('axios/lib/helpers/buildURL');
-    uni.request({
-      method: config.method.toUpperCase(),
-      url: config.baseURL + buildURL(config.url, config.params, config.paramsSerializer),
-      header: config.headers,
-      data: config.data,
-      dataType: config.dataType,
-      responseType: config.responseType,
-      sslVerify: config.sslVerify,
-      complete: function complete(response) {
-        response = {
-          data: response.data,
-          status: response.statusCode,
-          errMsg: response.errMsg,
-          header: response.header,
-          config: config
-        };
-
-        settle(resolve, reject, response);
-      }
-    })
-  })
-}
 // response 拦截器
 service.interceptors.response.use(
   response => {
@@ -69,7 +70,6 @@ service.interceptors.response.use(
 		uni.hideLoading()
 	}
     const res = response.data
-    const status = response.status
     if (res) {
 		if (res.code === 0) { // code 为0请求正常
 		    return res
@@ -97,6 +97,7 @@ service.interceptors.response.use(
 					uni.redirectTo({url: '/pages/login/index'})
 					break;
 			}
+		}
     } else {
 	  uni.showToast({ title: '请求成功，返回值错误', icon: 'error', duration: 3000});
       return Promise.reject('error', response)

@@ -28,3 +28,11 @@ export function getUserInfo(params) {
 		params
 	})
 }
+
+export function crtReplyClass(params) {
+	return request({
+		url: '/v1/answer',
+		method: 'post',
+		params
+	})
+}

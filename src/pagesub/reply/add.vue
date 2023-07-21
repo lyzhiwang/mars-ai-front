@@ -7,7 +7,14 @@
 	<view class="panel">
 		<view class="title">关键字<text class="r">*关键字一行一个</text></view>
 		<view class="iptBox" v-for="(item, i) in form.keyword" :key="i">
-			<u--input placeholder="请输入关键字" border="none" v-model.trim="form.keyword[i]" class="ipt" readonly></u--input>
+			<u--input 
+				placeholder="请输入关键字" 
+				border="none" 
+				v-model.trim="form.keyword[i]" 
+				class="ipt" 
+				readonly
+				cursor-spacing="10"
+			></u--input>
 		</view>
 		<view class="iptBox">
 			<u--input 

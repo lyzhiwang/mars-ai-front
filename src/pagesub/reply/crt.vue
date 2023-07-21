@@ -4,13 +4,18 @@
 		<view class="title">新项目名称</view>
 		<u--input placeholder="请输入内容" border="bottom" v-model="name"></u--input>
 	</view>
-	<u-button type="primary" text="确定添加" shape="circle" class="submit" @click="redirect('/pagesub/reply/add')"></u-button>
+	<u-button type="primary" text="确定添加" shape="circle" class="submit" @click="submit"></u-button>
 </view>
 </template>
 
 <script setup>
+import { crtReplyClass } from '@/api'
 const name = ref('')
 const redirect = url => uni.redirectTo({url})
+function submit(){
+	if(!name.value) return uni.showToast({title: '名称不能为空', icon: 'error'})
+	redirect('/pagesub/reply/add')
+}
 </script>
 
 <style lang="scss" scoped>

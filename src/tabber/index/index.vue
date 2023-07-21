@@ -47,20 +47,15 @@
 <script setup>
 import { onLoad, onReady } from '@dcloudio/uni-app'
 import { useConfigStore } from '@/stores'
+import { goTo } from '@/utils/helper.js'
+
 const config = useConfigStore()
-const title = ref('')
+// const title = ref('')
 const swiperList = ref(['/static/images/banner.png','/static/images/banner.png','/static/images/banner.png'])
 
 onLoad(()=>{
 
 })
-
-const click = ()=>{
-	
-}
-function goTo(url){
-	uni.navigateTo({url})
-}
 </script>
 
 <style lang="scss" scoped>

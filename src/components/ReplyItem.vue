@@ -18,7 +18,7 @@
 	<view class="btnGroup" v-if="!showMore">
 		<button class="btn">上传</button>
 		<button class="btn">录制</button>
-		<button class="btn">添加关键字</button>
+		<button class="btn" @click="goTo('/pagesub/reply/add')">添加关键字</button>
 	</view>
 	<view class="center expand" v-if="showMore" @click="toggleExt"><u-icon name="arrow-down" color="#999" size="32rpx"></u-icon>&nbsp;展开更多</view>
 	<view class="center" v-else @click="toggleExt"><u-icon name="arrow-up" color="#999" size="32rpx"></u-icon>&nbsp;收起</view>
@@ -26,6 +26,7 @@
 </template>
 
 <script setup>
+import { goTo } from '@/utils/helper.js'
 const props = defineProps({
     data: {
         type: Object,

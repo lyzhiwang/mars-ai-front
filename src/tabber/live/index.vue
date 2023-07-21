@@ -187,12 +187,12 @@ const goTo = url => uni.navigateTo({url})
 			background: #e8f2ff;
 			border-radius: 20rpx;
 			margin: 10rpx 0;
-			padding: 34rpx 20rpx 16rpx;
+			padding: 42rpx 20rpx 16rpx;
 			position: relative;
 			.state{
 				width: 124rpx;
-				height: 56rpx;
-				line-height: 56rpx;
+				height: 40rpx;
+				line-height: 40rpx;
 				background: #1e64fe;
 				border-radius: 0px 20rpx 0px 20rpx;
 				color: #ffffff;
@@ -218,7 +218,7 @@ const goTo = url => uni.navigateTo({url})
 				height: 55rpx;
 				margin: 0 10rpx;
 				font-size: 24rpx;
-				display: flex;
+				display: inline-flex;
 				justify-content: center;
 				align-items: center;
 				border-radius: 30rpx;
@@ -230,12 +230,12 @@ const goTo = url => uni.navigateTo({url})
 			.reply{
 				border: 2rpx solid #1e64fe;
 				color: #1e64fe;
-				width: 136rpx;
+				min-width: 136rpx;
 			}
 			.collect{
 				background: #1e64fe;
 				color: #fff;
-				width: 132rpx;
+				min-width: 132rpx;
 			}
 		}
 	}
