@@ -29,10 +29,10 @@ export function getUserInfo(params) {
 	})
 }
 
-export function crtReplyClass(params) {
+export function crtReplyClass(data) {
 	return request({
 		url: '/v1/answer',
 		method: 'post',
-		params
+		data
 	})
 }

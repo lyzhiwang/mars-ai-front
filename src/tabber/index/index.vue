@@ -9,7 +9,6 @@
 				:list="swiperList"
 				autoplay
 				circular
-				@click="click"
 				width="100%"
 				height="100%"
 			></u-swiper>
