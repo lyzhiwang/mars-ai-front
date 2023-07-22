@@ -66,6 +66,7 @@
     "@dcloudio/uni-cli-shared": "3.0.0-3080720230703001",
     "@dcloudio/uni-stacktracey": "3.0.0-3080720230703001",
     "@dcloudio/vite-plugin-uni": "3.0.0-3080720230703001",
+    "fant-axios-adapter": "^0.0.6",
     "sass": "^1.63.6",
     "sass-loader": "^10.4.1",
     "unplugin-auto-import": "^0.16.6",

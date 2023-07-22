@@ -1,6 +1,6 @@
 <template>
 	<view class="container content">
-		<view :style="{paddingTop: `${statusBarHeight}px`}"></view>
+		<!-- <view :style="{paddingTop: `${statusBarHeight}px`}"></view> -->
 		<view class="logo flex-rcc">
 			<image src="/static/logo.png"></image>
 		</view>
@@ -16,11 +16,11 @@
 			</u--form>
 		</view>
 		<view class="tips" @click="show=true">卡密激活?</view>
-		<u-button type="primary" size="large" text="立即登录" :disabled="isLoading" color="#2281FE" shape="circle" loadingText="登录中..." :loading="isLoading" @click="login"></u-button>
+		<u-button type="primary" size="large" text="立即登录" :disabled="isLoading" color="#2281FE" shape="circle" loadingText="登录中..." :loading="isLoading" @click="submitLogin"></u-button>
 		
 		<u-modal :show="show" title="卡密激活" showCancelButton @confirm="confirm" @cancel="cancel" confirmText="激活">
 			<view class="slot-content">
-				<u--input v-model="code" placeholder="请输入卡密" clearable class="codeBox"></u--input>
+				<u--input v-model.trim="code" placeholder="请输入卡密" clearable class="codeBox"></u--input>
 			</view>
 		</u-modal>
 	</view>
@@ -28,11 +28,13 @@
 
 <script setup>
 	import { onLoad } from '@dcloudio/uni-app'
+	import { login, activateCode } from '@/api'
+	import { useUserStore } from '@/stores/index'
 	
-	const statusBarHeight = ref()
+	const user = useUserStore()
 	const show = ref(false)
-	const code =ref(null)
-	const form = ref({
+	const code =ref('')
+	const form = reactive({
 		username: '',
 		password: ''
 	})
@@ -47,45 +49,40 @@
 		},
 		'password': {
 			type: 'string',
-			min: 6,
-			max: 8,
 			required: true,
 			message: '请输入密码',
 			trigger: ['blur', 'change']
 		},
 	}
 	onLoad(()=>{
-		statusBarHeight.value = uni.getStorageSync('statusBarHeight')
+
 	})
 	
-	const login = ()=>{
+	const submitLogin = ()=>{
 		form1.value.validate().then(res => {
 			isLoading.value = true
+			login(form).then(res=>{
+				if(res&&res.data){
+					user.setUserToken(res.data.token)
+					uni.switchTab({url:'/tabber/index/index'})
+				}
+			}).finally(()=>isLoading.value = false)
 		}).catch(errors => {
-			uni.$u.toast('请填写正确的信息')
-			uni.switchTab({
-				url:'/tabber/index/index'
-			})
-			// var environment = plus.android.importClass("android.os.Environment");
-			// var sdRoot = environment.getExternalStorageDirectory();
-			// var files = plus.android.invoke(sdRoot,"listFiles");
-			// var len = files.length;  
-			// for(var i=0; i<len; i++){  
-			//     var file = files[i];  
-			//     // 过滤隐藏文件  
-			//     if(!plus.android.invoke(file,"isHidden")){  
-			//         // 非隐藏文件执行操作  
-			
-			//     }  
-			// }
-			console.log('files', files)
+			uni.$u.toast('请填写正确的账号密码')
 		})
 	}
 	
 	const confirm = () =>{
 		if(!code.value) return uni.$u.toast('请输入正确的卡密')
-		show.value = false
-		code.value = null
+		activateCode({code: code.value}).then(res=>{
+			if(res && res.data){
+				const { username, pwd } = res.data;
+				form.username = username;
+				form.password = pwd;
+				show.value = false
+				code.value = null
+			}
+		})
 	}
 	
 	const cancel = ()=>{

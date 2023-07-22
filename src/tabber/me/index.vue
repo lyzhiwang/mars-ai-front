@@ -7,7 +7,7 @@
 			<view class="account">案说法伽师飞洒</view>
 			<view class="id">ID:21412</view>
 		</view>
-		<u-button plain type="primary" shape="circle" class="exit">退出登录</u-button>
+		<u-button plain type="primary" shape="circle" class="exit" @click="user.logOut">退出登录</u-button>
 	</view>
 	<view class="infoBox" v-else @click="goToLogin">
 		<u-avatar url="" size="120rpx"></u-avatar>
@@ -44,7 +44,7 @@ import { useUserStore } from '@/stores/index'
 const user = useUserStore()
 
 function goToLogin(){
-	uni.navigateTo({url: ''})
+	uni.navigateTo({url: '/pagesub/login/index'})
 }
 </script>
 

@@ -2,7 +2,7 @@
 <view class="page">
 	<view class="panel">
 		<view class="title">新项目名称</view>
-		<u--input placeholder="请输入内容" border="bottom" v-model="name"></u--input>
+		<u--input placeholder="请输入内容" border="bottom" v-model.trim="name"></u--input>
 	</view>
 	<u-button type="primary" text="确定添加" shape="circle" class="submit" @click="submit"></u-button>
 </view>
@@ -14,7 +14,12 @@ const name = ref('')
 const redirect = url => uni.redirectTo({url})
 function submit(){
 	if(!name.value) return uni.showToast({title: '名称不能为空', icon: 'error'})
-	redirect('/pagesub/reply/add')
+	crtReplyClass({title: name.value}).then(res=>{
+		if(res&&res.data){
+			console.log(1111, JSON.stringify(res.data))
+		}
+		// redirect('/pagesub/reply/add?id=')
+	})
 }
 </script>
 

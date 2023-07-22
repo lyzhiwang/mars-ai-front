@@ -1,7 +1,7 @@
 <template>
 <view class="livePage">
 	<view class="bg"></view>
-	<view class="container">
+	<view class="contBox">
 		<view class="panel">
 			<button class="create" @click="goTo('/pagesub/live/create')">
 				<image src="/static/images/live/crt.png" class="ion-crt"></image>
@@ -91,7 +91,7 @@ const goTo = url => uni.navigateTo({url})
 		height: 100vh;
 		background: linear-gradient(180deg,#1e64fe 0%, #f1f4ff 100%);
 	}
-	.container{
+	.contBox{
 		position: absolute;
 		z-index: 1;
 		top: 0;

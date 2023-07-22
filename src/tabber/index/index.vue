@@ -24,7 +24,7 @@
 			</view>
 			<view class="flex-cc fcc-sb">
 				<view class="r-box" @click="goTo('/pagesub/reply/list')">
-					<image src="/static/images/reply.png"></image>
+					<image src="/static/images/voices/reply.png"></image>
 					<view class="name name1">
 						<view>智能回复</view>
 						<view class="line blue"></view>

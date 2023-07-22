@@ -90,7 +90,8 @@
 				{
 					"path": "login/index",
 					"style": {
-						"transparentTitle": "always" //状态栏透明
+						"navigationBarTitleText": "",
+						"transparentTitle": "auto" //状态栏透明
 					}
 				},
 				{

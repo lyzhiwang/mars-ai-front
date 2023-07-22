@@ -4,12 +4,20 @@ import request from '@/utils/request'
 export function login(data) {
 	return request({
 		loading: true,
-		url: '/user/login',
+		url: '/v1/user/login',
 		method: 'post',
 		data
 	})
 }
-
+// 卡密激活
+export function activateCode(params){
+	return request({
+		loading: true,
+		url: '/v1/admin/activate/code',
+		method: 'get',
+		params
+	})
+}
 // change password
 export function changePwd(data) {
 	return request({

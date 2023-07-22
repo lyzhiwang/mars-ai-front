@@ -1,38 +1,11 @@
 import axios from 'axios';
 import { useUserStore } from '@/stores';
+import { uniAdapter } from 'fant-axios-adapter'
 
 // 设置全局的请求次数，请求的间隙
 axios.defaults.retry = 2
 axios.defaults.retryDelay = 1000
-axios.defaults.adapter = function (config) { //自己定义个适配器，用来适配uniapp的语法
-	return new Promise((resolve, reject) => {
-		var settle = require('axios/lib/core/settle');
-		var buildURL = require('axios/lib/helpers/buildURL');
-		var buildFullPath = require('axios/lib/core/buildFullPath');
-		let fullurl = buildFullPath(config.baseURL,config.url)
-		uni.request({
-			method: config.method.toUpperCase(),
-			// url: config.baseURL + buildURL(config.url, config.params, config.paramsSerializer),
-			url: buildURL(fullurl, config.params, config.paramsSerializer),
-			header: config.headers,
-			data: config.data,
-			dataType: config.dataType,
-			responseType: config.responseType,
-			sslVerify: config.sslVerify,
-			complete: function complete(response) {
-				response = {
-					data: response.data,
-					status: response.statusCode,
-					errMsg: response.errMsg,
-					header: response.header,
-					config: config
-				};
-				settle(resolve, reject, response);
-			}
-		})
-	})
-}
-const baseURL = (process.env.NODE_ENV === "development") ? "http://klt.zwstk.cn" : "https://api.klt.mudanma.com";
+const baseURL = (process.env.NODE_ENV === "development") ? "http://gdytest.zwstk.cn/api" : "https://api.klt.mudanma.com";
 // 创建axios实例
 const service = axios.create({
 	baseURL,
@@ -42,7 +15,8 @@ const service = axios.create({
 		'Content-Type': 'application/json',
 		'Accept': 'application/json',
 		'oemid': 5
-	}
+	},
+	adapter: uniAdapter // 配置适配器
 })
 
 // request拦截器
@@ -60,7 +34,8 @@ service.interceptors.request.use(
   error => {
     // Do something with request error
     uni.hideLoading()
-    Promise.reject(error)
+	console.log(error)
+    // Promise.reject(error)
   }
 )
 // response 拦截器
@@ -76,7 +51,7 @@ service.interceptors.response.use(
 		} else {
 			// 先提示错误信息
 			if (res.message){
-				uni.showToast({ title: res.message, icon: 'error', duration: 3000});
+				uni.showToast({ title: res.message, icon: 'none', duration: 3000});
 			}
 			const userStore = useUserStore()
 			switch (res.code) { 
@@ -104,6 +79,7 @@ service.interceptors.response.use(
     }
   },
   error => {
+	console.log(error)
     uni.hideLoading()
 	// http响应状态码
 	const resposeCode = {

@@ -1,7 +1,7 @@
 <template>
 <view class="createPage">
 	<image src="/static/images/live/bg2.png" class="bg2"></image>
-	<view class="container">
+	<view class="contBox">
 		<!-- <view :style="{'height': `${config.statusBar}px`}"></view>-->
 		<u-navbar 
 			title="创建新直播" 
@@ -97,7 +97,7 @@ function searchLive(){
 		height: 1127rpx;
 	}
 }
-.container{
+.contBox{
 	position: absolute;
 	top: 0;
 	left: 0;
