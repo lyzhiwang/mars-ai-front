@@ -10,5 +10,6 @@ export default defineConfig({
 		imports: ['vue'],
 	}),
   ],
-  transpileDependencies: ['uview-plus'],
+  transpileDependencies: ['uview-plus']
+  
 })

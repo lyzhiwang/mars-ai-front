@@ -1,0 +1,151 @@
+<template>
+	<view class="container content">
+		<view class="list">
+			<view class="item flex-item-col-center" v-for="(item,index) in list" :key="index" @click="handleItem(item)">
+				<image :src="`/static/images/voices/${item.id === playDataId? 'pause': 'play'}.png`" class="sImage"></image>
+				<view class="name u-line-1">{{item.name}}</view>
+				
+				<view class="delBox flex-rcc" @click.stop="delItem(item)">
+					<image src="/static/images/voices/del.png"></image>
+				</view>
+			</view>
+		</view>
+		<view class="footterBox fcc-sb">
+			<view class="btn flex-rcc" @click="toPath('/pagesub/voices/upload')">上传</view>
+			<view class="btn btn2 flex-rcc" @click="toPath('/pagesub/voices/transcribe')">录制</view>
+		</view>
+		
+		<u-modal :show="show" title="提示" :content='content' showCancelButton @confirm="ok" @cancel="show=false"></u-modal>
+	</view>
+</template>
+
+<script setup>
+	const list = ref([
+		{
+			id: 1,
+			type: 1,
+			name: '开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段'
+		},
+		{
+			id: 2,
+			type: 2,
+			name: '开播第二段'
+		},
+		{
+			id: 3,
+			type: 2,
+			name: '开播第三段'
+		}
+	])
+	
+	const show = ref(false)
+	const content = ref('请确认删除该语音?')
+	
+	const delItem = item =>{
+		show.value = true
+	}
+	
+	// 播放中数据
+	const playDataId = ref(null) 
+	
+	const handleItem = item =>{
+		if(playDataId.value === null){
+			playDataId.value = item.id
+			// 播放
+		}else{
+			if(playDataId.value === item.id){
+				// 当前播放暂停
+				playDataId.value = null
+			}else{
+				playDataId.value = item.id
+				// 播放
+			}
+		}
+		
+	}
+	
+	const ok = ()=>{
+		show.value = false
+	}
+	
+	const toPath = url =>{
+		uni.navigateTo({
+			url
+		})
+	}
+	
+</script>
+
+<style lang="scss" scoped>
+	.content {
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  padding: 36rpx 20rpx;
+	  box-sizing: border-box;
+	  position: relative;
+	  
+	  .list{
+		  width: 100%;
+		  .item{
+			  width: 100%;
+			  height: 100rpx;
+			  font-size: 30rpx;
+			  background: #ffffff;
+			  color: #333333;
+			  font-weight: bold;
+			  padding: 0 18rpx;
+			  border-radius: 20rpx;
+			  margin-bottom: 20rpx;
+			  position: relative;
+			  .sImage{
+				  width: 36rpx;
+				  height: 36rpx;
+				  margin-right: 22rpx;
+			  }
+			  .name{
+				  width: 80%;
+			  }
+			  .delBox{
+				  width: 53rpx;
+				  height: 53rpx;
+				  background: #2281fe;
+				  border-radius: 0px 20rpx 0px 20rpx;
+				  position: absolute;
+				  top: 0;
+				  right: 0;
+				  image{
+					  width: 27rpx;
+					  height: 29rpx;
+				  }
+			  }
+		  }
+	  }
+	  
+	  
+	  
+	  .footterBox{
+		  width: 100%;
+		  min-height: 130rpx;
+		  background: #ffffff;
+		  padding: 0 26rpx;
+		  padding-bottom: 50rpx;
+		  position: absolute;
+		  bottom: 0;
+		  left: 0;
+		  .btn{
+			  width: 336rpx;
+			  height: 98rpx;
+			  background: #e8f2ff;
+			  border: 1rpx solid #2281fe;
+			  border-radius: 10rpx;
+			  font-size: 36rpx;
+			  color: #333333;
+		  }
+		  .btn2{
+			  background: #2281fe;
+			  color: #ffffff;
+		  }
+	  }
+	}
+</style>

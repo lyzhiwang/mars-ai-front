@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-		<view class="header" :style="{paddingTop: `${config.statusBar}px`}">
+		<view class="headerBox" :style="{marginTop: `${config.statusBar}px`}">
 			<image src="/static/logo.png" class="logo"></image>
 			<text>火星AI无人直播1111</text>
 		</view>
@@ -15,8 +15,8 @@
 		</view>
 		
 		<view class="menus flex" >
-			<view class="voiceBox">
-				<image src="/static/images/voice.png"></image>
+			<view class="voiceBox" @click="goTo('/pagesub/voices/index')">
+				<image src="/static/images/voices/voice.png"></image>
 				<view class="name">
 					<view>AI语音库</view>
 					<view class="line"></view>
@@ -31,7 +31,7 @@
 					</view>
 				</view>
 				<view class="r-box">
-					<image src="/static/images/tasks.png"></image>
+					<image src="/static/images/voices/tasks.png"></image>
 					<view class="name name1">
 						<view>话术库</view>
 						<view class="line yellow"></view>
@@ -50,7 +50,9 @@ import { goTo } from '@/utils/helper.js'
 
 const config = useConfigStore()
 // const title = ref('')
-const swiperList = ref(['/static/images/banner.png','/static/images/banner.png','/static/images/banner.png'])
+const swiperList = ref(['/static/images/voices/banner.png','/static/images/voices/banner.png','/static/images/voices/banner.png'])
+
+
 
 onLoad(()=>{
 
@@ -70,7 +72,7 @@ onLoad(()=>{
 	height: 410rpx;
 	box-sizing: border-box;
 }
-.header{
+.headerBox{
 	width: 100%;
 	display: flex;
 	align-items: center;
