@@ -44,3 +44,64 @@ export function crtReplyClass(data) {
 		data
 	})
 }
+
+// 语音库列表
+export function voiceIndex(params) {
+	return request({
+		url: '/v1/voice',
+		method: 'get',
+		params
+	})
+}
+
+// 创建Ai语音库
+export function voiceStore(data) {
+	return request({
+		url: '/v1/voice',
+		method: 'post',
+		data
+	})
+}
+
+// 删除Ai语音库
+export function voiceDestory(params) {
+	return request({
+		url: '/v1/voice'+ params.id,
+		method: 'delete'
+	})
+}
+
+// 编辑Ai语音库
+export function voiceUpdate(data) {
+	return request({
+		url: '/v1/voice',
+		method: 'put',
+		data
+	})
+}
+
+// 语音库内语音列表
+export function voiceReaIndex(params) {
+	return request({
+		url: '/v1/voice/rea',
+		method: 'get',
+		params
+	})
+}
+
+// 语音库内语音创建
+export function voiceReaCreate(params) {
+	return request({
+		url: '/v1/voice/rea',
+		method: 'post',
+		params
+	})
+}
+
+// 语音库内语音列表
+export function voiceReaDestory(params) {
+	return request({
+		url: '/v1/voice/rea/'+params.id,
+		method: 'delete',
+	})
+}

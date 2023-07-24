@@ -1,21 +1,24 @@
 <template>
 	<view class="container content">
-		<view class="addBox flex-rcc" @click="toPath">
+		<view class="addBox flex-rcc" @click="goTo('/pagesub/voices/add')">
 			<image src="/static/images/voices/add.png"></image> <text>添加新项目</text>
 		</view>
+		<template v-if="data.length">
+			<view class="item flex-col flex-item-row-between" v-for="(item,index) in data" :key="index">
+				<view class="delBox flex-rcc" @click="handleDel(item)">
+					<image src="/static/images/voices/del.png"></image>
+				</view>
+				<view class="title flex flex-item-col-center">
+					<view class="circle flex-rcc">{{index+1}}</view>
+					<view class="titBox u-line-1">{{item.title}}</view>
+				</view>
+				<view class="des fcc-sb">
+					已上传{{item.voices}}条语音 
+					<u-icon name="arrow-right" size="36" color="#999999" bold></u-icon></view>
+			</view>
+		</template>
 		
-		<view class="item flex-col flex-item-row-between" v-for="(item,index) in data" :key="index">
-			<view class="delBox flex-rcc" @click="handleDel(item)">
-				<image src="/static/images/voices/del.png"></image>
-			</view>
-			<view class="title flex flex-item-col-center">
-				<view class="circle flex-rcc">{{index+1}}</view>
-				<view class="titBox u-line-1">{{item.name}}</view>
-			</view>
-			<view class="des fcc-sb">
-				已上传{{item.voices}}条语音 
-				<u-icon name="arrow-right" size="36" color="#999999" bold></u-icon></view>
-		</view>
+		<u-empty v-else mode="data" text="暂无项目,请新建项目!" :marginTop="160" iconSize="160" textSize="28" style="width: 100%;"></u-empty>
 		
 		<u-modal :show="show" title="提示" :content='content' showCancelButton @confirm="ok" @cancel="show=false"></u-modal>
 	</view>
@@ -23,19 +26,31 @@
 
 <script setup>
 import { onLoad, onReady, onShow } from '@dcloudio/uni-app'
+import { goTo } from '@/utils/helper.js'
+import { voiceIndex, voiceDestory } from '@/api'
 
-const data = ref([{
-	name: '超级泰麻辣',
-	voices: 10,
-	id: 1
-}])
+const data = ref([])
 
 const show = ref(false)
 const content = ref('请确认删除该项目?')
 
-onShow(()=>{
-	console.log(11111111)
+onLoad(()=>{
+	getList()
 })
+
+const params = ref({
+	page: 1,
+	size: 10
+})
+const total = ref(0)
+// 获取语音库列表
+const getList =()=>{
+	voiceIndex(params.value).then(res=>{
+		console.log('res', res)
+		data.value = res.data.list
+		total.value = res.data.total
+	})
+}
 
 const toPath = ()=>{
 	uni.navigateTo({
@@ -44,13 +59,19 @@ const toPath = ()=>{
 }
 
 // 删除
+const currentId = ref(null)
 const handleDel = item =>{
+	currentId.value = item.id
 	show.value = true
 }
 
+
 // 确认删除
 const ok = ()=>{
-	
+	voiceDestory({id: currentId.value}).then(res=>{
+		uni.showToast({title: '删除成功!',icon: 'success',duration: 2000});
+		getList()
+	})
 }
 
 </script>

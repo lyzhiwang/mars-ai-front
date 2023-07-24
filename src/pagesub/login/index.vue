@@ -35,8 +35,8 @@
 	const show = ref(false)
 	const code =ref('')
 	const form = reactive({
-		username: '',
-		password: ''
+		username: 'test123',
+		password: 'qwe123456'
 	})
 	const form1 = ref(null)
 	const isLoading = ref(false)

@@ -4,7 +4,7 @@
 			<view class="title">新项目名称</view>
 			<u--input
 			    placeholder="请输入项目名称"
-				v-model="name"
+				v-model="title"
 			    border="bottom"
 			    clearable
 			  ></u--input>
@@ -15,17 +15,23 @@
 </template>
 
 <script setup>
+	import { goTo } from '@/utils/helper.js'
+	import { voiceStore } from '@/api'
+	
 	const customStyle = {
 		fontSize: '18px'
 	}
 	
-	const name = ref('测试名称')
+	const title = ref('测试名称')
 	
 	const add = ()=>{
-		if(!name.value) return uni.showToast({title: '项目名称不能为空!',icon: 'none',duration: 2000});
-		uni.navigateTo({
-			url: '/pagesub/voices/voiceStore'
+		if(!title.value) return uni.showToast({title: '项目名称不能为空!',icon: 'none',duration: 2000});
+		voiceStore({title:title.value,sort_type: 1}).then(res=>{
+			uni.navigateTo({
+				url: '/pagesub/voices/voiceStore'
+			})
 		})
+		
 		
 	}
 </script>
