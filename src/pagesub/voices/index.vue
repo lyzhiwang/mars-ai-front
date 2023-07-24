@@ -12,10 +12,12 @@
 					<view class="circle flex-rcc">{{index+1}}</view>
 					<view class="titBox u-line-1">{{item.title}}</view>
 				</view>
-				<view class="des fcc-sb">
-					已上传{{item.voices}}条语音 
-					<u-icon name="arrow-right" size="36" color="#999999" bold></u-icon></view>
+				<view class="des fcc-sb" @click="goTo(`/pagesub/voices/voiceStore?id=${item.id}`)">
+					<text :style="{color: item.media? '#333333': '#FE2222'}">{{item.media? '已上传语音': '未上传语音'}}</text>
+					<u-icon name="arrow-right" size="36" color="#999999" bold></u-icon>
+				</view>
 			</view>
+			<u-loadmore :status="status" fontSize="28" />
 		</template>
 		
 		<u-empty v-else mode="data" text="暂无项目,请新建项目!" :marginTop="160" iconSize="160" textSize="28" style="width: 100%;"></u-empty>
@@ -25,18 +27,35 @@
 </template>
 
 <script setup>
-import { onLoad, onReady, onShow } from '@dcloudio/uni-app'
+import { onLoad, onBackPress, onShow, onReachBottom, onPullDownRefresh } from '@dcloudio/uni-app'
 import { goTo } from '@/utils/helper.js'
 import { voiceIndex, voiceDestory } from '@/api'
 
 const data = ref([])
-
+const status = ref('loadmore')
 const show = ref(false)
 const content = ref('请确认删除该项目?')
 
 onLoad(()=>{
-	getList()
+	uni.startPullDownRefresh();	
 })
+
+onPullDownRefresh(()=>{
+	init()
+	getList()
+	setTimeout(function () {
+		uni.stopPullDownRefresh();
+	}, 1000);
+})
+
+const init = () =>{
+	params.value = {
+		page: 1,
+		size: 10 
+	}
+	total.value = 0
+	data.value = []
+}
 
 const params = ref({
 	page: 1,
@@ -46,9 +65,9 @@ const total = ref(0)
 // 获取语音库列表
 const getList =()=>{
 	voiceIndex(params.value).then(res=>{
-		console.log('res', res)
-		data.value = res.data.list
+		data.value = data.value.concat(res.data.list) 
 		total.value = res.data.total
+		if(data.value.length>=res.data.total) status.value = 'nomore'
 	})
 }
 
@@ -70,9 +89,19 @@ const handleDel = item =>{
 const ok = ()=>{
 	voiceDestory({id: currentId.value}).then(res=>{
 		uni.showToast({title: '删除成功!',icon: 'success',duration: 2000});
-		getList()
+		show.value = false
+		const index = data.value.findIndex(v=> {return v.id===currentId.value})
+		if(index>-1) data.value.splice(index, 1)
 	})
 }
+
+// 页面触底加载下一页
+onReachBottom(()=>{
+	if(data.value.length<total.value){
+		params.value.page++
+		getList()
+	}
+})
 
 </script>
 

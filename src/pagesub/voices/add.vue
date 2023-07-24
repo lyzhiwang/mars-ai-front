@@ -27,9 +27,8 @@
 	const add = ()=>{
 		if(!title.value) return uni.showToast({title: '项目名称不能为空!',icon: 'none',duration: 2000});
 		voiceStore({title:title.value,sort_type: 1}).then(res=>{
-			uni.navigateTo({
-				url: '/pagesub/voices/voiceStore'
-			})
+			uni.showToast({title: '创建成功!',icon: 'success',duration: 1000});
+			uni.redirectTo({url:'/pagesub/voices/index'})
 		})
 		
 		

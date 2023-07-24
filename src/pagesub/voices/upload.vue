@@ -1,23 +1,12 @@
 <template>
 	<view class="container content">
-		<view class="title">上传音频</view>
+		<web-view src="/hybrid/html/index.html"></web-view>
+		<!-- <view class="title">上传音频</view>
 		<view class="uploadBox">
-			<!-- <u-upload
-				accept="video"
-				:fileList="fileList6"
-				@afterRead="afterRead"
-				@delete="deletePic"
-				name="6"
-				multiple
-				:maxCount="1"
-				width="300"
-				height="100"
-			> -->
-				<view class="upStyle flex-rcc" @click="upLoad">
-					<image src="/static/images/voices/audio.png"></image>
-					上传音频
-				</view>
-			<!-- </u-upload> -->
+			<view class="upStyle flex-rcc" @click="upLoad">
+				<image src="/static/images/voices/audio.png"></image>
+				上传音频
+			</view>
 		</view>
 		<view class="name flex-rcc">
 			<u--input
@@ -27,7 +16,7 @@
 			  ></u--input>
 		</view>
 		
-		<u-button type="primary" size="large" text="确定添加" color="#2281FE" shape="circle" @click="save" class="btn"></u-button>
+		<u-button type="primary" size="large" text="确定添加" color="#2281FE" shape="circle" @click="save" class="btn"></u-button> -->
 	</view>
 </template>
 

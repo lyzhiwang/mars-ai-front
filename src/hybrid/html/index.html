@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>上传文件</title>
+	<link rel="stylesheet" href="./css/index.css">
+</head>
+<body>
+	<div class="container">
+		<div class="title">上传音频</div>
+		<div class="uploadBox">
+			<div class="upStyle flex-rcc" @click="upLoad">
+				<image src="/static/images/voices/audio.png"></image>
+				上传音频
+			</div>
+		</div>
+		<div class="name flex-rcc">
+			<u--input
+			    placeholder="请输入该音频名称"
+			    border="none"
+			    clearable
+			  ></u--input>
+		</div>
+		
+		<u-button type="primary" size="large" text="确定添加" color="#2281FE" shape="circle" @click="save" class="btn"></u-button>
+	</div>
+</body>
+</html>

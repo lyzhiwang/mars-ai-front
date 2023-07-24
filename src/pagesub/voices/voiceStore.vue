@@ -1,6 +1,6 @@
 <template>
 	<view class="container content">
-		<view class="list">
+		<view class="list" v-if="list.length>0">
 			<view class="item flex-item-col-center" v-for="(item,index) in list" :key="index" @click="handleItem(item)">
 				<image :src="`/static/images/voices/${item.id === playDataId? 'pause': 'play'}.png`" class="sImage"></image>
 				<view class="name u-line-1">{{item.name}}</view>
@@ -10,6 +10,7 @@
 				</view>
 			</view>
 		</view>
+		<u-empty v-else mode="data" text="暂无语音,请上传或录制!" :marginTop="160" iconSize="160" textSize="28" style="width: 100%;"></u-empty>
 		<view class="footterBox fcc-sb">
 			<view class="btn flex-rcc" @click="toPath('/pagesub/voices/upload')">上传</view>
 			<view class="btn btn2 flex-rcc" @click="toPath('/pagesub/voices/transcribe')">录制</view>
@@ -20,6 +21,9 @@
 </template>
 
 <script setup>
+	import { onLoad } from '@dcloudio/uni-app'
+	import { voiceReaIndex, voiceReaDestory } from '@/api'
+	
 	const list = ref([
 		{
 			id: 1,
@@ -40,8 +44,21 @@
 	
 	const show = ref(false)
 	const content = ref('请确认删除该语音?')
+	const id = ref(null)
+	onLoad((option)=>{
+		id.value = option.id
+		getList()
+	})
 	
+	// 获取语音库语音列表
+	const getList =()=>{
+		voiceReaIndex({voice_id: id.value}).then(res=>{
+			list.value = res.data
+		})
+	}
+	const currentId = ref(null)
 	const delItem = item =>{
+		currentId.value = item.id
 		show.value = true
 	}
 	
@@ -65,7 +82,12 @@
 	}
 	
 	const ok = ()=>{
-		show.value = false
+		voiceReaDestory({id: currentId.value}).then(res=>{
+			uni.showToast({title: '删除成功!',icon: 'success',duration: 2000});
+			show.value = false
+			const index = list.value.findIndex(v=> {return v.id===currentId.value})
+			if(index>-1) list.value.splice(index, 1)
+		})
 	}
 	
 	const toPath = url =>{

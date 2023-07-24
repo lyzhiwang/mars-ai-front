@@ -144,7 +144,7 @@ export function voiceStore(data) {
 // 删除Ai语音库
 export function voiceDestory(params) {
 	return request({
-		url: '/v1/voice'+ params.id,
+		url: '/v1/voice/'+ params.id,
 		method: 'delete'
 	})
 }

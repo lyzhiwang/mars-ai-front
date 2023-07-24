@@ -97,7 +97,8 @@
 				{
 					"path": "voices/index",
 					"style": {
-						"navigationBarTitleText": "AI语音库"
+						"navigationBarTitleText": "AI语音库",
+						"enablePullDownRefresh": true
 					}
 				},
 				{
