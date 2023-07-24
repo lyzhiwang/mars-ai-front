@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-// import { getUserInfo } from '@/api/index'
+import { getUserInfo } from '@/api/index'
 
 export const useUserStore = defineStore('user', {
 	persist: {
@@ -33,9 +33,9 @@ export const useUserStore = defineStore('user', {
         },
         async getUserInfo() {
             try {
-                // const res = await getUserInfo()
-                // this.setUserInfo(res.data)
-                // return res
+                const res = await getUserInfo()
+                this.setUserInfo(res.data)
+                return res.data
             } catch (error) {
                 throw error
             }

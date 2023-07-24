@@ -9,6 +9,14 @@ export function login(data) {
 		data
 	})
 }
+// 七牛云token
+export function qiniuToken(params){
+	return request({
+		url: '/v1/common/qiniu/token',
+		method: 'get',
+		params
+	})
+}
 // 卡密激活
 export function activateCode(params){
 	return request({
@@ -31,7 +39,7 @@ export function changePwd(data) {
 // userinfo
 export function getUserInfo(params) {
 	return request({
-		url: '/user/info',
+		url: '/v1/common/info',
 		method: 'get',
 		params
 	})
@@ -82,7 +90,15 @@ export function replyList(id, params){
 		params
 	})
 }
-
+// 回复添加语音
+export function addVoiceAtReply(id, data){
+	return request({
+		loading: true,
+		url: `v1/add/media/${id}`,
+		method: 'post',
+		data
+	})
+}
 // 删除回复分类
 export function deleReplyClass(id){
 	return request({
@@ -95,6 +111,14 @@ export function deleReplyClass(id){
 export function deleReply(id){
 	return request({
 		url: `/v1/destory/keywords/${id}`,
+		method: 'delete',
+	})
+}
+
+// 删除回复内得语音
+export function deleReplyVoice(id){
+	return request({
+		url: `/v1/del/media/${id}`,
 		method: 'delete',
 	})
 }

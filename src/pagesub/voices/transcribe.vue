@@ -2,7 +2,7 @@
 	<view class="container content">
 		<view class="txtBox">
 			<u--textarea v-model="value1" placeholder="请输入内容" count height="616" maxlength="5000"></u--textarea>
-			<view class="export" @click="goTo('/pagesub/voices/taskStore')">导入文档</view>
+			<view class="export" @click="goTo('/pagesub/voices/taskStore')" v-if="type!=2">导入文档</view>
 		</view>
 		
 		<view class="mediaBox">
@@ -12,7 +12,7 @@
 					<image :src="`/static/images/voices/${isPlay? 'pause': 'play'}-w.png`"></image>
 					试听
 				</view>
-				<view class="btn flex-rcc">
+				<view class="btn flex-rcc" @click="saveVoice">
 					<image src="/static/images/voices/save.png"></image>
 					保存音频
 				</view>
@@ -30,8 +30,11 @@
 	import { onLoad } from '@dcloudio/uni-app'
 	import { goTo } from '@/utils/helper.js'
 	import AudioQuickPlay from '@/components/audioQuickPlay/index.vue'
+	import { useConfigStore } from '@/stores'
+	import { addVoiceAtReply } from '@/api'
 	
-	const value1 = ref('开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段')
+	const config = useConfigStore()
+	const value1 = ref('')
 	const list = ref([
 		{
 			id: 1,
@@ -77,31 +80,35 @@
 		}
 		
 	}
-	const recorderManager = ref(null);
-	const innerAudioContext = ref(null);
-	
-	onLoad(()=>{
+	const type = ref(1) // 1 语音库， 2 回复
+	let recorderManager = null, innerAudioContext = null, id = null;
+	onLoad((option)=>{
+		id = option.id
+		type.value = option.type
 		// 初始化录音
-		recorderManager.value = uni.getRecorderManager();
+		recorderManager = uni.getRecorderManager();
 		// 初始化播放器
-		innerAudioContext.value = uni.createInnerAudioContext();
-		innerAudioContext.value.autoplay = true;
+		// innerAudioContext = uni.createInnerAudioContext();
+		// innerAudioContext.autoplay = true;
 		// 获取音频信息
-		innerAudioContext.value.onCanplay(res=>{
-			console.log('res音频',JSON.stringify(res))
-		})
+		// innerAudioContext.onCanplay(res=>{
+		// 	console.log('res音频',JSON.stringify(res))
+		// })
 		
 		// 音频停止事件
-		innerAudioContext.value.onStop(function (res){
-			isPlay.value = false
-			uni.$u.toast('播放结束!')
-		})
+		// innerAudioContext.onStop(function (res){
+		// 	isPlay.value = false
+		// 	uni.$u.toast('播放结束!')
+		// })
 		
-		recorderManager.value.onStop(function (res) {
+		recorderManager.onStop(function (res) {
 			console.log('recorder stop' + JSON.stringify(res));
 			voicePath.value = res.tempFilePath;
+			uni.showToast({title: '录音完成!', icon: 'success', duration: 1500})
 		});
-	}) 
+		// 获取七牛token
+		config.getQnToken()
+	})
 	
 	const isRecord = ref(false)
 	
@@ -111,26 +118,16 @@
 		uni.vibrateLong({
 			success:()=>{
 				if(isRecord.value){
-					console.log('recorderManager.value', recorderManager.value)
+					console.log('recorderManager', recorderManager)
 					uni.showToast({
 						title: '录音开始!',
 						icon: 'success',
 						duration: 1500,
-						success() {
-							recorderManager.value.start();
-						}
 					})
-					
+					recorderManager.start();
 				}else{
-					console.log('recorderManager.value222', recorderManager.value)
-					uni.showToast({
-						title: '录音完成!',
-						icon: 'success',
-						duration: 1500,
-						success() {
-							recorderManager.value.stop();
-						}
-					})
+					console.log('recorderManager.value222', recorderManager)
+					recorderManager.stop();
 				}
 			}
 		})
@@ -143,13 +140,13 @@
 		if(voicePath.value){
 			isPlay.value = !isPlay.value
 			if(voicePath.value){
-				// innerAudioContext.value.src = voicePath.value;
+				// innerAudioContext.src = voicePath.value;
 				if(isPlay.value){
 					audioQuickPlay.value.play()
-					// innerAudioContext.value.play();
+					// innerAudioContext.play();
 				}else{
 					audioQuickPlay.value.stop()
-					// innerAudioContext.value.pause();
+					// innerAudioContext.pause();
 				}
 				
 			}	
@@ -160,6 +157,34 @@
 	
 	const ok = ()=>{
 		show.value = false
+	}
+	function saveVoice(){
+		uni.showLoading({title: '加载中'})   
+		// 获取音频
+		uni.uploadFile({
+			url: 'https://upload-z1.qiniup.com',
+			filePath: voicePath.value,
+			name: 'file',
+			formData: {
+				"token": config.qnToken,
+				"x:type": 15,
+			},
+			success: async(res) => { 
+				const file = JSON.parse(res.data)
+				const upload_id = file.data.id
+				const response = (type.value == 2) ? await addVoiceAtReply(id, {upload_id}) : await addVoiceAtReply(id, {upload_id})
+				if(response){
+					uni.showToast({title: '保存成功', icon: 'success', duration: 2000});
+					uni.navigateBack()
+				}
+			},
+			fail: (err) => {
+				uni.showToast({title: '保存失败', icon: 'error', duration: 2000});
+			},
+			complete(){
+				uni.hideLoading()
+			}
+		})
 	}
 </script>
 

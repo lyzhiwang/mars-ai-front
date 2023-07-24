@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { qiniuToken } from '@/api/index'
 
 export const useConfigStore = defineStore('config', {
 	persist: {
@@ -10,6 +11,7 @@ export const useConfigStore = defineStore('config', {
 		password: '',
 		remeberPwd: false,
 		statusBar: 24, // 状态栏的高度
+		qnToken: null,
 	}),
 	actions: {
 		setRemeberPwd(val) {
@@ -21,6 +23,16 @@ export const useConfigStore = defineStore('config', {
 		},
 		setStatusBar(height){
 			this.statusBar = height
+		},
+		async getQnToken(){
+			try{
+				const res = await qiniuToken({file_type: 'audio'})
+				if(res&&res.data){
+					this.qnToken = res.data.qiniuToken
+				}
+			}catch(e){
+				throw error
+			}
 		}
 	}
 })

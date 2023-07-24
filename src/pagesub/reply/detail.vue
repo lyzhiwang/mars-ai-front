@@ -25,11 +25,11 @@ const size = 20;
 function queryList(init){
 	if(!answer_id.value) return
 	replyList(answer_id.value, {page, size}).then(res=>{
-		console.log(111, res)
 		if(res && res.data){
 			const {list, total} = res.data
 			plist.value = init ? list : plist.value.concat(list);
 			last = Math.ceil(total/size)
+			console.log(111, plist.value)
 		}
 	})
 }

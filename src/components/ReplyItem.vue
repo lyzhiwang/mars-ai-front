@@ -10,14 +10,14 @@
 	</view>
 	<view class="iptBox between" v-for="(item, i) in data.media">
 		<view class="vcenter">
-			<u-icon name="play-circle-fill" size="50rpx" color="#1E64FE"></u-icon>&nbsp;
-			<u--text text="录音名字11111111录音名字录音名字录音名字录音名字录音名字录音名字录音名字" :lines="1" size="28rpx" color="#333"></u--text>
+			<u-icon :name="!isplay?'play-circle-fill':'pause-circle-fill'" size="50rpx" color="#1E64FE" @click="togglePlay(item)"></u-icon>&nbsp;
+			<u--text :text="item.tiitle||item.upload.name" :lines="1" size="28rpx" color="#333"></u--text>
 		</view>
-		<u-icon name="trash-fill" size="50rpx" color="#1E64FE" @click="delReplyVoice"></u-icon>
+		<u-icon name="trash-fill" size="50rpx" color="#1E64FE" @click="delReplyVoice(item.id)"></u-icon>
 	</view>
 	<view class="btnGroup" v-if="!showMore">
 		<button class="btn">上传</button>
-		<button class="btn" @click="goTo('/pagesub/voices')">录制</button>
+		<button class="btn" @click="goTo('/pagesub/voices/transcribe?type=2&id='+data.id)">录制</button>
 		<button class="btn" @click="editKeyword">添加关键字</button>
 	</view>
 	<view class="center expand" v-if="showMore" @click="toggleExt"><u-icon name="arrow-down" color="#999" size="32rpx"></u-icon>&nbsp;展开更多</view>
@@ -28,7 +28,7 @@
 <script setup>
 import { goTo } from '@/utils/helper.js'
 import { useReplyStore } from '@/stores'
-import { deleReply } from '@/api'
+import { deleReply, deleReplyVoice } from '@/api'
 
 const emit = defineEmits(['refresh']);
 const props = defineProps({
@@ -48,11 +48,14 @@ const props = defineProps({
 		require: true,
 	},
 });
+
 const reply = useReplyStore()
 const showMore = ref(true)
 const list = computed(()=>{
 	return showMore.value ? props.data.media.slice(0,1) : props.data.media
 })
+let isplay = ref(false)
+let innerAudioContext = null;
 
 function deleteItem(){
 	uni.showModal({
@@ -68,8 +71,19 @@ function deleteItem(){
 		}
 	})
 }
-function delReplyVoice(){
-	
+function delReplyVoice(id){
+	uni.showModal({
+		title: '提示',
+		content: `是否确定删除当前回复语音片段?`,
+		success: function (res) {
+			if (res.confirm) {
+				deleReplyVoice(id).then(res=>{
+					uni.showToast({title: '删除成功', icon: 'success', duration: 2000});
+					emit('refresh')
+				})
+			}
+		}
+	})
 }
 function toggleExt(){
 	showMore.value = !showMore.value
@@ -77,6 +91,17 @@ function toggleExt(){
 function editKeyword(){
 	reply.saveReplyTemp(props.data)
 	goTo(`/pagesub/reply/add?id=${props.answer_id}&rid=${props.data.id}`)
+}
+function togglePlay(item){
+	isplay.value = !isplay.value
+	if(isplay.value){
+		if(innerAudioContext) innerAudioContext.destroy();
+		innerAudioContext = uni.createInnerAudioContext();
+		innerAudioContext.src = item.upload.full_path;
+		innerAudioContext.autoplay = true;
+	}else{
+		innerAudioContext.stop()
+	}
 }
 </script>
 
