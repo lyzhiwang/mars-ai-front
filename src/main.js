@@ -22,6 +22,10 @@ export function createApp() {
 			},
 			icon:{
 				size: 28
+			},
+			loadmore: {
+				fontSize: 28,
+				iconSize: 30
 			}
 			// 其他组件属性配置
 			// ......

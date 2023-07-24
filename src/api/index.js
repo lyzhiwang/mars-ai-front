@@ -37,11 +37,65 @@ export function getUserInfo(params) {
 	})
 }
 
+// 创建回复分类
 export function crtReplyClass(data) {
 	return request({
+		loading: true,
 		url: '/v1/answer',
 		method: 'post',
 		data
+	})
+}
+
+// 添加关键字
+export function addKeyword(data){
+	return request({
+		loading: true,
+		url: '/v1/ans/add/title',
+		method: 'post',
+		data
+	})
+}
+// 编辑关键字
+export function editKeyword(id, data){
+	return request({
+		loading: true,
+		url: `/v1/ans/edit/keyword/${id}`,
+		method: 'put',
+		data
+	})
+}
+// 回复分类列表
+export function replyClassList(params){
+	return request({
+		url: '/v1/answer',
+		method: 'get',
+		params
+	})
+}
+
+// 回复列表
+export function replyList(id, params){
+	return request({
+		url: `/v1/answer/keywords/${id}`,
+		method: 'get',
+		params
+	})
+}
+
+// 删除回复分类
+export function deleReplyClass(id){
+	return request({
+		url: `/v1/answer/${id}`,
+		method: 'delete',
+	})
+}
+
+// 删除回复列表
+export function deleReply(id){
+	return request({
+		url: `/v1/destory/keywords/${id}`,
+		method: 'delete',
 	})
 }
 

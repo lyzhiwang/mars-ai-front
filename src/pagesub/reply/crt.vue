@@ -16,9 +16,9 @@ function submit(){
 	if(!name.value) return uni.showToast({title: '名称不能为空', icon: 'error'})
 	crtReplyClass({title: name.value}).then(res=>{
 		if(res&&res.data){
-			console.log(1111, JSON.stringify(res.data))
+			// redirect('/pagesub/reply/add?id='+res.data.id)
+			redirect('/pagesub/reply/list')
 		}
-		// redirect('/pagesub/reply/add?id=')
 	})
 }
 </script>

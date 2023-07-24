@@ -49,6 +49,7 @@ service.interceptors.response.use(
 		if (res.code === 0) { // code 为0请求正常
 		    return res
 		} else {
+			console.log(999, res)
 			// 先提示错误信息
 			if (res.message){
 				uni.showToast({ title: res.message, icon: 'none', duration: 3000});
@@ -61,7 +62,7 @@ service.interceptors.response.use(
 						content: '您还未登录，请先登录',
 						success: function (res) {
 							if (res.confirm) {
-								uni.redirectTo({ url: '/pages/login/index' })
+								uni.redirectTo({ url: '/pagesub/login/index' })
 							}
 						}
 					})
@@ -69,7 +70,7 @@ service.interceptors.response.use(
 				case 700010: // 重新获取微信授权登录
 					userStore.logOut()
 					// navigateTo
-					uni.redirectTo({url: '/pages/login/index'})
+					uni.redirectTo({url: '/pagesub/login/index'})
 					break;
 			}
 		}

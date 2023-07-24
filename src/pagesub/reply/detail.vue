@@ -1,17 +1,50 @@
 <template>
 <view class="page2">
-	<button class="create" @click="goTo('/pagesub/reply/crt')">
+	<button class="create" @click="goTo('/pagesub/reply/add?id='+answer_id)">
 		<image src="/static/images/reply/icon-msg.png" class="icon-crt"></image>
 		<text>添加新回复</text>
 	</button>
-	<ReplyItem v-for="i in 6" :index="i"></ReplyItem>
+	<ReplyItem v-for="(item, i) in plist" :index="i+1" :data="item" :answer_id="answer_id" @refresh="queryList(true)"></ReplyItem>
+	<u-loadmore v-if="plist.length>0" :status="listStatus" />
+	<u-empty v-else mode="data"></u-empty>
 </view>
 </template>
 
 <script setup>
+import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app'
 import { goTo } from '@/utils/helper.js'
+import { replyList } from '@/api'
 import ReplyItem from '@/components/ReplyItem'
 
+const answer_id = ref(null)
+const plist = ref([])
+const listStatus = ref('loadmore')
+let page = 1, last = 0;
+const size = 20;
+
+function queryList(init){
+	if(!answer_id.value) return
+	replyList(answer_id.value, {page, size}).then(res=>{
+		console.log(111, res)
+		if(res && res.data){
+			const {list, total} = res.data
+			plist.value = init ? list : plist.value.concat(list);
+			last = Math.ceil(total/size)
+		}
+	})
+}
+onLoad((option)=>{
+	answer_id.value = option.id
+})
+onShow(()=>queryList(true))
+onReachBottom(()=>{
+	if(page >= last) return listStatus.value = 'nomore';
+	listStatus.value = 'loading'
+	if(page < last){
+		page++
+		queryList()
+	}
+})
 </script>
 
 <style lang="scss" scoped>

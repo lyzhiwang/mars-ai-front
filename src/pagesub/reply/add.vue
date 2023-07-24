@@ -2,15 +2,15 @@
 <view class="page">
 	<view class="panel">
 		<view class="title">回复标题</view>
-		<u--input placeholder="请输入标题" border="bottom" v-model="form.title"></u--input>
+		<u--input placeholder="请输入标题" border="bottom" v-model.trim="form.title" :disabled="isEdit"></u--input>
 	</view>
 	<view class="panel">
 		<view class="title">关键字<text class="r">*关键字一行一个</text></view>
-		<view class="iptBox" v-for="(item, i) in form.keyword" :key="i">
+		<view class="iptBox" v-for="(item, i) in form.keywords" :key="i">
 			<u--input 
 				placeholder="请输入关键字" 
 				border="none" 
-				v-model.trim="form.keyword[i]" 
+				v-model.trim="form.keywords[i]" 
 				class="ipt" 
 				readonly
 				cursor-spacing="10"
@@ -32,23 +32,47 @@
 </template>
 
 <script setup>
+import { onLoad } from '@dcloudio/uni-app'
+import { addKeyword, editKeyword } from '@/api'
+import { useReplyStore } from '@/stores'
+
+const reply = useReplyStore()
 const form = reactive({
+	answer_id: '',
 	title: '',
-	keyword: [],
+	keywords: [],
 })
 const iptword = ref('')
+const isEdit = ref(false)
 
 const redirect = url => uni.redirectTo({url})
+onLoad((option)=>{
+	const { id, rid } = option // id: 项目id, rid: 回复id
+	form.answer_id = id
+	if(rid && reply.replyTemp){
+		// 进入编辑模式
+		const { title, keywords } = reply.replyTemp
+		form.title = title
+		form.keywords = keywords
+		isEdit.value = true
+	}
+})
 function updateKeyword(val){
 	if(val){
 		iptword.value = ''
-		form.keyword.push(val)
+		form.keywords.push(val)
 	}
 }
-function backToList(){
-	console.log(1111, form)
-	redirect('/pagesub/reply/list')
+async function backToList(){
+	const res = isEdit.value ? await editKeyword(reply.replyTemp.id, {keywords: form.keywords}) : await addKeyword(form);
+	if(res){
+		uni.showToast({title: '添加成功', icon: 'success', duration: 2000});
+		setTimeout(()=>redirect('/pagesub/reply/list'), 1000)
+	}
 }
+onBeforeUnmount(()=>{
+	if(isEdit.value) reply.saveReplyTemp(null)
+})
 </script>
 
 <style lang="scss" scoped>

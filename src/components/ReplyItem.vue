@@ -3,12 +3,12 @@
 	<view class="dele" @click="deleteItem"><u-icon name="trash" size="34rpx" color="#fff"></u-icon></view>
 	<view class="fir">
 		<view class="index">{{ index }}</view>
-		<u--text text="超级泰麻辣烫" :lines="1" size="30rpx" bold color="#333"></u--text>
+		<u--text :text="data.title" :lines="1" size="30rpx" bold color="#333"></u--text>
 	</view>
 	<view class="iptBox vcenter">
-		<text class="keyword">{{data.keyword.join('/')}}</text>
+		<text class="keyword">{{data.keywords.join('/')}}</text>
 	</view>
-	<view class="iptBox between" v-for="(item, i) in list">
+	<view class="iptBox between" v-for="(item, i) in data.media">
 		<view class="vcenter">
 			<u-icon name="play-circle-fill" size="50rpx" color="#1E64FE"></u-icon>&nbsp;
 			<u--text text="录音名字11111111录音名字录音名字录音名字录音名字录音名字录音名字录音名字" :lines="1" size="28rpx" color="#333"></u--text>
@@ -17,8 +17,8 @@
 	</view>
 	<view class="btnGroup" v-if="!showMore">
 		<button class="btn">上传</button>
-		<button class="btn">录制</button>
-		<button class="btn" @click="goTo('/pagesub/reply/add')">添加关键字</button>
+		<button class="btn" @click="goTo('/pagesub/voices')">录制</button>
+		<button class="btn" @click="editKeyword">添加关键字</button>
 	</view>
 	<view class="center expand" v-if="showMore" @click="toggleExt"><u-icon name="arrow-down" color="#999" size="32rpx"></u-icon>&nbsp;展开更多</view>
 	<view class="center" v-else @click="toggleExt"><u-icon name="arrow-up" color="#999" size="32rpx"></u-icon>&nbsp;收起</view>
@@ -27,34 +27,56 @@
 
 <script setup>
 import { goTo } from '@/utils/helper.js'
+import { useReplyStore } from '@/stores'
+import { deleReply } from '@/api'
+
+const emit = defineEmits(['refresh']);
 const props = defineProps({
     data: {
         type: Object,
         require: true,
 		default: {
-			keyword: ['地址','在哪','真的','假的','的是根深蒂固山豆根但是'],
-			replyVoice: [1,2,3,4]
+			keywords: [], // 关键字
+			media: [] // 录音数据
 		}
     },
 	index:{
 		type: Number,
 		require: true,
-	}
+	},
+	answer_id: {
+		require: true,
+	},
 });
-
+const reply = useReplyStore()
 const showMore = ref(true)
 const list = computed(()=>{
-	return showMore.value ? props.data.replyVoice.slice(0,1) : props.data.replyVoice
+	return showMore.value ? props.data.media.slice(0,1) : props.data.media
 })
 
 function deleteItem(){
-	
+	uni.showModal({
+		title: '提示',
+		content: `是否确定删除当前回复(${props.data.title})?`,
+		success: function (res) {
+			if (res.confirm) {
+				deleReply(props.data.id).then(res=>{
+					uni.showToast({title: '删除成功', icon: 'success', duration: 2000});
+					emit('refresh')
+				})
+			}
+		}
+	})
 }
 function delReplyVoice(){
 	
 }
 function toggleExt(){
 	showMore.value = !showMore.value
+}
+function editKeyword(){
+	reply.saveReplyTemp(props.data)
+	goTo(`/pagesub/reply/add?id=${props.answer_id}&rid=${props.data.id}`)
 }
 </script>
 

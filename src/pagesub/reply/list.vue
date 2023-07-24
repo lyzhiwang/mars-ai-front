@@ -4,41 +4,72 @@
 		<image src="/static/images/reply/icon-create.png" class="icon-crt"></image>
 		<text>创建新项目</text>
 	</button>
-	<view class="panel">
-		<view class="dele" @click="deleteItem"><u-icon name="trash" size="34rpx" color="#fff"></u-icon></view>
+	<view class="panel" v-for="(item, i) in plist" :key="item.id">
+		<view class="dele" @click="deleteItem(item)"><u-icon name="trash" size="34rpx" color="#fff"></u-icon></view>
 		<view class="fir">
-			<view class="index">1</view>
-			<u--text text="超级泰麻辣烫" :lines="1" size="30rpx" bold color="#333"></u--text>
+			<view class="index">{{i+1}}</view>
+			<u--text :text="item.title" :lines="1" size="30rpx" bold color="#333"></u--text>
 		</view>
 		<view class="con">
-			<view class="status" @click="goTo('/pagesub/reply/add')">
+			<view class="status" @click="goTo('/pagesub/reply/detail?id='+item.id)" v-if="item.answerKeywords">
+				<text class="b">已创建回复</text>
+				<u-icon name="arrow-right" size="34rpx" color="#999"></u-icon>
+			</view>
+			<view class="status" @click="goTo('/pagesub/reply/add?id='+item.id)" v-else>
 				<text class="r">未创建回复</text>
 				<u-icon name="arrow-right" size="34rpx" color="#999"></u-icon>
 			</view>
 		</view>
 	</view>
-	<view class="panel">
-		<view class="dele" @click="deleteItem"><u-icon name="trash" size="34rpx" color="#fff"></u-icon></view>
-		<view class="fir">
-			<view class="index">1</view>
-			<u--text text="超级泰麻辣烫" :lines="1" size="30rpx" bold color="#333"></u--text>
-		</view>
-		<view class="con">
-			<view class="status" @click="goTo('/pagesub/reply/detail')">
-				<text class="b">已创建回复</text>
-				<u-icon name="arrow-right" size="34rpx" color="#999"></u-icon>
-			</view>
-		</view>
-	</view>
+	<u-loadmore v-if="plist.length>0" :status="listStatus" />
+	<u-empty v-else mode="data"></u-empty>
 </view>
 </template>
 
 <script setup>
-const feedback = ref('')
-function deleteItem(){
-	
+import { onLoad, onReachBottom, onShow } from '@dcloudio/uni-app'
+import { replyClassList, deleReplyClass } from '@/api'
+import { goTo } from '@/utils/helper.js'
+
+const feedback = ref('');
+const plist = ref([])
+const listStatus = ref('loadmore')
+let page = 1, last = 0;
+const size = 20;
+
+function deleteItem(item){
+	const {id, title} = item
+	uni.showModal({
+		title: '提示',
+		content: `是否确定删除当前回复项目(${title})?`,
+		success: function (res) {
+			if (res.confirm) {
+				deleReplyClass(id).then(res=>{
+					uni.showToast({title: '删除成功', icon: 'success', duration: 2000});
+					queryList(true)
+				})
+			}
+		}
+	})
 }
-const goTo = url => uni.navigateTo({url})
+function queryList(init){
+	replyClassList({page, size}).then(res=>{
+		if(res&&res.data){
+			const {list, total} = res.data
+			plist.value = init ? list : plist.value.concat(list);
+			last = Math.ceil(total/size)
+		}
+	})
+}
+onShow(()=>queryList(true))
+onReachBottom(()=>{
+	if(page >= last) return listStatus.value = 'nomore';
+	listStatus.value = 'loading'
+	if(page < last){
+		page++
+		queryList()
+	}
+})
 </script>
 
 <style lang="scss" scoped>
