@@ -4,9 +4,11 @@
 		<image src="/static/images/reply/icon-msg.png" class="icon-crt"></image>
 		<text>添加新回复</text>
 	</button>
-	<ReplyItem v-for="(item, i) in plist" :index="i+1" :data="item" :answer_id="answer_id" @refresh="queryList(true)"></ReplyItem>
-	<u-loadmore v-if="plist.length>0" :status="listStatus" />
-	<u-empty v-else mode="data"></u-empty>
+	<template v-if="plist.length>0">
+		<ReplyItem v-for="(item, i) in plist" :index="i+1" :data="item" :answer_id="answer_id" @refresh="queryList(true)"></ReplyItem>
+		<u-loadmore v-if="plist.length>=size" :status="listStatus" fontSize="28rpx" iconSize="30rpx" line/>
+	</template>
+	<u-empty v-else mode="data" textSize="28rpx"></u-empty>
 </view>
 </template>
 
@@ -29,7 +31,7 @@ function queryList(init){
 			const {list, total} = res.data
 			plist.value = init ? list : plist.value.concat(list);
 			last = Math.ceil(total/size)
-			console.log(111, plist.value)
+			if(page >= last) listStatus.value = 'nomore';
 		}
 	})
 }
@@ -38,7 +40,7 @@ onLoad((option)=>{
 })
 onShow(()=>queryList(true))
 onReachBottom(()=>{
-	if(page >= last) return listStatus.value = 'nomore';
+	if(page >= last) return;
 	listStatus.value = 'loading'
 	if(page < last){
 		page++

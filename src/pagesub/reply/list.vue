@@ -4,25 +4,27 @@
 		<image src="/static/images/reply/icon-create.png" class="icon-crt"></image>
 		<text>创建新项目</text>
 	</button>
-	<view class="panel" v-for="(item, i) in plist" :key="item.id">
-		<view class="dele" @click="deleteItem(item)"><u-icon name="trash" size="34rpx" color="#fff"></u-icon></view>
-		<view class="fir">
-			<view class="index">{{i+1}}</view>
-			<u--text :text="item.title" :lines="1" size="30rpx" bold color="#333"></u--text>
-		</view>
-		<view class="con">
-			<view class="status" @click="goTo('/pagesub/reply/detail?id='+item.id)" v-if="item.answerKeywords">
-				<text class="b">已创建回复</text>
-				<u-icon name="arrow-right" size="34rpx" color="#999"></u-icon>
+	<template v-if="plist.length>0">
+		<view class="panel" v-for="(item, i) in plist" :key="item.id">
+			<view class="dele" @click="deleteItem(item)"><u-icon name="trash" size="34rpx" color="#fff"></u-icon></view>
+			<view class="fir">
+				<view class="index">{{i+1}}</view>
+				<u--text :text="item.title" :lines="1" size="30rpx" bold color="#333"></u--text>
 			</view>
-			<view class="status" @click="goTo('/pagesub/reply/add?id='+item.id)" v-else>
-				<text class="r">未创建回复</text>
-				<u-icon name="arrow-right" size="34rpx" color="#999"></u-icon>
+			<view class="con">
+				<view class="status" @click="goTo('/pagesub/reply/detail?id='+item.id)" v-if="item.answerKeywords">
+					<text class="b">已创建回复</text>
+					<u-icon name="arrow-right" size="34rpx" color="#999"></u-icon>
+				</view>
+				<view class="status" @click="goTo('/pagesub/reply/add?id='+item.id)" v-else>
+					<text class="r">未创建回复</text>
+					<u-icon name="arrow-right" size="34rpx" color="#999"></u-icon>
+				</view>
 			</view>
 		</view>
-	</view>
-	<u-loadmore v-if="plist.length>0" :status="listStatus" />
-	<u-empty v-else mode="data"></u-empty>
+		<u-loadmore v-if="plist.length>=size" :status="listStatus" fontSize="28rpx" iconSize="30rpx" line/>
+	</template>
+	<u-empty v-else mode="data" textSize="28"></u-empty>
 </view>
 </template>
 
@@ -58,12 +60,13 @@ function queryList(init){
 			const {list, total} = res.data
 			plist.value = init ? list : plist.value.concat(list);
 			last = Math.ceil(total/size)
+			if(page >= last) listStatus.value = 'nomore';
 		}
 	})
 }
 onShow(()=>queryList(true))
 onReachBottom(()=>{
-	if(page >= last) return listStatus.value = 'nomore';
+	if(page >= last) return;
 	listStatus.value = 'loading'
 	if(page < last){
 		page++

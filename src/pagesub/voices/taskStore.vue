@@ -13,50 +13,73 @@
 			</scroll-view>
 		</view>
 		
-		<u-empty v-else mode="data" text="暂无语音库!" :marginTop="160" iconSize="160" textSize="28" style="width: 100%;"></u-empty>
+		<u-empty v-else mode="data" text="暂无数据" :marginTop="160" iconSize="160" textSize="28" style="width: 100%;"></u-empty>
 		
 		<view class="btn flex-rcc" @click="handleAdd">确定添加</view>
 	</view>
 </template>
 
 <script setup>
-	import { onLoad, onReady } from '@dcloudio/uni-app'
-	import { scriptIndex } from '@/api'
+	import { onLoad, onReady, onReachBottom } from '@dcloudio/uni-app'
+	import { scriptIndex, voiceIndex, replyClassList } from '@/api'
 	import { useTaskStore } from '@/stores'
+	
+	const useTask = useTaskStore()
+	const type = ref(1) // 1 话术库 
+	const current = ref(null)
+	const list = ref([])
+	const listStatus = ref('loadmore')
+	let page = 1, last = 0, currentItem = {};
+	const size = 20;
 	
 	onLoad((option)=>{
 		type.value = Number(option.type)
-		getList()
+		getList(true)
 	})
-	
 	onReady(()=>{
 		uni.setNavigationBarTitle({
 			title: type.value===1? '话术库': type.value===2? '选择语音': '选择回复'
 		})
 	})
 	
-	const type = ref(1) // 1 话术库 
-	
-	const useTask = useTaskStore()
-	const current = ref(null)
-	const list = ref([])
-	const getList = () =>{
-		scriptIndex().then(res=>{
-			console.log('res', res)
-			list.value = res.data
+	const getList = (init) =>{
+		const fun = type.value===1 ? scriptIndex : (type.value===2 ? voiceIndex : replyClassList)
+		fun({page, size}).then(res=>{
+			if(type.value===1){
+				list.value = res.data
+			}else{
+				list.value =  init ? res.data.list : list.value.concat(res.data.list);
+				last = Math.ceil(total/size)
+				if(page >= last) listStatus.value = 'nomore';
+			}
 		})
 	}
-	
-	let currentItem = {}
 	const select = item =>{
 		currentItem = item
 		current.value = item.id
 	}
-	
 	const handleAdd = ()=>{
-		useTask.setTask(currentItem)
+		switch (type.value){
+			case 1:
+				useTask.setTask(currentItem)
+				break;
+			case 2:
+				useTask.setVoice(currentItem)
+				break;
+			case 3:
+				useTask.setReply(currentItem)
+				break;
+		}
 		uni.navigateBack()
 	}
+	onReachBottom(()=>{
+		if(page >= last) return;
+		listStatus.value = 'loading'
+		if(page < last){
+			page++
+			queryList()
+		}
+	})
 </script>
 
 <style lang="scss" scoped>

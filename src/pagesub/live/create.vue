@@ -13,11 +13,11 @@
 			class="panel"
 			:model="form"
 			:rules="rules"
-			ref="form1"
+			ref="urlForm"
 			errorType="toast"
 		>
 			<image src="/static/images/live/title.png" class="title"></image>
-			<u-form-item prop="url" borderBottom ref="item1">
+			<u-form-item prop="url">
 				<view class="iptBox">
 					<u--input 
 						v-model="form.url" 
@@ -26,6 +26,7 @@
 						prefixIcon="search"
 						prefixIconStyle="font-size: 36rpx;color: #909399"
 						placeholder="输入直播间地址"
+						:formatter="formatter"
 					></u--input>
 				</view>
 				<text class="searchText mc" @click="searchLive">搜索</text>
@@ -36,26 +37,26 @@
 		<view class="panel">
 			<view class="flex between">
 				<view class="lebel">选择语音库</view>
-				<u-button plain type="primary" text="添加" icon="plus" shape="circle" class="add"></u-button>
+				<u-button plain type="primary" text="添加" icon="plus" shape="circle" class="add" @click="goTo('/pagesub/voices/taskStore?type=2')"></u-button>
 			</view>
-			<view class="selectItem" v-for="i in 2">
+			<view class="selectItem" v-if="task.selectVoice">
 				<image src="/static/images/live/ico-voice.png" class="voice"/>
-				<text>开播第一段</text>
+				<text>{{task.selectVoice.title}}</text>
 			</view>
 		</view>
 		<view class="panel shadow">
 			<view class="flex between">
 				<view class="lebel">选择智能回复</view>
-				<u-button plain type="primary" text="添加" icon="plus" shape="circle" class="add"></u-button>
+				<u-button plain type="primary" text="添加" icon="plus" shape="circle" class="add" @click="goTo('/pagesub/voices/taskStore?type=3')"></u-button>
 			</view>
-			<view class="selectItem" v-for="i in 4">
+			<view class="selectItem" v-if="task.selectReply">
 				<image src="/static/images/live/ico-reply.png" class="voice"/>
-				<text>回复第一段</text>
+				<text>{{task.selectReply.title}}</text>
 			</view>
 		</view>
 		<view class="placeholder"></view>
 		<view class="fixedArea">
-			<u-button type="primary" text="确定" shape="circle" class="submit"></u-button>
+			<u-button type="primary" text="确定" shape="circle" class="submit" @click="startLive"></u-button>
 		</view>
 	</view>
 </view>
@@ -64,28 +65,72 @@
 <script setup>
 import { onPageScroll } from '@dcloudio/uni-app'
 import { useConfigStore } from '@/stores'
+import { getLiveTit } from '@/api'
+import { goTo } from '@/utils/helper'
+import { useTaskStore } from '@/stores'
+import { onBeforeUnmount } from 'vue'
 
 const config = useConfigStore()
+const task = useTaskStore()
 // const bgColor = ref('transparent')
-const form = reactive({
-	url: '',
-})
-const rules = reactive({
-	url: {
-		type: 'string',
-		required: true,
-		message: '请填写正确的直播地址',
-		trigger: ['blur', 'change']
-	}
-})
-
 // onPageScroll((e)=>{
 // 	console.log(111, JSON.stringify(e))
 // 	bgColor.value = e.scrollTop>10 ? '#519af8' :'transparent'
 // })
-function searchLive(){
-	
+const urlForm = ref()
+const form = reactive({
+	url: '',
+})
+const rules = reactive({
+	url: [
+		{
+			type: 'string',
+			required: true,
+			message: '请输入直播地址',
+			trigger: ['blur', 'change'],
+		},
+		{
+			validator: (rule, value, callback) => {
+				return uni.$u.test.url(value)
+			},
+			message: '请填写正确的直播地址',
+			trigger: ['blur', 'change'],
+		}
+	]
+})
+let url_validate = false
+
+const formatter = (value) => {
+	// 过滤输入的汉字
+    if(value.includes('http')){
+      const url = value.split('http')[1]
+      return `http${url}`
+    }else{
+      return value
+    }
 }
+function searchLive(){
+	urlForm.value.validate().then(res => {
+		url_validate = true
+		getLiveTit({live_url: form.url}).then(res=>{
+			consoloe.log(4444, res)
+		})
+	}).catch(errors => {
+		uni.$u.toast(errors[0].message)
+	})
+}
+function startLive(){
+	if(!form.url || !url_validate) return uni.$u.toast('未填写直播地址或不正确')
+	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
+	// 开始直播
+	uni.switchTab({
+		url: '/tabber/live/index'
+	})
+}
+onBeforeUnmount(()=>{
+	// if(task.selectVoice) task.setVoice(null)
+	// if(task.selectReply) task.setReply(null)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -139,6 +184,8 @@ function searchLive(){
 			font-size: 30rpx;
 			padding-left: 14rpx;
 			font-weight: 700;
+			position: relative;
+			z-index: 1;
 		}
 		.liveName{
 			font-size: 30rpx;
@@ -150,6 +197,7 @@ function searchLive(){
 			right: -10rpx;
 			width: 182rpx;
 			height: 216rpx;
+			z-index: 0;
 		}
 		.add{
 			width: 134rpx;

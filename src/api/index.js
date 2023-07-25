@@ -191,3 +191,12 @@ export function scriptIndex() {
 		method: 'get'
 	})
 }
+
+// 获取直播间标题
+export function getLiveTit(data){
+	return request({
+		url: '/v1/get/live/title',
+		method: 'post',
+		data
+	})
+}

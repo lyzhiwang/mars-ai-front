@@ -10,7 +10,7 @@
 	</view>
 	<view class="iptBox between" v-for="(item, i) in data.media">
 		<view class="vcenter">
-			<u-icon :name="!isplay?'play-circle-fill':'pause-circle-fill'" size="50rpx" color="#1E64FE" @click="togglePlay(item)"></u-icon>&nbsp;
+			<u-icon :name="isplay&&playId==item.id?'pause-circle-fill':'play-circle-fill'" size="50rpx" color="#1E64FE" @click="togglePlay(item)"></u-icon>&nbsp;
 			<u--text :text="item.tiitle||item.upload.name" :lines="1" size="28rpx" color="#333"></u--text>
 		</view>
 		<u-icon name="trash-fill" size="50rpx" color="#1E64FE" @click="delReplyVoice(item.id)"></u-icon>
@@ -54,7 +54,8 @@ const showMore = ref(true)
 const list = computed(()=>{
 	return showMore.value ? props.data.media.slice(0,1) : props.data.media
 })
-let isplay = ref(false)
+const isplay = ref(false)
+const playId = ref(null)
 let innerAudioContext = null;
 
 function deleteItem(){
@@ -93,16 +94,27 @@ function editKeyword(){
 	goTo(`/pagesub/reply/add?id=${props.answer_id}&rid=${props.data.id}`)
 }
 function togglePlay(item){
-	isplay.value = !isplay.value
-	if(isplay.value){
-		if(innerAudioContext) innerAudioContext.destroy();
+	// if(playId.value===item.id) return
+	if(!innerAudioContext){
 		innerAudioContext = uni.createInnerAudioContext();
-		innerAudioContext.src = item.upload.full_path;
+		innerAudioContext.onEnded(()=>isplay.value = false);
+	}
+	if(!isplay.value||playId.value!=item.id){
+		playId.value = item.id
+		// 未播放点击播放
 		innerAudioContext.autoplay = true;
-	}else{
+		innerAudioContext.src = item.upload.full_path;
+		innerAudioContext.play();
+		isplay.value = true
+	}else if(isplay.value){
+		// 已播放点击停止
 		innerAudioContext.stop()
+		isplay.value = false
 	}
 }
+onBeforeUnmount(()=>{
+	if(innerAudioContext) innerAudioContext.destroy();
+})
 </script>
 
 <style lang="scss" scoped>

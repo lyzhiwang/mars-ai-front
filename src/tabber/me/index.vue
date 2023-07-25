@@ -2,10 +2,10 @@
 <view class="page">
 	<u-image width="100%" :height="410" src="/static/images/me/bg.jpg"></u-image>
 	<view class="infoBox" v-if="user.isLogin">
-		<u-avatar class="avatar" text="案" fontSize="44rpx" size="120rpx" randomBgColor></u-avatar>
+		<u-avatar class="avatar" :text="user.info.name.slice(0,1)" fontSize="44rpx" size="120rpx" randomBgColor></u-avatar>
 		<view class="username">
-			<view class="account">案说法伽师飞洒</view>
-			<view class="id">ID:21412</view>
+			<view class="account">{{user.info.name}}</view>
+			<view class="id">ID:{{user.info.userId}}</view>
 		</view>
 		<u-button plain type="primary" shape="circle" class="exit" @click="user.logOut">退出登录</u-button>
 	</view>
@@ -39,6 +39,7 @@
 </template>
 
 <script setup>
+import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/index'
 
 const user = useUserStore()
@@ -46,6 +47,9 @@ const user = useUserStore()
 function goToLogin(){
 	uni.navigateTo({url: '/pagesub/login/index'})
 }
+onShow(()=>{
+	if(user.isLogin) user.getUserInfo()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -87,6 +91,7 @@ function goToLogin(){
 			font-size: 36rpx;
 		}
 		.id{
+			margin-top: 8rpx;
 			font-size: 32rpx;
 		}
 	}

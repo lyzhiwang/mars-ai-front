@@ -10,8 +10,8 @@ export const useUserStore = defineStore('user', {
 		return {
 			token: '',
 			info: {
-			    id: '',
-			    username: '',
+			    userId: '',
+			    name: '',
 			},
 		}
     },
@@ -35,6 +35,7 @@ export const useUserStore = defineStore('user', {
             try {
                 const res = await getUserInfo()
                 this.setUserInfo(res.data)
+				console.log(res.data);
                 return res.data
             } catch (error) {
                 throw error

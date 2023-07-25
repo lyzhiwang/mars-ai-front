@@ -10,7 +10,7 @@
 		"list": [{
 			"name": "test", //模式名称
 			// "path": "pages/tabpages/gasstation" //启动页面，必选
-			"path": "pagesub/login/index"
+			"path": "tabber/index/index"
 		}]
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages

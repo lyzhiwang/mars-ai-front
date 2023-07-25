@@ -63,23 +63,54 @@
 			</view>
 		</view>
 	</view>
+	<!-- 虚拟循环播放音频区 -->
+	<audio 
+		:ref="el=>vRef[i]=el" 
+		v-for="(item,i) in soundList"
+		:src="item" 
+		@ended="partEnd" 
+	></audio>
 </view>
 </template>
 
 <script setup>
 import { onLoad, onShow } from '@dcloudio/uni-app'
-import { useUserStore } from '@/stores/index'
+import { useUserStore, useLiveStore } from '@/stores'
 
 const user = useUserStore()
+const live = useLiveStore()
 const replyCon = ref('')
+const vRef = reactive({})
+const soundList = ref([])
+let round = 1, i = 0, voiceArr = []; // 轮数和当前播放的第几个
 
 onLoad(()=>{
-	
+	// live.openLonglink()
 })
 onShow(()=>{
-
+	// 先预加载第一段直播音频
+	voiceArr = soundList.value.map((item, index)=>index)
+	live.setLiveDom(vRef)
 })
 const goTo = url => uni.navigateTo({url})
+function nextRound(){ // 播放下一轮
+    if(live.liveInfo.is_random && voiceArr.length>1){
+		voiceArr = randomArr(voiceArr)
+    }
+    i = 0
+    round++
+}
+function partEnd(){
+	if(i===(voiceArr.length-1)){ // 下一轮 播放第一个音频
+	    nextRound()
+	}else{ // 当前轮 播放下一个音频
+	    i++
+	}
+	live.setCurrent(voiceArr[i])
+	var vdom = vRef[live.current]
+	vdom.volume = live.isplay ? 0.2 : 1 // 回复在播放得时候声音降低
+	vdom.play()
+}
 </script>
 
 <style lang="scss" scoped>
