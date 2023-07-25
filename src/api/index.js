@@ -183,3 +183,11 @@ export function voiceReaDestory(params) {
 		method: 'delete',
 	})
 }
+
+// 话术库
+export function scriptIndex() {
+	return request({
+		url: '/v1/script/library',
+		method: 'get'
+	})
+}

@@ -17,7 +17,7 @@
 					<u-icon name="arrow-right" size="36" color="#999999" bold></u-icon>
 				</view>
 			</view>
-			<u-loadmore :status="status" fontSize="28" />
+			<u-loadmore :status="status" fontSize="28" style="padding-bottom: 20rpx;"/>
 		</template>
 		
 		<u-empty v-else mode="data" text="暂无项目,请新建项目!" :marginTop="160" iconSize="160" textSize="28" style="width: 100%;"></u-empty>
@@ -114,11 +114,12 @@ onReachBottom(()=>{
   box-sizing: border-box;
   .addBox{
 	  width: 100%;
-	  height: 82rpx;
+	  height: 82rpx !important;
 	  background: #ffffff;
 	  border-radius: 10rpx;
 	  font-size: 30rpx;
 	  color: #333333;
+	  line-height: 82rpx;
 	  margin-bottom: 30rpx;
 	  image{
 		  width: 40rpx;

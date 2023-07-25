@@ -1,19 +1,21 @@
 <template>
 	<view class="container content">
-		<view class="list" v-if="list.length>0">
+		<view class="listBox" v-if="list.length>0">
+			<scroll-view :scroll-top="0" scroll-y="true" style="height: 90vh;" class="scrollBox">
 			<view class="item flex-item-col-center" v-for="(item,index) in list" :key="index" @click="handleItem(item)">
 				<image :src="`/static/images/voices/${item.id === playDataId? 'pause': 'play'}.png`" class="sImage"></image>
-				<view class="name u-line-1">{{item.name}}</view>
+				<view class="name u-line-1">{{item.title}}</view>
 				
 				<view class="delBox flex-rcc" @click.stop="delItem(item)">
 					<image src="/static/images/voices/del.png"></image>
 				</view>
 			</view>
+			</scroll-view>
 		</view>
 		<u-empty v-else mode="data" text="暂无语音,请上传或录制!" :marginTop="160" iconSize="160" textSize="28" style="width: 100%;"></u-empty>
 		<view class="footterBox fcc-sb">
 			<view class="btn flex-rcc" @click="toPath('/pagesub/voices/upload')">上传</view>
-			<view class="btn btn2 flex-rcc" @click="toPath('/pagesub/voices/transcribe')">录制</view>
+			<view class="btn btn2 flex-rcc" @click="toPath(`/pagesub/voices/transcribe?type=1&id=${id}`)">录制</view>
 		</view>
 		
 		<u-modal :show="show" title="提示" :content='content' showCancelButton @confirm="ok" @cancel="show=false"></u-modal>
@@ -21,26 +23,10 @@
 </template>
 
 <script setup>
-	import { onLoad } from '@dcloudio/uni-app'
+	import { onLoad,onShow } from '@dcloudio/uni-app'
 	import { voiceReaIndex, voiceReaDestory } from '@/api'
 	
-	const list = ref([
-		{
-			id: 1,
-			type: 1,
-			name: '开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段'
-		},
-		{
-			id: 2,
-			type: 2,
-			name: '开播第二段'
-		},
-		{
-			id: 3,
-			type: 2,
-			name: '开播第三段'
-		}
-	])
+	const list = ref([])
 	
 	const show = ref(false)
 	const content = ref('请确认删除该语音?')
@@ -50,9 +36,16 @@
 		getList()
 	})
 	
+	onShow(()=>{
+		if(id.value){
+			getList()
+		}
+	})
+	
 	// 获取语音库语音列表
 	const getList =()=>{
 		voiceReaIndex({voice_id: id.value}).then(res=>{
+			console.log('res', res)
 			list.value = res.data
 		})
 	}
@@ -101,14 +94,19 @@
 <style lang="scss" scoped>
 	.content {
 	  display: flex;
+	  width: 100%;
+	  height: 100vh;
 	  flex-direction: column;
 	  align-items: center;
 	  padding: 36rpx 20rpx;
-	  box-sizing: border-box;
 	  position: relative;
-	  
-	  .list{
+	  box-sizing: border-box;
+	  .listBox{
 		  width: 100%;
+		  box-sizing: border-box;
+		  .scrollBox{
+			  padding-bottom: 50rpx;
+		  }
 		  .item{
 			  width: 100%;
 			  height: 100rpx;
@@ -150,10 +148,10 @@
 		  width: 100%;
 		  min-height: 130rpx;
 		  background: #ffffff;
-		  padding: 0 26rpx;
-		  padding-bottom: 50rpx;
 		  position: absolute;
-		  bottom: 0;
+		  padding: 0 25rpx;
+		  padding-bottom:30rpx;
+		  bottom: 0 !important;
 		  left: 0;
 		  .btn{
 			  width: 336rpx;

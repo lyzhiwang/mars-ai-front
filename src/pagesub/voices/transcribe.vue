@@ -2,7 +2,7 @@
 	<view class="container content">
 		<view class="txtBox">
 			<u--textarea v-model="value1" placeholder="请输入内容" count height="616" maxlength="5000"></u--textarea>
-			<view class="export" @click="goTo('/pagesub/voices/taskStore')" v-if="type!=2">导入文档</view>
+			<view class="export" @click="goTo('/pagesub/voices/taskStore?type=2')" v-if="type!=2">导入文档</view>
 		</view>
 		
 		<view class="mediaBox">
@@ -23,37 +23,37 @@
 			<image src="/static/images/voices/record.png" @click="handleRecord"></image>
 			<view class="tips">点击开始录音，再次点击结束录音</view>
 		</view>
+		
+		<u-popup :show="showPopup" @close="showPopup=false" :closeOnClickOverlay="false" safeAreaInsetBottom :round="10" closeable>
+			<view class="titBox">
+				<u--input
+				    placeholder="请输入音频名称"
+				    border="surround"
+				    v-model="title"
+					inputAlign="center"
+					maxlength="10"
+					showWordLimit
+					clearable
+				  ></u--input>
+				  <u-button type="primary" text="确定" shape="circle" class="btn" @click="save"></u-button>
+			</view>
+		</u-popup>
 	</view>
 </template>
 
 <script setup>
-	import { onLoad } from '@dcloudio/uni-app'
+	import { onLoad,onShow } from '@dcloudio/uni-app'
 	import { goTo } from '@/utils/helper.js'
 	import AudioQuickPlay from '@/components/audioQuickPlay/index.vue'
-	import { useConfigStore } from '@/stores'
-	import { addVoiceAtReply } from '@/api'
+	import { useConfigStore, useTaskStore } from '@/stores'
+	import { addVoiceAtReply, voiceReaCreate } from '@/api'
 	
 	const config = useConfigStore()
+	const useTask = useTaskStore()
 	const value1 = ref('')
-	const list = ref([
-		{
-			id: 1,
-			type: 1,
-			name: '开播第一段开播第一段开播第一段开播第一段开播第一段开播第一段'
-		},
-		{
-			id: 2,
-			type: 2,
-			name: '开播第二段'
-		},
-		{
-			id: 3,
-			type: 2,
-			name: '开播第三段'
-		}
-	])
-	
+	const showPopup = ref(false)
 	const voicePath = ref(null)
+	const title = ref(null)
 	
 	const show = ref(false)
 	const content = ref('请确认删除该语音?')
@@ -64,6 +64,13 @@
 	
 	// 播放中数据
 	const playDataId = ref(null) 
+	
+	onShow(()=>{
+		console.log('onShow', useTask.$state)
+		if(Object.keys(useTask.$state.task).length>0){
+			value1.value = useTask.$state.task.detail
+		}
+	})
 	
 	const handleItem = item =>{
 		if(playDataId.value === null){
@@ -159,7 +166,26 @@
 		show.value = false
 	}
 	function saveVoice(){
-		uni.showLoading({title: '加载中'})   
+		if(!voicePath.value) return uni.$u.toast('请录音完成后保存!')
+		if(type.value == 2){
+			upLoadFile()
+		}else{
+			title.value = null
+			showPopup.value = true
+		}
+	}
+	
+	const save = ()=>{
+		if(title.value){
+			upLoadFile()
+			showPopup.value = false
+		}else{
+			uni.$u.toast('请填写音频名称!')
+		}
+	}
+	
+	const upLoadFile = ()=>{
+		uni.showLoading({title: '加载中'})
 		// 获取音频
 		uni.uploadFile({
 			url: 'https://upload-z1.qiniup.com',
@@ -172,9 +198,10 @@
 			success: async(res) => { 
 				const file = JSON.parse(res.data)
 				const upload_id = file.data.id
-				const response = (type.value == 2) ? await addVoiceAtReply(id, {upload_id}) : await addVoiceAtReply(id, {upload_id})
+				const response = (type.value == 2) ? await addVoiceAtReply(id, {upload_id}) : await voiceReaCreate({upload_id,voice_id:id,title:title.value  })
 				if(response){
 					uni.showToast({title: '保存成功', icon: 'success', duration: 2000});
+					useTask.setTask({})
 					uni.navigateBack()
 				}
 			},
@@ -215,7 +242,7 @@
 			  border-radius: 5rpx;
 			  margin-top: -50rpx;
 			  margin-left: 10rpx;
-			  z-index: 99999;
+			  z-index: 999;
 		  }
 	  }
 	  .mediaBox{
@@ -254,5 +281,12 @@
 			  line-height: 6rpx;
 		  }
 	  }
+	}
+	.titBox{
+		width: 100%;
+		padding: 100rpx 40rpx;
+		.btn{
+			margin-top: 100rpx;
+		}
 	}
 </style>
