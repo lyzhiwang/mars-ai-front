@@ -2,7 +2,7 @@
 	<view class="container content">
 		<view class="txtBox">
 			<u--textarea v-model="value1" placeholder="请输入内容" count height="616" maxlength="5000"></u--textarea>
-			<view class="export" @click="goTo('/pagesub/voices/taskStore?type=2')" v-if="type!=2">导入文档</view>
+			<view class="export" @click="goTo('/pagesub/voices/taskStore?type=1')" v-if="type!=2">导入文档</view>
 		</view>
 		
 		<view class="mediaBox">
@@ -47,6 +47,7 @@
 	import AudioQuickPlay from '@/components/audioQuickPlay/index.vue'
 	import { useConfigStore, useTaskStore } from '@/stores'
 	import { addVoiceAtReply, voiceReaCreate } from '@/api'
+import { onBeforeUnmount } from 'vue'
 	
 	const config = useConfigStore()
 	const useTask = useTaskStore()
@@ -62,13 +63,15 @@
 		show.value = true
 	}
 	
+	onBeforeUnmount(()=>{
+		useTask.setTask({})
+	})
 	// 播放中数据
 	const playDataId = ref(null) 
 	
 	onShow(()=>{
-		console.log('onShow', useTask.$state)
-		if(Object.keys(useTask.$state.task).length>0){
-			value1.value = useTask.$state.task.detail
+		if(Object.keys(useTask.task).length>0){
+			value1.value = useTask.task.detail
 		}
 	})
 	

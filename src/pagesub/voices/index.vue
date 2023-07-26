@@ -65,7 +65,6 @@ const total = ref(0)
 // 获取语音库列表
 const getList =()=>{
 	voiceIndex(params.value).then(res=>{
-		console.log('res', res)
 		data.value = data.value.concat(res.data.list) 
 		total.value = res.data.total
 		if(data.value.length>=res.data.total) status.value = 'nomore'
