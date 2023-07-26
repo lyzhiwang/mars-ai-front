@@ -14,7 +14,7 @@
 		</view>
 		<u-empty v-else mode="data" text="暂无语音,请上传或录制!" :marginTop="160" iconSize="160" textSize="28" style="width: 100%;"></u-empty>
 		<view class="footterBox fcc-sb">
-			<view class="btn flex-rcc" @click="toPath('/pagesub/voices/upload')">上传</view>
+			<view class="btn flex-rcc" @click="toPath(`/pagesub/voices/upload?id=${id}`)">上传</view>
 			<view class="btn btn2 flex-rcc" @click="toPath(`/pagesub/voices/transcribe?type=1&id=${id}`)">录制</view>
 		</view>
 		
@@ -23,17 +23,23 @@
 </template>
 
 <script setup>
-	import { onLoad,onShow } from '@dcloudio/uni-app'
+	import { onLoad,onShow, onHide } from '@dcloudio/uni-app'
 	import { voiceReaIndex, voiceReaDestory } from '@/api'
+	import { useConfigStore } from '@/stores'
 	
 	const list = ref([])
+	const config = useConfigStore()
 	
 	const show = ref(false)
 	const content = ref('请确认删除该语音?')
 	const id = ref(null)
 	onLoad((option)=>{
+		config.getQnToken()
 		id.value = option.id
 		getList()
+		innerAudioContext.onEnded(()=>{
+			playDataId.value = null
+		})
 	})
 	
 	onShow(()=>{
@@ -45,7 +51,6 @@
 	// 获取语音库语音列表
 	const getList =()=>{
 		voiceReaIndex({voice_id: id.value}).then(res=>{
-			console.log('res', res)
 			list.value = res.data
 		})
 	}
@@ -58,17 +63,27 @@
 	// 播放中数据
 	const playDataId = ref(null) 
 	
+	const innerAudioContext = uni.createInnerAudioContext();
+	innerAudioContext.autoplay = true;
+	
 	const handleItem = item =>{
 		if(playDataId.value === null){
 			playDataId.value = item.id
 			// 播放
+			innerAudioContext.src = item.upload.full_path;
+			innerAudioContext.play();
 		}else{
 			if(playDataId.value === item.id){
 				// 当前播放暂停
-				playDataId.value = null
+				innerAudioContext.stop();
+				playDataId.value = null	
+				
 			}else{
+				innerAudioContext.stop();
 				playDataId.value = item.id
+				innerAudioContext.src = item.upload.full_path;
 				// 播放
+				innerAudioContext.play();
 			}
 		}
 		
@@ -88,6 +103,11 @@
 			url
 		})
 	}
+	
+	onHide(()=>{
+		playDataId.value = null
+		innerAudioContext.stop()
+	})
 	
 </script>
 

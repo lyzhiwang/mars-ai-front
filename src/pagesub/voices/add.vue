@@ -22,7 +22,7 @@
 		fontSize: '18px'
 	}
 	
-	const title = ref('测试名称')
+	const title = ref('')
 	
 	const add = ()=>{
 		if(!title.value) return uni.showToast({title: '项目名称不能为空!',icon: 'none',duration: 2000});

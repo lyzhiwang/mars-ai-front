@@ -5,25 +5,27 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>上传文件</title>
 	<link rel="stylesheet" href="./css/index.css">
+	<script type="text/javascript" src="./js/uni.webview.1.5.4.js"></script>
 </head>
 <body>
 	<div class="container">
 		<div class="title">上传音频</div>
 		<div class="uploadBox">
 			<div class="upStyle flex-rcc" @click="upLoad">
-				<image src="/static/images/voices/audio.png"></image>
+				<img src="./img/audio.png" class="icon"></img>
 				上传音频
+				<input type="file" name="file" class="upInput" id="myFileInput">
 			</div>
 		</div>
 		<div class="name flex-rcc">
-			<u--input
-			    placeholder="请输入该音频名称"
-			    border="none"
-			    clearable
-			  ></u--input>
+			<input type="text" name="name" placeholder="请输入该音频名称" class="nameInput" id="nameInput">
 		</div>
 		
-		<u-button type="primary" size="large" text="确定添加" color="#2281FE" shape="circle" @click="save" class="btn"></u-button>
+		<div class="btnBox">
+			<div class="btn flex-rcc" id="add">确定添加</div>
+		</div>
+		
 	</div>
+	<script src="js/index.js"></script>
 </body>
 </html>

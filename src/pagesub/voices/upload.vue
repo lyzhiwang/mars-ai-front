@@ -1,6 +1,6 @@
 <template>
 	<view class="container content">
-		<web-view src="/hybrid/html/index.html"></web-view>
+		<web-view :src="`/hybrid/html/index.html?token=${encodeURIComponent(userStore.qnToken)}`" @onPostMessage="postMessage" @message="postMessage"></web-view>
 		<!-- <view class="title">上传音频</view>
 		<view class="uploadBox">
 			<view class="upStyle flex-rcc" @click="upLoad">
@@ -21,34 +21,28 @@
 </template>
 
 <script setup>
+	import { onLoad } from '@dcloudio/uni-app'
+	import { useConfigStore } from '@/stores';
+	import { voiceReaCreate } from '@/api'
 	
-	const name = ref('')
-	const fileList6 = ref([])
+	const userStore = useConfigStore()
+	let id = null
+	onLoad((option)=>{
+		id = option.id
+		userStore.getQnToken()
+	})
 	
-	const afterRead = () =>{
-		
+	const postMessage = (data)=>{
+		const params = {
+			voice_id:id,...data.detail.data[0]
+		}
+		console.log('params', params)
+		voiceReaCreate(params).then((res)=>{
+			console.log('res', res)
+			uni.navigateBack()
+		})
 	}
 	
-	const deletePic = () =>{
-		
-	}
-	
-	const upLoad = () =>{
-		// var environment = plus.android.importClass("android.os.Environment");
-		// var sdRoot = environment.getExternalStorageDirectory();
-		// var files = plus.android.invoke(sdRoot,"listFiles");
-		// console.log('files', files)
-		// console.log('uni', uni.canIUse('chooseVideo'))
-		uni.chooseFile({
-			success: function (res) {
-				console.log(JSON.stringify(res.tempFilePaths));
-			}
-		});
-	}
-	
-	const save = ()=>{
-		
-	}
 </script>
 
 <style lang="scss" scoped>
