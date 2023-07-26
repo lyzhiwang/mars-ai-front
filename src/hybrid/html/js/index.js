@@ -33,7 +33,7 @@ function uploadFile(file){
 	  alert('上传成功!')
     } else {
 		alert('上传失败.请重试!')
-      console.log('Error: ' + xhr.status);
+		console.log('Error: ' + xhr.status);
     }
   };
 }

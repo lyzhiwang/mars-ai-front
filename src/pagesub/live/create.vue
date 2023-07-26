@@ -31,7 +31,7 @@
 				</view>
 				<text class="searchText mc" @click="searchLive">搜索</text>
 			</u-form-item>
-			<view class="liveName">直播间：<text>XXXXXXXX</text></view>
+			<view class="liveName">直播间：<text>{{title}}</text></view>
 			<image src="/static/images/live/icon-msg.png" class="icon-msg"></image>
 		</u--form>
 		<view class="panel">
@@ -64,14 +64,13 @@
 
 <script setup>
 import { onPageScroll } from '@dcloudio/uni-app'
-import { useConfigStore } from '@/stores'
-import { getLiveTit } from '@/api'
+import { useConfigStore, useTaskStore, useLiveStore } from '@/stores'
+import { getLiveTit, createLiveRoom } from '@/api'
 import { goTo } from '@/utils/helper'
-import { useTaskStore } from '@/stores'
-import { onBeforeUnmount } from 'vue'
 
 const config = useConfigStore()
 const task = useTaskStore()
+const live = useLiveStore()
 // const bgColor = ref('transparent')
 // onPageScroll((e)=>{
 // 	console.log(111, JSON.stringify(e))
@@ -81,6 +80,7 @@ const urlForm = ref()
 const form = reactive({
 	url: '',
 })
+const title = ref('')
 const rules = reactive({
 	url: [
 		{
@@ -113,7 +113,9 @@ function searchLive(){
 	urlForm.value.validate().then(res => {
 		url_validate = true
 		getLiveTit({live_url: form.url}).then(res=>{
-			consoloe.log(4444, res)
+			if(res&&res.data){
+				title.value = res.data.title
+			}
 		})
 	}).catch(errors => {
 		uni.$u.toast(errors[0].message)
@@ -122,14 +124,18 @@ function searchLive(){
 function startLive(){
 	if(!form.url || !url_validate) return uni.$u.toast('未填写直播地址或不正确')
 	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
-	// 开始直播
-	uni.switchTab({
-		url: '/tabber/live/index'
+	if(!task.selectReply) return uni.$u.toast('请选择回复')
+	createLiveRoom({voice_id: task.selectVoice.id, answer_id: task.selectReply.id, live_url: form.url}).then(res=>{
+		if(res){
+			// 开始直播
+			live.setTitle(title.value)
+			uni.switchTab({url: '/tabber/live/index'})
+		}
 	})
 }
 onBeforeUnmount(()=>{
-	// if(task.selectVoice) task.setVoice(null)
-	// if(task.selectReply) task.setReply(null)
+	if(task.selectVoice) task.setVoice(null)
+	if(task.selectReply) task.setReply(null)
 })
 </script>
 

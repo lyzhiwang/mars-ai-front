@@ -8,15 +8,15 @@
 	<view class="iptBox vcenter">
 		<text class="keyword">{{data.keywords.join('/')}}</text>
 	</view>
-	<view class="iptBox between" v-for="(item, i) in data.media">
+	<view class="iptBox between" v-for="(item, i) in list">
 		<view class="vcenter">
 			<u-icon :name="isplay&&playId==item.id?'pause-circle-fill':'play-circle-fill'" size="50rpx" color="#1E64FE" @click="togglePlay(item)"></u-icon>&nbsp;
-			<u--text :text="item.tiitle||item.upload.name" :lines="1" size="28rpx" color="#333"></u--text>
+			<u--text :text="item.title||item.upload.name" :lines="1" size="28rpx" color="#333"></u--text>
 		</view>
 		<u-icon name="trash-fill" size="50rpx" color="#1E64FE" @click="delReplyVoice(item.id)"></u-icon>
 	</view>
 	<view class="btnGroup" v-if="!showMore">
-		<button class="btn">上传</button>
+		<button class="btn" @click="goTo('/pagesub/voices/upload?type=2&id='+data.id)">上传</button>
 		<button class="btn" @click="goTo('/pagesub/voices/transcribe?type=2&id='+data.id)">录制</button>
 		<button class="btn" @click="editKeyword">添加关键字</button>
 	</view>

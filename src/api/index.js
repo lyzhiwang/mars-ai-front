@@ -195,8 +195,28 @@ export function scriptIndex() {
 // 获取直播间标题
 export function getLiveTit(data){
 	return request({
+		loading: true,
 		url: '/v1/get/live/title',
 		method: 'post',
 		data
+	})
+}
+
+// 开启直播间
+export function createLiveRoom(data){
+	return request({
+		loading: true,
+		url: '/v1/store/live',
+		method: 'post',
+		data
+	})
+}
+
+// 获取直播间信息
+export function getLiveRoom(){
+	return request({
+		loading: true,
+		url: '/v1/get/live',
+		method: 'get',
 	})
 }

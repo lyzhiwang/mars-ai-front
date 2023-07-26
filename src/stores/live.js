@@ -1,20 +1,41 @@
 import { defineStore } from 'pinia'
+import { dropRight, sample } from 'lodash-es'
 
 export const useLiveStore = defineStore('live', {
 	state: () => ({
+		title: '',
 		wsObj: null, // websocket对象
 		innerAudioContext: null, // 音频对象
 		isplay: false, // 回复音频是否在播放
 		current: 0, // 当前播放的第几个直播音频
 		vRef: null,
+		msgList: [],
+		currentMsg: '', // 当前正在回复的评论消息
+		replyVoice: '', // 当前正在回复的音频的名称
 	}),
 	actions: {
+		setTitle(tit){
+			this.title = tit
+		},
 		setCurrent(i){
 			this.current = i
 		},
 		setLiveDom(vRef){
 			this.vRef = vRef
 			this.current = 0
+		},
+		addMsg(data){
+			const len = this.msgList.length
+			if(len<20){
+				this.msgList.unshift(data)
+			}else{
+				const list = dropRight(this.msgList, 1)
+				this.msgList = [data, ...list]
+			}
+		},
+		setCurrentReply(file, msg){
+			this.replyVoice = file
+			this.currentMsg = msg
 		},
 		openLonglink(data) {
 			// 打开长连接
@@ -29,20 +50,34 @@ export const useLiveStore = defineStore('live', {
 		globelMessage({ channel, data }) {
 			switch (channel) {
 				case 'WebcastChatMessage': // 评论
+					const { comment } = data
+					this.addMsg(comment); // 添加用户评论信息到列表
 					if(!this.innerAudioContext){
 						// 初次创建音频对象
 						this.innerAudioContext = uni.createInnerAudioContext();
-						this.innerAudioContext.onEnded(()=>this.isplay = false);
+						this.innerAudioContext.onEnded(()=>{
+							this.vRef[this.current].volume = 1
+							this.isplay = false
+							this.setCurrentReply('', '')
+						});
 						this.innerAudioContext.autoplay = true;
 					}
 					if(!this.isplay){
-						// 先降低直播音频声音
-						this.isplay = true
-						var vdom = this.vRef[this.current]
-						vdom.volume = 0.2
-						// 再播放回复音频声音
-						this.innerAudioContext.src = data.full_path;
-						this.innerAudioContext.play();
+						// 匹配关键字，播放答案语音
+						// replyList 回复列表, comment 评论的内容
+						const findObj = replyList.find(opt=>comment.match(new RegExp(opt.keywords.join('|'), 'g')))
+						if(findObj){
+							// 先降低直播音频声音
+							this.isplay = true
+							var vdom = this.vRef[this.current]
+							vdom.volume = 0.2
+							// 从匹配结果的录音中随机选取一个播放
+							const randomItem = sample(findObj.media)
+							this.innerAudioContext.src = randomItem.upload.full_path;
+							this.innerAudioContext.play();
+							// 显示当前正在回复的内容
+							this.setCurrentReply(randomItem.title||randomItem.upload.name, comment)
+						}
 					}
 					break;
 				case 'WebcastMemberMessage': // 进入直播间

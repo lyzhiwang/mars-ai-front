@@ -23,24 +23,24 @@
 <script setup>
 	import { onLoad } from '@dcloudio/uni-app'
 	import { useConfigStore } from '@/stores';
-	import { voiceReaCreate } from '@/api'
+	import { addVoiceAtReply, voiceReaCreate } from '@/api'
 	
 	const userStore = useConfigStore()
-	let id = null
+	let id = null, type = null;
 	onLoad((option)=>{
+		type = option.type
 		id = option.id
 		userStore.getQnToken()
 	})
 	
-	const postMessage = (data)=>{
-		const params = {
-			voice_id:id,...data.detail.data[0]
-		}
-		console.log('params', params)
-		voiceReaCreate(params).then((res)=>{
+	const postMessage = async(data)=>{
+		const { upload_id, title } = data.detail.data[0]
+		const res = (type == 2) ? await addVoiceAtReply(id, {upload_id, title}) : await voiceReaCreate({voice_id: id, upload_id, title});
+		if(res){
 			console.log('res', res)
-			uni.navigateBack()
-		})
+			uni.showToast({title: '添加成功', icon: 'success', duration: 1500});
+			setTimeout(uni.navigateBack, 1500)
+		}
 	}
 	
 </script>

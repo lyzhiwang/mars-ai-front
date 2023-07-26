@@ -11,7 +11,7 @@
 				<text>直播间</text>
 				<image src="/static/images/live/living.png" class="status"></image>
 			</view>
-			<text class="name">直播间名称：超级泰麻辣烫</text>
+			<text class="name">直播间名称：{{live.title}}</text>
 			<view class="bottom">
 				<text class="mc">直播中</text>
 				<image src="/static/images/live/icon-playing.gif" class="playing"></image>
@@ -31,7 +31,7 @@
 						class="ipt"
 						border="none"
 						placeholder="暂无回复"
-						v-model="replyCon"
+						v-model="live.currentMsg"
 						shape="circle"
 						readonly
 					></u--input>
@@ -40,7 +40,7 @@
 			<view class="bottom">
 				<text class="mc">语音回复</text>
 				<u-icon name="pause-circle-fill" size="50rpx" color="#1E64FE"></u-icon>
-				<text class="filename">这里是文件名称.xtx</text>
+				<text class="filename">{{live.replyVoice}}</text>
 			</view>
 		</view>
 		<view class="panel">
@@ -76,6 +76,7 @@
 <script setup>
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { useUserStore, useLiveStore } from '@/stores'
+import { getLiveRoom } from '@/api'
 
 const user = useUserStore()
 const live = useLiveStore()
@@ -86,6 +87,9 @@ let round = 1, i = 0, voiceArr = []; // 轮数和当前播放的第几个
 
 onLoad(()=>{
 	// live.openLonglink()
+	getLiveRoom().then(res=>{
+		console.log(111, res)
+	})
 })
 onShow(()=>{
 	// 先预加载第一段直播音频

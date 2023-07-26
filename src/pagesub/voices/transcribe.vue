@@ -29,7 +29,7 @@
 				<u--input
 				    placeholder="请输入音频名称"
 				    border="surround"
-				    v-model="title"
+				    v-model.trim="title"
 					inputAlign="center"
 					maxlength="10"
 					showWordLimit
@@ -47,7 +47,6 @@
 	import AudioQuickPlay from '@/components/audioQuickPlay/index.vue'
 	import { useConfigStore, useTaskStore } from '@/stores'
 	import { addVoiceAtReply, voiceReaCreate } from '@/api'
-import { onBeforeUnmount } from 'vue'
 	
 	const config = useConfigStore()
 	const useTask = useTaskStore()
@@ -170,25 +169,24 @@ import { onBeforeUnmount } from 'vue'
 	}
 	function saveVoice(){
 		if(!voicePath.value) return uni.$u.toast('请录音完成后保存!')
-		if(type.value == 2){
-			upLoadFile()
-		}else{
-			title.value = null
-			showPopup.value = true
-		}
+		title.value = null
+		showPopup.value = true
+		// if(type.value == 2){
+		// 	upLoadFile()
+		// }else{
+		// }
 	}
 	
 	const save = ()=>{
 		if(title.value){
 			upLoadFile()
-			showPopup.value = false
 		}else{
 			uni.$u.toast('请填写音频名称!')
 		}
 	}
 	
 	const upLoadFile = ()=>{
-		uni.showLoading({title: '加载中'})
+		uni.showLoading({title: '加载中', mask: true})
 		// 获取音频
 		uni.uploadFile({
 			url: 'https://upload-z1.qiniup.com',
@@ -201,14 +199,16 @@ import { onBeforeUnmount } from 'vue'
 			success: async(res) => { 
 				const file = JSON.parse(res.data)
 				const upload_id = file.data.id
-				const response = (type.value == 2) ? await addVoiceAtReply(id, {upload_id}) : await voiceReaCreate({upload_id,voice_id:id,title:title.value  })
+				const response = (type.value == 2) ? await addVoiceAtReply(id, {upload_id,title:title.value}) : await voiceReaCreate({upload_id,voice_id:id,title:title.value})
 				if(response){
-					uni.showToast({title: '保存成功', icon: 'success', duration: 2000});
+					showPopup.value = false
 					useTask.setTask({})
-					uni.navigateBack()
+					uni.showToast({title: '保存成功', icon: 'success', duration: 1500});
+					setTimeout(uni.navigateBack, 1500)
 				}
 			},
 			fail: (err) => {
+				console.log(111, err)
 				uni.showToast({title: '保存失败', icon: 'error', duration: 2000});
 			},
 			complete(){

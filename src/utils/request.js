@@ -5,7 +5,8 @@ import { uniAdapter } from 'fant-axios-adapter'
 // 设置全局的请求次数，请求的间隙
 axios.defaults.retry = 2
 axios.defaults.retryDelay = 1000
-const baseURL = (process.env.NODE_ENV === "development") ? "http://gdytest.zwstk.cn/api" : "https://api.klt.mudanma.com";
+// const baseURL = (process.env.NODE_ENV === "development") ? "http://gdytest.zwstk.cn/api" : "https://mars.lytklw.cn/api";
+const baseURL = (process.env.NODE_ENV === "development") ? "https://mars.lytklw.cn/api" : "https://mars.lytklw.cn/api";
 // 创建axios实例
 const service = axios.create({
 	baseURL,
@@ -22,8 +23,8 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(
   config => {
-	if(config.headers.loading){
-	    uni.showLoading({title: '加载中'})     
+	if(config.loading){
+	    uni.showLoading({title: '加载中', mask: true})     
 	}
 	const userStore = useUserStore()
     if (userStore.token) {
@@ -41,7 +42,7 @@ service.interceptors.request.use(
 // response 拦截器
 service.interceptors.response.use(
   response => {
-	if(response.config.headers.loading){
+	if(response.config.loading){
 		uni.hideLoading()
 	}
     const res = response.data
