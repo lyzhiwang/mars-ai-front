@@ -1,35 +1,32 @@
 <template>
 	<view class="container content">
 		<view class="listBox" v-if="list.length>0">
-			<scroll-view :scroll-top="0" scroll-y="true" style="height: 90vh;" class="scrollBox">
-				<u-swipe-action>
-					<template v-for="(item,index) in list" :key="index">
-						<u-swipe-action-item
-						  :options="options1"
-						  :name="index"
-						  :threshold="100"
-						  class="swiperItem"
-						  @click="delItem(item)"
-						>
-						<view class="item flex-item-col-center" @click="handleItem(item)">
-							<image :src="`/static/images/voices/${item.id === playDataId? 'pause': 'play'}.png`" class="sImage"></image>
-							<view class="name u-line-1">{{item.title}}</view>
-							
-							<view class="delBox flex-rcc">
-								<view class="iconBox flex-rcc" :class="{iconBox1: index<list.length-1}" @click.stop="changeSort(item,index, 1)" v-if="index>0">
-									<u-icon name="arrow-upward" color="#2979ff" bold size="28"></u-icon>
-								</view>
-								<view class="iconBox flex-rcc" @click.stop="changeSort(item,index, 2)" v-if="index<list.length-1">
-									<u-icon name="arrow-downward" color="#2979ff" bold size="28"></u-icon>
-								</view>
-								<!-- <image src="/static/images/voices/top.png" @click.stop="changeSort(item,index, 1)"></image>
-								<image src="/static/images/voices/down.png" @click.stop="changeSort(item,index, 2)"></image> -->
-							</view>
-						</view>
-						</u-swipe-action-item>
-					</template>
-				  </u-swipe-action>
-			</scroll-view>
+			
+				<scroll-view :scroll-top="0" scroll-y="true" style="height: 90vh;" class="scrollBox">
+					
+						<u-swipe-action autoClose>
+							<movable-area style="width: 100%; height: 500px; border: 1px solid red;">
+								<movable-view v-for="(item,index) in list" class="movableItem" :y="item.y" direction="vertical" inertia  :key="index"
+								 @change="changeItem" @touchend="handleTouchEnd($event,index, item)">
+										
+									<u-swipe-action-item
+									  :options="options1"
+									  :name="index"
+									  class="swiperItem"
+									  @click="delItem(item)"
+									>
+										<view class="item flex-item-col-center" @click="handleItem(item)">
+											<image :src="`/static/images/voices/${item.id === playDataId? 'pause': 'play'}.png`" class="sImage"></image>
+											<view class="name u-line-1">{{item.title}}</view>
+										</view>
+									</u-swipe-action-item>
+										
+							</movable-view>
+							 </movable-area>
+						  </u-swipe-action>
+					 
+				</scroll-view>
+			
 		</view>
 		<u-empty v-else mode="data" text="暂无语音,请上传或录制!" :marginTop="160" iconSize="160" textSize="28" style="width: 100%;"></u-empty>
 		<view class="footterBox fcc-sb">
@@ -43,7 +40,7 @@
 
 <script setup>
 	import { onLoad,onShow, onHide } from '@dcloudio/uni-app'
-	import { voiceReaIndex, voiceReaDestory, voiceRelationSort } from '@/api'
+	import { voiceReaIndex, voiceReaDestory } from '@/api'
 	import { useConfigStore } from '@/stores'
 	
 	const list = ref([])
@@ -73,10 +70,70 @@
 		}
 	})
 	
+	const changeItem = event=>{
+		// console.log('event', event.detail.y)
+	}
+	
+	const handleTouchEnd = (e,index,item) => {
+		const { x, y } = item
+		const goIndex = Math.floor(y/50)
+		if(goIndex>0){
+			let nearestIndex = index
+			let minDistance = Infinity
+			for (let i = 0; i < list.value.length; i++) {
+				if (i !== index) {
+					const dx = list.value[i].x - x
+					const dy = list.value[i].y - y
+					const distance = Math.sqrt(dx ** 2 + dy ** 2)
+					if (distance < minDistance) {
+						nearestIndex = i
+						minDistance = distance
+					}
+				}
+			}
+			
+			const temp = list.value[index]
+			list.value[index] = list.value[nearestIndex]
+			list.value[nearestIndex] = temp
+		}
+		
+		// 自动归位到最近的元素位置
+		// let nearestIndex = index
+		// let minDistance = Infinity
+		// for (let i = 0; i < list.value.length; i++) {
+		// 	if (i !== index) {
+		// 		const dx = list.value[i].x - x
+		// 		const dy = list.value[i].y - y
+		// 		const distance = Math.sqrt(dx ** 2 + dy ** 2)
+		// 		if (distance < minDistance) {
+		// 			nearestIndex = i
+		// 			minDistance = distance
+		// 		}
+		// 	}
+		// }
+		// 交换拖拽元素和最近元素的位置
+		// const temp = list.value[index]
+		// list.value[index] = list.value[nearestIndex]
+		// list.value[nearestIndex] = temp
+		// 更新元素位置
+		list.value.forEach((item, index) => {
+			item.x = 0
+			item.y = index * 50
+		})
+	}
+	
 	// 获取语音库语音列表
 	const getList =()=>{
 		voiceReaIndex({voice_id: id.value}).then(res=>{
-			list.value = res.data
+			const data = [...res.data]
+			if(data.length>0){
+				data.map((v,index)=>{
+					v.x = 0
+					v.y = index * 50
+				})
+				
+			}
+			list.value = data
 		})
 	}
 	const currentId = ref(null)
@@ -84,26 +141,6 @@
 		console.log('item',item)
 		currentId.value = item.id
 		show.value = true
-	}
-	
-	const changeSort = (item,index,type) =>{
-		const length = list.value.length
-		if(type===1){
-			//向上
-			if(index!==0){
-				let temp = list.value[index]
-				list.value[index] = list.value[index-1]
-				list.value[index-1] = temp
-				voiceRelationSort({id1: list.value[index].id, id2: list.value[index-1].id})
-			}
-		}else{
-			if(index!==length-1){
-				let temp = list.value[index]
-				list.value[index] = list.value[index+1]
-				list.value[index+1] = temp
-				voiceRelationSort({id1: list.value[index].id, id2: list.value[index+1].id})
-			}
-		}
 	}
 	
 	// 播放中数据
@@ -176,8 +213,14 @@
 		  }
 		  .swiperItem{
 			  // border: 1px solid red;
-			   margin-bottom: 20rpx;
-			   border-radius: 20rpx;
+			   // margin-bottom: 20rpx;
+			   // border-radius: 20rpx;
+		  }
+		  .movableItem{
+			 width: 100%;
+			 height: 100rpx; 
+			 box-sizing: border-box;
+			 border: 1px solid red;
 		  }
 		  .item{
 			  width: 100%;
@@ -197,21 +240,16 @@
 				  width: 80%;
 			  }
 			  .delBox{
-				  width: 18%;
-				  height: 100%;
+				  width: 53rpx;
+				  height: 53rpx;
+				  background: #2281fe;
+				  border-radius: 0px 20rpx 0px 20rpx;
 				  position: absolute;
 				  top: 0;
-				  right: 10rpx;
-				  justify-content: flex-end;
-				  .iconBox{
-					  width: 50rpx;
-					  height: 50rpx;
-					  box-shadow: 0rpx 0rpx 5rpx #2281fe;
-					  border-radius: 50%;
-					  font-weight: bold;  
-				  }
-				  .iconBox1{
-					  margin-right: 10rpx;
+				  right: 0;
+				  image{
+					  width: 27rpx;
+					  height: 29rpx;
 				  }
 			  }
 		  }

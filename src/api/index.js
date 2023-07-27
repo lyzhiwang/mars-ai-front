@@ -152,7 +152,7 @@ export function voiceDestory(params) {
 // 编辑Ai语音库
 export function voiceUpdate(data) {
 	return request({
-		url: '/v1/voice',
+		url: '/v1/voice/'+data.id,
 		method: 'put',
 		data
 	})
@@ -189,6 +189,15 @@ export function scriptIndex() {
 	return request({
 		url: '/v1/script/library',
 		method: 'get'
+	})
+}
+
+// 语音库内语音-排序
+export function voiceRelationSort(data) {
+	return request({
+		url: '/v1/voice/relation/sort',
+		method: 'post',
+		data
 	})
 }
 
