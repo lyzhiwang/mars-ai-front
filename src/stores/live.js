@@ -8,21 +8,27 @@ export const useLiveStore = defineStore('live', {
 		innerAudioContext: null, // 音频对象
 		isplay: false, // 回复音频是否在播放
 		current: 0, // 当前播放的第几个直播音频
-		vRef: null,
+		vRef: [],
 		msgList: [],
 		currentMsg: '', // 当前正在回复的评论消息
 		replyVoice: '', // 当前正在回复的音频的名称
+		liveInfo: null,
 	}),
 	actions: {
 		setTitle(tit){
+			// 开播前设置title,清除wsObj
 			this.title = tit
+			this.wsObj = null
 		},
 		setCurrent(i){
 			this.current = i
 		},
 		setLiveDom(vRef){
 			this.vRef = vRef
-			this.current = 0
+			// this.current = 0
+		},
+		setLiveInfo(info){
+			this.liveInfo = info
 		},
 		addMsg(data){
 			const len = this.msgList.length
@@ -42,7 +48,7 @@ export const useLiveStore = defineStore('live', {
 			if(this.wsObj) return
 			const user = useUserStore()
 			if (!user.isLogin) return
-			const ws = process.env.NODE_ENV === 'development' ? 'ws://water1.zwstk.cn' : `wss://${window.productApi}/socket.io`
+			const ws = 'wss://mars.lytklw.cn/api/socket.io'
 			connectWebsocket(ws, { uid: user.info.userId, ...data }, this.globelMessage, () => {
 				// 连接错误
 			})
@@ -65,6 +71,7 @@ export const useLiveStore = defineStore('live', {
 					if(!this.isplay){
 						// 匹配关键字，播放答案语音
 						// replyList 回复列表, comment 评论的内容
+						const { reply: replyList } = this.liveInfo
 						const findObj = replyList.find(opt=>comment.match(new RegExp(opt.keywords.join('|'), 'g')))
 						if(findObj){
 							// 先降低直播音频声音
@@ -73,10 +80,10 @@ export const useLiveStore = defineStore('live', {
 							vdom.volume = 0.2
 							// 从匹配结果的录音中随机选取一个播放
 							const randomItem = sample(findObj.media)
-							this.innerAudioContext.src = randomItem.upload.full_path;
+							this.innerAudioContext.src = randomItem.full_path;
 							this.innerAudioContext.play();
 							// 显示当前正在回复的内容
-							this.setCurrentReply(randomItem.title||randomItem.upload.name, comment)
+							this.setCurrentReply(randomItem.title, comment)
 						}
 					}
 					break;

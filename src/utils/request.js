@@ -76,7 +76,7 @@ service.interceptors.response.use(
 			}
 		}
     } else {
-	  uni.showToast({ title: '请求成功，返回值错误', icon: 'error', duration: 3000});
+	  uni.showToast({ title: '请求成功，返回值错误', icon: 'none', duration: 3000});
       return Promise.reject('error', response)
     }
   },

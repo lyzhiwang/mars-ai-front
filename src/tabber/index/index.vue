@@ -30,7 +30,7 @@
 						<view class="line blue"></view>
 					</view>
 				</view>
-				<view class="r-box">
+				<view class="r-box" @click="comingsoon">
 					<image src="/static/images/voices/tasks.png"></image>
 					<view class="name name1">
 						<view>话术库</view>
@@ -50,9 +50,11 @@ import { goTo } from '@/utils/helper.js'
 
 const config = useConfigStore()
 // const title = ref('')
-const swiperList = ref(['/static/images/voices/banner.png','/static/images/voices/banner.png','/static/images/voices/banner.png'])
+const swiperList = ref(['/static/images/voices/banner.png'])
 
-
+function comingsoon(){
+	uni.showToast({title: '暂未开放', icon: 'none'})
+}
 
 onLoad(()=>{
 

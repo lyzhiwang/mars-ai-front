@@ -11,7 +11,7 @@
 					<u--input v-model="form.username" shape="circle" placeholder="请输入账号" class="inputBox inputBox1" clearable></u--input>
 				</u-form-item>
 				<u-form-item label="" prop="password">
-					<u--input v-model="form.password" password shape="circle" placeholder="请输入密码" class="inputBox" clearable></u--input>
+					<u--input v-model="form.password" :type="isAct?'text':'password'" shape="circle" placeholder="请输入密码" class="inputBox" clearable></u--input>
 				</u-form-item>
 			</u--form>
 		</view>
@@ -35,11 +35,12 @@
 	const show = ref(false)
 	const code =ref('')
 	const form = reactive({
-		username: 'test123',
-		password: 'qwe123456'
+		username: '',
+		password: ''
 	})
 	const form1 = ref(null)
 	const isLoading = ref(false)
+	const isAct = ref(false)
 	const rules = {
 		'username': {
 			type: 'string',
@@ -81,6 +82,7 @@
 				form.password = pwd;
 				show.value = false
 				code.value = null
+				isAct.value = true
 			}
 		})
 	}

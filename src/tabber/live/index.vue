@@ -16,7 +16,7 @@
 				<text class="mc">直播中</text>
 				<image src="/static/images/live/icon-playing.gif" class="playing"></image>
 				<u-icon name="play-circle-fill" size="50rpx" color="#1E64FE"></u-icon>
-				<text class="filename">这里是文件名称.xtx</text>
+				<text class="filename">{{partName}}</text>
 			</view>
 		</view>
 		<view class="panel">
@@ -63,58 +63,117 @@
 			</view>
 		</view>
 	</view>
-	<!-- 虚拟循环播放音频区 -->
-	<audio 
-		:ref="el=>vRef[i]=el" 
-		v-for="(item,i) in soundList"
-		:src="item" 
-		@ended="partEnd" 
-	></audio>
+	<!-- 循环播放音频区 -->
+	<!-- :ref="el=>vRef[i]=el" -->
+	<template v-if="live.liveInfo">
+		<video
+			:id="`vDom${i}`"
+			v-for="(item,i) in live.liveInfo.voice_media"
+			:src="item.full_path" 
+			:key="i"
+			:muted="live.isplay"
+			@ended="partEnd" 
+			class="none"
+		></video>
+	</template>
 </view>
 </template>
 
 <script setup>
-import { onLoad, onShow } from '@dcloudio/uni-app'
+import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import { useUserStore, useLiveStore } from '@/stores'
 import { getLiveRoom } from '@/api'
+import { goTo, randomArr } from '@/utils/helper'
+import { nextTick } from 'vue';
 
 const user = useUserStore()
 const live = useLiveStore()
-const replyCon = ref('')
-const vRef = reactive({})
-const soundList = ref([])
+// const vRef = reactive({})
 let round = 1, i = 0, voiceArr = []; // 轮数和当前播放的第几个
 
-onLoad(()=>{
-	// live.openLonglink()
-	getLiveRoom().then(res=>{
-		console.log(111, res)
-	})
-})
-onShow(()=>{
-	// 先预加载第一段直播音频
-	voiceArr = soundList.value.map((item, index)=>index)
-	live.setLiveDom(vRef)
-})
-const goTo = url => uni.navigateTo({url})
+const partName= computed(()=>live.liveInfo ? live.liveInfo.voice_media[live.current].title : '')
+const getItem = (media)=> {
+	const { title, upload } = media
+	return {"full_path": upload.full_path, "title": title||upload.name};
+}
 function nextRound(){ // 播放下一轮
-    if(live.liveInfo.is_random && voiceArr.length>1){
+    if(live.liveInfo.sort_type==2 && voiceArr.length>2){
+		// 开启了随机播放
 		voiceArr = randomArr(voiceArr)
     }
     i = 0
     round++
 }
 function partEnd(){
+	live.vRef[live.current].autoplay = false
 	if(i===(voiceArr.length-1)){ // 下一轮 播放第一个音频
 	    nextRound()
 	}else{ // 当前轮 播放下一个音频
 	    i++
 	}
 	live.setCurrent(voiceArr[i])
-	var vdom = vRef[live.current]
-	vdom.volume = live.isplay ? 0.2 : 1 // 回复在播放得时候声音降低
+	var vdom = live.vRef[live.current]
+	vdom.autoplay = true
 	vdom.play()
+	vdom.volume = live.isplay ? 0.2 : 1 // 回复在播放得时候声音降低
 }
+onLoad(()=>{
+})
+onShow(()=>{
+	if(live.wsObj) return
+	getLiveRoom().then(res=>{
+		if(res&&res.data){
+			const { voice, answer_keyword } = res.data
+			const { sort_type, get_media } = voice
+			const vRef = []
+			const voice_media = get_media.map((media, i)=>{
+				const vdom = uni.createVideoContext(`vDom${i}`)
+				vRef.push(vdom)
+				return getItem(media)
+			})
+			live.setLiveDom(vRef)
+			voiceArr = voice_media.map((item, index)=>index)
+			const info = {
+				sort_type,
+				voice_media,
+				reply: answer_keyword.map((item)=>{
+					return {
+						keywords: item.keywords,
+						media: item.get_midia.map(getItem)
+					}
+				})
+			}
+			live.setLiveInfo(info)
+			// 先预加载第一段直播音频
+			nextTick(()=>{
+				if(vRef[0]){
+					live.setCurrent(0)
+					vRef[0].autoplay = true
+					vRef[0].play()
+				}
+			})
+			// 打开获取评论的长连接
+			// live.openLonglink()
+		}
+	})
+})
+onHide(()=>{
+	// const arr = Object.values(live.vRef)
+	// for(let item of arr){
+	// 	item.destroy()
+	// }
+	try{
+		round = 1
+		i = 0
+		voiceArr = []
+		if(live.vRef[live.current]) live.vRef[live.current].stop()
+		live.setCurrent(0)
+		live.setLiveDom([])
+		live.setLiveInfo(null)
+	}catch(e){
+		//TODO handle the exception
+	}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -122,13 +181,23 @@ function partEnd(){
 	width: 100%;
 	min-height: 100vh;
 	position: relative;
+	.none{
+		position: absolute;
+		top: 0;
+		z-index: 0;
+		width: 1px;
+		height: 1px;
+		opacity: 0;
+	}
 	.bg{
 		height: 100vh;
 		background: linear-gradient(180deg,#1e64fe 0%, #f1f4ff 100%);
+		position: relative;
+		z-index: 1;
 	}
 	.contBox{
 		position: absolute;
-		z-index: 1;
+		z-index: 2;
 		top: 0;
 		left: 0;
 		padding: 0 20rpx;
