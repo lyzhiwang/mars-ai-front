@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { dropRight, sample } from 'lodash-es'
 import { connectWebsocket, sendDateByChannel } from '../utils/socket'
+import { useUserStore } from '@/stores'
 
 export const useLiveStore = defineStore('live', {
 	persist: {
@@ -61,48 +62,48 @@ export const useLiveStore = defineStore('live', {
 			if(this.wsObj) return
 			const user = useUserStore()
 			if (!user.isLogin) return
-			const ws = 'wss://mars.lytklw.cn/api/socket.io'
-			connectWebsocket(ws, { uid: user.info.userId, ...data }, this.globelMessage, () => {
+			const ws = 'wss://mars.lytklw.cn/socket.io'
+			// const ws = 'ws://water1.zwstk.cn' 
+			connectWebsocket(ws, { type: 'msg', ...data }, this.globelMessage, () => {
 				// 连接错误
 			})
 		},
-		globelMessage({ channel, data }) {
-			switch (channel) {
-				case 'WebcastChatMessage': // 评论
-					const { comment } = data
-					this.addMsg(comment); // 添加用户评论信息到列表
-					if(!this.innerAudioContext){
-						// 初次创建音频对象
-						this.innerAudioContext = uni.createInnerAudioContext();
-						this.innerAudioContext.onEnded(()=>{
-							this.vRef[this.current].volume = 1
-							this.isplay = false
-							this.setCurrentReply('', '')
-						});
-						this.innerAudioContext.autoplay = true;
-					}
-					if(!this.isplay){
-						// 匹配关键字，播放答案语音
-						// replyList 回复列表, comment 评论的内容
-						const { reply: replyList } = this.liveInfo
-						const findObj = replyList.find(opt=>comment.match(new RegExp(opt.keywords.join('|'), 'g')))
-						if(findObj){
-							// 先降低直播音频声音
-							this.isplay = true
-							var vdom = this.vRef[this.current]
-							vdom.volume = 0.2
-							// 从匹配结果的录音中随机选取一个播放
-							const randomItem = sample(findObj.media)
-							this.innerAudioContext.src = randomItem.full_path;
-							this.innerAudioContext.play();
-							// 显示当前正在回复的内容
-							this.setCurrentReply(randomItem.title, comment)
-						}
-					}
-					break;
-				case 'WebcastMemberMessage': // 进入直播间
-					break;
-				default:
+		startReply(msg, cb){
+			if(!this.innerAudioContext){
+				// 初次创建音频对象
+				this.innerAudioContext = uni.createInnerAudioContext();
+				this.innerAudioContext.onEnded(()=>{
+					this.vRef[this.current].play()
+					this.isplay = false
+					this.setCurrentReply('', '')
+				});
+				this.innerAudioContext.autoplay = true;
+			}
+			if(!this.isplay){
+				// 匹配关键字，播放答案语音
+				// replyList 回复列表, msg 评论的内容
+				const { reply: replyList } = this.liveInfo
+				const findObj = replyList.find(opt=>msg.match(new RegExp(opt.keywords.join('|'), 'g')))
+				if(findObj){
+					// 先降低直播音频声音
+					this.isplay = true
+					// 从匹配结果的录音中随机选取一个播放
+					const randomItem = sample(findObj.media)
+					this.vRef[this.current].pause()
+					this.innerAudioContext.src = randomItem.full_path;
+					this.innerAudioContext.play();
+					// 显示当前正在回复的内容
+					this.setCurrentReply(randomItem.title, msg)
+				}else{
+					if(cb) cb()
+				}
+			}
+		},
+		globelMessage({ type, info }) {
+			switch (type) {
+				case 'live': // 评论
+					this.addMsg(info); // 添加用户评论信息到列表
+					this.startReply(info); // 自动回复
 					break;
 			}
 		},

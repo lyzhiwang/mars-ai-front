@@ -41,30 +41,24 @@ export const closeWebsocket = () => {
     wsCreateHandler && clearTimeout(wsCreateHandler)
     // 关闭心跳检查
     heartCheck.stop()
+	wsObj = null
   }
 }
 
 // 向服务器发送对应通道到请求参数
 export const sendDateByChannel = (data) => {
   // const reqData = { channel: channel || 'odd', ...data }
-  wsObj.send(JSON.stringify(data))
+  wsObj.send({data: JSON.stringify(data)})
 }
 
 // 创建ws函数
 const createWebSoket = () => {
-  if (typeof (WebSocket) === 'undefined') {
-    writeToScreen('您的浏览器不支持WebSocket，无法获取数据')
-    return false
-  }
   if(wsObj){
     closeWebsocket()
   }
-  // const host = window.location.host;
-  // userId = GetQueryString("userId");
-  // wsUrl = "ws://" + host + "/websoket" + userId;
 
   try {
-    wsObj = new WebSocket(wsUrl)
+    wsObj = uni.connectSocket({url: wsUrl, complete: ()=> {}})
     initWsEventHandle()
   } catch (e) {
     writeToScreen('连接异常，开始重连')
@@ -76,29 +70,29 @@ const initWsEventHandle = () => {
   try {
     lockReconnect = false
     // 连接成功
-    wsObj.onopen = (event) => {
+	wsObj.onOpen(event => {
       useLiveStore().$patch({ wsObj })
       onWsOpen(event)
       heartCheck.start()
-    }
+    })
 
     // 监听服务器端返回的信息
-    wsObj.onmessage = (event) => {
+    wsObj.onMessage(event => {
       onWsMessage(event)
       // heartCheck.start()
-    }
+    })
 
-    wsObj.onclose = (event) => {
+    wsObj.onClose(event => {
       useLiveStore().$patch({ wsObj: null })
       writeToScreen('onclose执行关闭事件')
       onWsClose(event)
-    }
+    })
 
-    wsObj.onerror = (event) => {
+    wsObj.onError(event => {
       writeToScreen('onerror执行error事件，开始重连')
       onWsError(event)
       reconnect()
-    }
+    })
   } catch (err) {
     writeToScreen('绑定事件没有成功，开始重连')
     reconnect()
@@ -112,8 +106,8 @@ const onWsOpen = (event) => {
   // 添加状态判断，当为OPEN时，发送消息
   if (wsObj.readyState === wsObj.OPEN) { // wsObj.OPEN = 1
     // 发给后端的数据需要字符串化
-    console.log('发送标识', sendDatas)
-    wsObj.send(JSON.stringify(sendDatas))
+    // console.log('发送标识', sendDatas)
+    wsObj.send({data: JSON.stringify(sendDatas)})
   }
   if (wsObj.readyState === wsObj.CLOSED) { // wsObj.CLOSED = 3
     writeToScreen('wsObj.readyState=3, ws连接异常，开始重连')
@@ -140,7 +134,7 @@ const onWsClose = (event) => {
   }
 }
 const onWsError = (event) => {
-  writeToScreen('onWsError: ', event.data)
+  writeToScreen('onWsError: ', event.errMsg)
   errorCallback()
 }
 
@@ -203,8 +197,7 @@ const heartCheck = {
     this.timeoutObj = setInterval(() => {
       writeToScreen('send ping')
       try {
-        const datas = { channel: 'other' }
-        wsObj.send(JSON.stringify(datas))
+		 wsObj.send({data: 'ping'})
       } catch (err) {
         writeToScreen('发送ping异常')
       }

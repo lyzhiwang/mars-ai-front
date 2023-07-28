@@ -6,7 +6,7 @@
 		<u--text :text="data.title" :lines="1" size="30rpx" bold color="#333"></u--text>
 	</view>
 	<view class="iptBox vcenter">
-		<text class="keyword">{{data.keywords.join('/')}}</text>
+		<text class="keyword">{{data.keywords?data.keywords.join('/'):'暂无关键字'}}</text>
 	</view>
 	<view class="iptBox between" v-for="(item, i) in list">
 		<view class="vcenter">

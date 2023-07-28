@@ -40,14 +40,17 @@
 
 <script setup>
 import { onShow } from '@dcloudio/uni-app'
-import { useUserStore } from '@/stores/index'
+import { useUserStore, useLiveStore } from '@/stores/index'
+import { closeWebsocket } from '@/utils/socket'
 
 const user = useUserStore()
+const live = useLiveStore()
 
 function goToLogin(){
 	uni.navigateTo({url: '/pagesub/login/index'})
 }
 onShow(()=>{
+	// closeWebsocket()
 	if(user.isLogin) user.getUserInfo()
 })
 </script>

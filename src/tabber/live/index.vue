@@ -39,39 +39,31 @@
 			</view>
 			<view class="bottom">
 				<text class="mc">语音回复</text>
-				<u-icon name="pause-circle-fill" size="50rpx" color="#1E64FE"></u-icon>
+				<u-icon :name="live.isplay?'pause-circle-fill':'play-circle-fill'" size="50rpx" color="#1E64FE"></u-icon>
 				<text class="filename">{{live.replyVoice}}</text>
 			</view>
 		</view>
 		<view class="panel">
 			<view class="tit">直播间回复列表</view>
-			<view class="li">
+			<view class="li" v-for="(item, i) in live.msgList" :key="i">
 				<view class="state">未回复</view>
-				<view class="quesion">店铺具体位置在哪？店铺具体位置在哪？店铺具体位置在哪？店铺具体位置在哪？店铺具体位置在哪？</view>
+				<view class="quesion">{{item}}</view>
 				<view class="btnGroup">
-					<button type="default" class="btn reply"><image src="/static/images/live/msg.png" class="lIcon"></image>回复</button>
-					<button type="default" class="btn collect"><image src="/static/images/live/collect.png" class="lIcon"></image>收录</button>
-				</view>
-			</view>
-			<view class="li">
-				<view class="state already">已回复</view>
-				<view class="quesion">多店通用吗？</view>
-				<view class="btnGroup">
-					<button type="default" class="btn reply"><image src="/static/images/live/msg.png" class="lIcon"></image>回复</button>
-					<button type="default" class="btn collect"><image src="/static/images/live/collect.png" class="lIcon"></image>收录</button>
+					<button type="default" class="btn reply" @click="activeReply(item)"><image src="/static/images/live/msg.png" class="lIcon"></image>回复</button>
+					<button type="default" class="btn collect" @click="collect(item)"><image src="/static/images/live/collect.png" class="lIcon"></image>收录</button>
 				</view>
 			</view>
 		</view>
 	</view>
 	<!-- 循环播放音频区 -->
 	<!-- :ref="el=>vRef[i]=el" -->
+	<!-- :muted="live.isplay" -->
 	<template v-if="live.liveInfo">
 		<video
 			:id="`vDom${i}`"
 			v-for="(item,i) in live.liveInfo.voice_media"
 			:src="item.full_path" 
 			:key="i"
-			:muted="live.isplay"
 			:autoplay="live.current===i"
 			@ended="partEnd" 
 			class="none"
@@ -83,7 +75,7 @@
 <script setup>
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import { useUserStore, useLiveStore } from '@/stores'
-import { getLiveRoom } from '@/api'
+import { getLiveRoom, addKeyword } from '@/api'
 import { goTo, randomArr } from '@/utils/helper'
 import { closeWebsocket } from '@/utils/socket'
 
@@ -96,6 +88,19 @@ const partName= computed(()=>live.liveInfo ? live.liveInfo.voice_media[live.curr
 const getItem = (media)=> {
 	const { title, upload } = media
 	return {"full_path": upload.full_path, "title": title||upload.name};
+}
+function activeReply(msg){
+	// 主动点击回复
+	live.startReply(msg, ()=>{
+		uni.showToast({title: '暂无匹配的关键字', icon: 'none'})
+	})
+}
+function collect(title){
+	addKeyword({answer_id: live.liveInfo.answer_id, title}).then(res=>{
+		if(res){
+			uni.showToast({ title:'收录成功',icon: 'success'})
+		}
+	})
 }
 function nextRound(){ // 播放下一轮
     if(live.liveInfo.sort_type==2 && voiceArr.length>2){
@@ -124,7 +129,8 @@ onShow(()=>{
 	if(live.wsObj) return
 	getLiveRoom().then(res=>{
 		if(res&&res.data){
-			const { voice, answer_keyword, is_kill, is_open, live_url } = res.data
+			console.log(1111, res.data)
+			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id } = res.data
 			const { sort_type, get_media } = voice
 			const vRef = []
 			const voice_media = get_media.map((media, i)=>{
@@ -137,6 +143,7 @@ onShow(()=>{
 			const info = {
 				sort_type,
 				voice_media,
+				answer_id,
 				reply: answer_keyword.map((item)=>{
 					return {
 						keywords: item.keywords,
@@ -152,6 +159,7 @@ onShow(()=>{
 			})
 			// 打开获取评论的长连接
 			if(is_open===1&&is_kill===0){
+				console.log(111, live_url)
 				live.openLonglink({live_url})
 			}
 		}
@@ -169,9 +177,12 @@ onHide(()=>{
 			closeWebsocket()
 			live.$patch({wsObj: null})
 		}
+		if(live.innerAudioContext) live.innerAudioContext.destroy()
 		live.setCurrent(0)
 		live.setLiveDom([])
 		live.setLiveInfo(null)
+		live.setCurrentReply('', '')
+		live.$patch({isplay: false, innerAudioContext: null, msgList: []})
 		round = 1
 		i = 0
 		voiceArr = []

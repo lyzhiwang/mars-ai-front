@@ -2,7 +2,7 @@
 	<view class="content">
 		<view class="headerBox" :style="{marginTop: `${config.statusBar}px`}">
 			<image src="/static/logo.png" class="logo"></image>
-			<text>火星AI无人直播1111</text>
+			<text>火星AI无人直播</text>
 		</view>
 		<view class="swiperBox">
 			<u-swiper
@@ -44,20 +44,21 @@
 </template>
 
 <script setup>
-import { onLoad, onReady } from '@dcloudio/uni-app'
-import { useConfigStore } from '@/stores'
+import { onShow, onReady } from '@dcloudio/uni-app'
+import { useConfigStore, useLiveStore } from '@/stores'
 import { goTo } from '@/utils/helper.js'
+import { closeWebsocket } from '@/utils/socket'
 
 const config = useConfigStore()
-// const title = ref('')
+const live = useLiveStore()
 const swiperList = ref(['/static/images/voices/banner.png'])
 
 function comingsoon(){
 	uni.showToast({title: '暂未开放', icon: 'none'})
 }
 
-onLoad(()=>{
-
+onShow(()=>{
+	// closeWebsocket()
 })
 </script>
 

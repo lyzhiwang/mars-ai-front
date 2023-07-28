@@ -229,3 +229,11 @@ export function getLiveRoom(){
 		method: 'get',
 	})
 }
+
+// 获取最新APP版本
+export function getAppVersion(){
+	return request({
+		url: '/version',
+		method: 'get',
+	})
+}
