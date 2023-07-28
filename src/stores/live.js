@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia'
 import { dropRight, sample } from 'lodash-es'
+import { connectWebsocket, sendDateByChannel } from '../utils/socket'
 
 export const useLiveStore = defineStore('live', {
+	persist: {
+	    enabled: true,
+		detached: true, // 设置订阅与组件分离
+	},
 	state: () => ({
 		title: '',
 		wsObj: null, // websocket对象
@@ -13,8 +18,16 @@ export const useLiveStore = defineStore('live', {
 		currentMsg: '', // 当前正在回复的评论消息
 		replyVoice: '', // 当前正在回复的音频的名称
 		liveInfo: null,
+		// live_url: '',
+		// autoplay: false, // 当前的片段是否自动播放
 	}),
 	actions: {
+		// setPartAutoPlay(bool){
+		// 	this.autoplay = bool
+		// },
+		// setLiveUrl(url){
+		// 	this.live_url = url
+		// },
 		setTitle(tit){
 			// 开播前设置title,清除wsObj
 			this.title = tit

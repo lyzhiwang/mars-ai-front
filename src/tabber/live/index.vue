@@ -72,6 +72,7 @@
 			:src="item.full_path" 
 			:key="i"
 			:muted="live.isplay"
+			:autoplay="live.current===i"
 			@ended="partEnd" 
 			class="none"
 		></video>
@@ -84,7 +85,7 @@ import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import { useUserStore, useLiveStore } from '@/stores'
 import { getLiveRoom } from '@/api'
 import { goTo, randomArr } from '@/utils/helper'
-import { nextTick } from 'vue';
+import { closeWebsocket } from '@/utils/socket'
 
 const user = useUserStore()
 const live = useLiveStore()
@@ -105,7 +106,7 @@ function nextRound(){ // 播放下一轮
     round++
 }
 function partEnd(){
-	live.vRef[live.current].autoplay = false
+	// live.vRef[live.current].autoplay = false
 	if(i===(voiceArr.length-1)){ // 下一轮 播放第一个音频
 	    nextRound()
 	}else{ // 当前轮 播放下一个音频
@@ -113,9 +114,9 @@ function partEnd(){
 	}
 	live.setCurrent(voiceArr[i])
 	var vdom = live.vRef[live.current]
-	vdom.autoplay = true
+	// vdom.volume = live.isplay ? 0.2 : 1 // 回复在播放得时候声音降低
+	// vdom.autoplay = true
 	vdom.play()
-	vdom.volume = live.isplay ? 0.2 : 1 // 回复在播放得时候声音降低
 }
 onLoad(()=>{
 })
@@ -123,7 +124,7 @@ onShow(()=>{
 	if(live.wsObj) return
 	getLiveRoom().then(res=>{
 		if(res&&res.data){
-			const { voice, answer_keyword } = res.data
+			const { voice, answer_keyword, is_kill, is_open, live_url } = res.data
 			const { sort_type, get_media } = voice
 			const vRef = []
 			const voice_media = get_media.map((media, i)=>{
@@ -144,16 +145,15 @@ onShow(()=>{
 				})
 			}
 			live.setLiveInfo(info)
+			live.setCurrent(0)
 			// 先预加载第一段直播音频
 			nextTick(()=>{
-				if(vRef[0]){
-					live.setCurrent(0)
-					vRef[0].autoplay = true
-					vRef[0].play()
-				}
+				if(vRef[0]) vRef[0].play()
 			})
 			// 打开获取评论的长连接
-			// live.openLonglink()
+			if(is_open===1&&is_kill===0){
+				live.openLonglink({live_url})
+			}
 		}
 	})
 })
@@ -163,13 +163,18 @@ onHide(()=>{
 	// 	item.destroy()
 	// }
 	try{
-		round = 1
-		i = 0
-		voiceArr = []
+		// 重置数据
 		if(live.vRef[live.current]) live.vRef[live.current].stop()
+		if(live.wsObj) {
+			closeWebsocket()
+			live.$patch({wsObj: null})
+		}
 		live.setCurrent(0)
 		live.setLiveDom([])
 		live.setLiveInfo(null)
+		round = 1
+		i = 0
+		voiceArr = []
 	}catch(e){
 		//TODO handle the exception
 	}

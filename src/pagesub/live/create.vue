@@ -17,16 +17,16 @@
 			errorType="toast"
 		>
 			<image src="/static/images/live/title.png" class="title"></image>
-			<u-form-item prop="url">
+			<u-form-item prop="live_id">
 				<view class="iptBox">
 					<u--input 
-						v-model="form.url" 
+						v-model.number="form.live_id" 
+						type="number"
 						border="none" 
 						class="ipt"
 						prefixIcon="search"
 						prefixIconStyle="font-size: 36rpx;color: #909399"
-						placeholder="输入直播间地址"
-						:formatter="formatter"
+						placeholder="输入直播账号的抖音号"
 					></u--input>
 				</view>
 				<text class="searchText mc" @click="searchLive">搜索</text>
@@ -78,27 +78,27 @@ const live = useLiveStore()
 // })
 const urlForm = ref()
 const form = reactive({
-	url: '',
+	live_id: null,
 })
 const title = ref('')
 const rules = reactive({
-	url: [
+	live_id: [
 		{
-			type: 'string',
+			type: 'number',
 			required: true,
-			message: '请输入直播地址',
+			message: '请输入直播账号的抖音号',
 			trigger: ['blur', 'change'],
 		},
-		{
-			validator: (rule, value, callback) => {
-				return uni.$u.test.url(value)
-			},
-			message: '请填写正确的直播地址',
-			trigger: ['blur', 'change'],
-		}
+		// {
+		// 	validator: (rule, value, callback) => {
+		// 		return uni.$u.test.url(value)
+		// 	},
+		// 	message: '请填写正确的直播地址',
+		// 	trigger: ['blur', 'change'],
+		// }
 	]
 })
-let url_validate = false
+let url_validate = false, live_url = '';
 
 const formatter = (value) => {
 	// 过滤输入的汉字
@@ -112,9 +112,10 @@ const formatter = (value) => {
 function searchLive(){
 	urlForm.value.validate().then(res => {
 		url_validate = true
-		getLiveTit({live_url: form.url}).then(res=>{
+		getLiveTit({live_id: form.live_id}).then(res=>{
 			if(res&&res.data){
 				title.value = res.data.title
+				live_url = res.data.live_url
 			}
 		})
 	}).catch(errors => {
@@ -122,10 +123,10 @@ function searchLive(){
 	})
 }
 function startLive(){
-	if(!form.url || !url_validate) return uni.$u.toast('未填写直播地址或不正确')
+	if(!form.live_id || !url_validate) return uni.$u.toast('未填写抖音号或不正确')
 	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
 	if(!task.selectReply) return uni.$u.toast('请选择回复')
-	createLiveRoom({voice_id: task.selectVoice.id, answer_id: task.selectReply.id, live_url: form.url}).then(res=>{
+	createLiveRoom({voice_id: task.selectVoice.id, answer_id: task.selectReply.id, live_url}).then(res=>{
 		if(res){
 			// 开始直播
 			live.setTitle(title.value)
