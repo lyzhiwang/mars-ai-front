@@ -109,6 +109,7 @@
 		  image{
 			  width: 131rpx;
 			  height: 123rpx;
+			  border-radius: 50%;
 		  }
 	  }
 	  .formBox{
