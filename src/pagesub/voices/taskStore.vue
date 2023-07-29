@@ -15,7 +15,7 @@
 		
 		<u-empty v-else mode="data" text="暂无数据" :marginTop="160" iconSize="160" textSize="28" style="width: 100%;"></u-empty>
 		
-		<view class="btn flex-rcc" @click="handleAdd">确定添加</view>
+		<view class="btn flex-rcc" v-if="list.length>0" @click="handleAdd">确定添加</view>
 	</view>
 </template>
 

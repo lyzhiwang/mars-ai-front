@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-	import { onLoad,onShow } from '@dcloudio/uni-app'
+	import { onLoad,onShow, onUnload } from '@dcloudio/uni-app'
 	import { goTo } from '@/utils/helper.js'
 	import AudioQuickPlay from '@/components/audioQuickPlay/index.vue'
 	import { useConfigStore, useTaskStore } from '@/stores'
@@ -212,6 +212,13 @@
 			}
 		})
 	}
+	
+	onUnload(()=>{
+		if(audioQuickPlay.value){
+			audioQuickPlay.value.destroy()
+			audioQuickPlay.value = null
+		} 	
+	})
 </script>
 
 <style lang="scss" scoped>

@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-	import { onLoad,onShow, onHide } from '@dcloudio/uni-app'
+	import { onLoad,onShow, onHide, onUnload } from '@dcloudio/uni-app'
 	import { voiceReaIndex, voiceReaDestory, voiceRelationSort } from '@/api'
 	import { useConfigStore } from '@/stores'
 	
@@ -58,13 +58,11 @@
 	const show = ref(false)
 	const content = ref('请确认删除该语音?')
 	const id = ref(null)
+	let innerAudioContext = null
 	onLoad((option)=>{
 		config.getQnToken()
 		id.value = option.id
 		getList()
-		innerAudioContext.onEnded(()=>{
-			playDataId.value = null
-		})
 	})
 	
 	onShow(()=>{
@@ -108,10 +106,14 @@
 	// 播放中数据
 	const playDataId = ref(null) 
 	
-	const innerAudioContext = uni.createInnerAudioContext();
-	innerAudioContext.autoplay = true;
-	
 	const handleItem = item =>{
+		if(!innerAudioContext){
+			innerAudioContext = uni.createInnerAudioContext();
+			innerAudioContext.autoplay = true;
+			innerAudioContext.onEnded(()=>{
+				playDataId.value = null
+			})
+		}
 		if(playDataId.value === null){
 			playDataId.value = item.id
 			// 播放
@@ -152,7 +154,18 @@
 	
 	onHide(()=>{
 		playDataId.value = null
-		innerAudioContext.stop()
+		if(innerAudioContext){
+			innerAudioContext.destroy()
+			innerAudioContext = null
+		} 	
+	})
+	
+	onUnload(()=>{
+		playDataId.value = null
+		if(innerAudioContext){
+			innerAudioContext.destroy()
+			innerAudioContext = null
+		} 	
 	})
 	
 </script>
