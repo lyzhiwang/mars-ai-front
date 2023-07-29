@@ -83,7 +83,7 @@ export const useLiveStore = defineStore('live', {
 				// 匹配关键字，播放答案语音
 				// replyList 回复列表, msg 评论的内容
 				const { reply: replyList } = this.liveInfo
-				const findObj = replyList.find(opt=>msg.match(new RegExp(opt.keywords.join('|'), 'g')))
+				const findObj = replyList.find(opt=>opt.keywords&&msg.match(new RegExp(opt.keywords.join('|'), 'g')))
 				if(findObj){
 					// 先降低直播音频声音
 					this.isplay = true
