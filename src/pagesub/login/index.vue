@@ -83,6 +83,7 @@
 				show.value = false
 				code.value = null
 				isAct.value = true
+				uni.$u.toast('请保存您的账号密码!')
 			}
 		})
 	}

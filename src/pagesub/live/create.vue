@@ -20,8 +20,7 @@
 			<u-form-item prop="live_id">
 				<view class="iptBox">
 					<u--input 
-						v-model.number="form.live_id" 
-						type="number"
+						v-model.trim="form.live_id" 
 						border="none" 
 						class="ipt"
 						prefixIcon="search"
@@ -84,7 +83,6 @@ const title = ref('')
 const rules = reactive({
 	live_id: [
 		{
-			type: 'number',
 			required: true,
 			message: '请输入直播账号的抖音号',
 			trigger: ['blur', 'change'],
