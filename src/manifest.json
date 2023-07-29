@@ -47,10 +47,13 @@
             },
             /* ios打包配置 */
             "ios" : {
-                "idfa" : false
+                "idfa" : false,
+                "dSYMs" : false
             },
             /* SDK配置 */
-            "sdkConfigs" : {},
+            "sdkConfigs" : {
+                "ad" : {}
+            },
             /* 分包配置 */
             "optimization" : {
                 "subPackages" : true

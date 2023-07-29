@@ -138,8 +138,9 @@
 		voiceReaDestory({id: currentId.value}).then(res=>{
 			uni.showToast({title: '删除成功!',icon: 'success',duration: 2000});
 			show.value = false
-			const index = list.value.findIndex(v=> {return v.id===currentId.value})
-			if(index>-1) list.value.splice(index, 1)
+			getList()
+			// const index = list.value.findIndex(v=> {return v.id===currentId.value})
+			// if(index>-1) list.value.splice(index, 1)
 		})
 	}
 	
