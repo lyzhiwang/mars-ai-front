@@ -35,7 +35,7 @@ service.interceptors.request.use(
   error => {
     // Do something with request error
     uni.hideLoading()
-	console.log(error)
+	// console.log(error)
     // Promise.reject(error)
   }
 )
@@ -50,7 +50,7 @@ service.interceptors.response.use(
 		if (res.code === 0) { // code 为0请求正常
 		    return res
 		} else {
-			console.log(999, res)
+			// console.log(999, res)
 			// 先提示错误信息
 			if (res.message){
 				uni.showToast({ title: res.message, icon: 'none', duration: 3000});
@@ -81,7 +81,7 @@ service.interceptors.response.use(
     }
   },
   error => {
-	console.log(error)
+	// console.log(error)
     uni.hideLoading()
 	// http响应状态码
 	const resposeCode = {

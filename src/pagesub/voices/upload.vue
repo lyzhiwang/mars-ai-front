@@ -37,7 +37,6 @@
 		const { upload_id, title } = data.detail.data[0]
 		const res = (type == 2) ? await addVoiceAtReply(id, {upload_id, title}) : await voiceReaCreate({voice_id: id, upload_id, title});
 		if(res){
-			console.log('res', res)
 			uni.showToast({title: '添加成功', icon: 'success', duration: 1500});
 			setTimeout(uni.navigateBack, 1500)
 		}

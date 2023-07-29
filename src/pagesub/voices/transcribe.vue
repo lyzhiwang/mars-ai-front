@@ -111,7 +111,6 @@
 		// })
 		
 		recorderManager.onStop(function (res) {
-			console.log('recorder stop' + JSON.stringify(res));
 			voicePath.value = res.tempFilePath;
 			uni.showToast({title: '录音完成!', icon: 'success', duration: 1500})
 		});
@@ -127,7 +126,6 @@
 		uni.vibrateLong({
 			success:()=>{
 				if(isRecord.value){
-					console.log('recorderManager', recorderManager)
 					uni.showToast({
 						title: '录音开始!',
 						icon: 'success',
@@ -135,7 +133,6 @@
 					})
 					recorderManager.start();
 				}else{
-					console.log('recorderManager.value222', recorderManager)
 					recorderManager.stop();
 				}
 			}
@@ -208,7 +205,6 @@
 				}
 			},
 			fail: (err) => {
-				console.log(111, err)
 				uni.showToast({title: '保存失败', icon: 'error', duration: 2000});
 			},
 			complete(){

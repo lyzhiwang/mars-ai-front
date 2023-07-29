@@ -138,7 +138,6 @@
 	}
 	const currentId = ref(null)
 	const delItem = item =>{
-		console.log('item',item)
 		currentId.value = item.id
 		show.value = true
 	}

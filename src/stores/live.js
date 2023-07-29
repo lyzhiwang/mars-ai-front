@@ -39,7 +39,6 @@ export const useLiveStore = defineStore('live', {
 		},
 		setLiveDom(vRef){
 			this.vRef = vRef
-			// this.current = 0
 		},
 		setLiveInfo(info){
 			this.liveInfo = info
@@ -50,7 +49,8 @@ export const useLiveStore = defineStore('live', {
 				this.msgList.unshift(data)
 			}else{
 				const list = dropRight(this.msgList, 1)
-				this.msgList = [data, ...list]
+				list.unshift(data)
+				this.msgList = list
 			}
 		},
 		setCurrentReply(file, msg){

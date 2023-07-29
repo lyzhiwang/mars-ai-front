@@ -129,7 +129,6 @@ onShow(()=>{
 	if(live.wsObj) return
 	getLiveRoom().then(res=>{
 		if(res&&res.data){
-			console.log(1111, res.data)
 			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id } = res.data
 			const { sort_type, get_media } = voice
 			const vRef = []
@@ -159,7 +158,6 @@ onShow(()=>{
 			})
 			// 打开获取评论的长连接
 			if(is_open===1&&is_kill===0){
-				console.log(111, live_url)
 				live.openLonglink({live_url})
 			}
 		}
