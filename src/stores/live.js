@@ -7,6 +7,9 @@ export const useLiveStore = defineStore('live', {
 	persist: {
 	    enabled: true,
 		detached: true, // 设置订阅与组件分离
+		strategies: [
+		  { paths: ['title'] }
+		],
 	},
 	state: () => ({
 		title: '',
