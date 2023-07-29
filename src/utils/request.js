@@ -58,9 +58,10 @@ service.interceptors.response.use(
 			const userStore = useUserStore()
 			switch (res.code) { 
 				case 700003: case 700004: // 没有登录
+					userStore.logOut()
 					uni.showModal({
 						title: '提示',
-						content: '您还未登录，请先登录',
+						content: '您还未登录或登录超时，请登录!',
 						success: function (res) {
 							if (res.confirm) {
 								uni.redirectTo({ url: '/pagesub/login/index' })

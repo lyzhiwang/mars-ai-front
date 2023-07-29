@@ -237,3 +237,13 @@ export function getAppVersion(){
 		method: 'get',
 	})
 }
+
+// 反馈
+export function sendFeedBack(data){
+	return request({
+		loading: true,
+		url: '/v1/feedback',
+		method: 'post',
+		data
+	})
+}

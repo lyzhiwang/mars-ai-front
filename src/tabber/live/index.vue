@@ -59,15 +59,18 @@
 	<!-- :ref="el=>vRef[i]=el" -->
 	<!-- :muted="live.isplay" -->
 	<template v-if="live.liveInfo">
-		<video
-			:id="`vDom${i}`"
-			v-for="(item,i) in live.liveInfo.voice_media"
-			:src="item.full_path" 
-			:key="i"
-			:autoplay="live.current===i"
-			@ended="partEnd" 
-			class="none"
-		></video>
+		<template v-for="(item,i) in live.liveInfo.voice_media">
+			<video
+				v-if="i<limit"
+				:id="`vDom${i}`"
+				:src="item.full_path" 
+				:key="i"
+				:autoplay="live.current===i"
+				@ended="partEnd" 
+				@error="interrupt"
+				class="none"
+			></video>
+		</template>
 	</template>
 </view>
 </template>
@@ -81,10 +84,10 @@ import { closeWebsocket } from '@/utils/socket'
 
 const user = useUserStore()
 const live = useLiveStore()
-// const vRef = reactive({})
+const limit = ref(2) // 控制video渲染个数
 let round = 1, i = 0, voiceArr = []; // 轮数和当前播放的第几个
 
-const partName= computed(()=>live.liveInfo ? live.liveInfo.voice_media[live.current].title : '')
+const partName= computed(()=>live.liveInfo&&live.liveInfo.voice_media[live.current] ? live.liveInfo.voice_media[live.current].title : '')
 const getItem = (media)=> {
 	const { title, upload } = media
 	return {"full_path": upload.full_path, "title": title||upload.name};
@@ -102,6 +105,12 @@ function collect(title){
 		}
 	})
 }
+function interrupt(){ // 播放中断
+	live.vRef[live.current].stop()
+	i++
+	live.setCurrent(voiceArr[i])
+	live.vRef[live.current].play()
+}
 function nextRound(){ // 播放下一轮
     if(live.liveInfo.sort_type==2 && voiceArr.length>2){
 		// 开启了随机播放
@@ -116,6 +125,9 @@ function partEnd(){
 	    nextRound()
 	}else{ // 当前轮 播放下一个音频
 	    i++
+		if(limit.value < voiceArr.length){
+			limit.value++
+		}
 	}
 	live.setCurrent(voiceArr[i])
 	var vdom = live.vRef[live.current]
@@ -170,6 +182,7 @@ onHide(()=>{
 	// }
 	try{
 		// 重置数据
+		limit.value = 2
 		if(live.vRef[live.current]) live.vRef[live.current].stop()
 		if(live.wsObj) {
 			closeWebsocket()

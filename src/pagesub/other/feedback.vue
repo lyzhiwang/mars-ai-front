@@ -2,14 +2,27 @@
 <view class="page">
 	<view class="panel">
 		<view class="title">反馈内容</view>
-		<u--textarea v-model="feedback" placeholder="请输入内容" class="content"></u--textarea>
+		<u--textarea v-model="feedback" placeholder="请输入内容" class="content" height="286"></u--textarea>
 	</view>
-	<u-button type="primary" text="确定" shape="circle" class="submit"></u-button>
+	<u-button type="primary" text="确定" shape="circle" class="submit" @click="submit"></u-button>
 </view>
 </template>
 
 <script setup>
+import { sendFeedBack } from '@/api'
+import { useUserStore } from '@/stores/index'
+
+const user = useUserStore()
 const feedback = ref('')
+
+function submit(){
+	sendFeedBack({detail: feedback.value, user_id: user.info.userId }).then(res=>{
+		if(res){
+			uni.showToast({title: '反馈提交成功', icon: 'success', duration: 1500});
+			setTimeout(()=>uni.switchTab({url: '/tabber/me/index'}), 1500)
+		}
+	})
+}
 </script>
 
 <style lang="scss" scoped>
@@ -30,7 +43,6 @@ const feedback = ref('')
 		margin-bottom: 20rpx;
 	}
 	.content{
-		height: 286rpx;
 		background: #f8f8f8;
 		border-radius: 20rpx;
 	}
