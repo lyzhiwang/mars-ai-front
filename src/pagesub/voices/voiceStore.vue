@@ -3,10 +3,11 @@
 		<view class="listBox" v-if="list.length>0">
 			<scroll-view :scroll-top="0" scroll-y="true" style="height: 90vh;" class="scrollBox">
 				<u-swipe-action>
-					<template v-for="(item,index) in list" :key="index">
 						<u-swipe-action-item
+						  v-for="(item,index) in list" 
+						  :key="item.id"
 						  :options="options1"
-						  :name="index"
+						  :name="index+'item1'"
 						  :threshold="100"
 						  class="swiperItem"
 						  @click="delItem(item)"
@@ -27,7 +28,6 @@
 							</view>
 						</view>
 						</u-swipe-action-item>
-					</template>
 				  </u-swipe-action>
 			</scroll-view>
 		</view>
@@ -138,9 +138,9 @@
 		voiceReaDestory({id: currentId.value}).then(res=>{
 			uni.showToast({title: '删除成功!',icon: 'success',duration: 2000});
 			show.value = false
-			getList()
-			// const index = list.value.findIndex(v=> {return v.id===currentId.value})
-			// if(index>-1) list.value.splice(index, 1)
+			// getList()
+			const index = list.value.findIndex(v=> {return v.id===currentId.value})
+			if(index>-1) list.value.splice(index, 1)
 		})
 	}
 	
