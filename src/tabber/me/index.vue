@@ -18,7 +18,7 @@
 	</view>
 	<div class="function">
 		<u-cell-group :border="false">
-			<!-- <u-cell title="兑换码" size="large" isLink url="">
+			<!-- <u-cell title="修改密码" size="large" isLink @click="showPwdPop = true">
 				<template #icon>
 					<u-image :width="35" :height="35" src="/static/images/me/exchange.png"></u-image>
 				</template>
@@ -35,6 +35,15 @@
 			</u-cell>
 		</u-cell-group>
 	</div>
+	<!-- 修改密码弹窗 -->
+	<u-modal :show="showPwdPop" title="修改密码" showCancelButton @confirm="changePwdConfirm">
+		<u--input
+		    placeholder="请输入您的新密码"
+		    border="surround"
+		    v-model="password"
+			type="password"
+		></u--input>
+	</u-modal>
 </view>
 </template>
 
@@ -42,12 +51,26 @@
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore, useLiveStore } from '@/stores/index'
 import { closeWebsocket } from '@/utils/socket'
+import { changePwd } from '@/api'
 
 const user = useUserStore()
 const live = useLiveStore()
+const showPwdPop = ref(false)
+const password = ref('')
 
 function goToLogin(){
 	uni.navigateTo({url: '/pagesub/login/index'})
+}
+function changePwdConfirm(){
+	changePwd(user.info.userId, {password: password.value}).then(res=>{
+		if(res){
+			uni.showToast({title: '修改密码成功', icon: 'success', duration: 1500})
+			setTimeout(()=>{
+				user.logOut()
+				goToLogin()
+			}, 1500)
+		}
+	})
 }
 onShow(()=>{
 	// closeWebsocket()

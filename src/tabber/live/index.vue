@@ -107,9 +107,7 @@ function collect(title){
 }
 function interrupt(){ // 播放中断
 	live.vRef[live.current].stop()
-	i++
-	live.setCurrent(voiceArr[i])
-	live.vRef[live.current].play()
+	partEnd() // 播放下个音频
 }
 function nextRound(){ // 播放下一轮
     if(live.liveInfo.sort_type==2 && voiceArr.length>2){

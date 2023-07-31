@@ -17,6 +17,7 @@ function checkVeision() {
 					title: '版本检查',
 					content: '检测到新版本，是否下载安装包？',
 					confirmText: '下载',
+					showCancel: false,
 					success: res => {
 						// 打开浏览器下载新版APP
 						plus.runtime.openURL(url)

@@ -27,10 +27,10 @@ export function activateCode(params){
 	})
 }
 // change password
-export function changePwd(data) {
+export function changePwd(id, data) {
 	return request({
 		loading: true,
-		url: '/reset/password',
+		url: `/v1/admin/${id}`,
 		method: 'patch',
 		data
 	})
