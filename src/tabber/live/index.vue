@@ -57,7 +57,6 @@
 	</view>
 	<!-- 循环播放音频区 -->
 	<!-- :ref="el=>vRef[i]=el" -->
-	<!-- :muted="live.isplay" -->
 	<template v-if="live.liveInfo">
 		<template v-for="(item,i) in live.liveInfo.voice_media">
 			<video
@@ -66,6 +65,7 @@
 				:src="item.full_path" 
 				:key="i"
 				:autoplay="live.current===i"
+				:muted="live.isplay"
 				@ended="partEnd" 
 				@error="interrupt"
 				class="none"
@@ -78,7 +78,7 @@
 <script setup>
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import { useUserStore, useLiveStore } from '@/stores'
-import { getLiveRoom, addKeyword } from '@/api'
+import { getLiveRoom, addKeyword, errorStatistics } from '@/api'
 import { goTo, randomArr } from '@/utils/helper'
 import { closeWebsocket } from '@/utils/socket'
 
@@ -105,9 +105,15 @@ function collect(title){
 		}
 	})
 }
-function interrupt(){ // 播放中断
-	live.vRef[live.current].stop()
-	partEnd() // 播放下个音频
+function interrupt(event){ // 播放中断
+	try{
+		// const { target, detail, type, code } = event
+		errorStatistics({...event, media: live.liveInfo.voice_media[live.current]})
+	}catch(e){
+		//TODO handle the exception
+	}
+	// live.vRef[live.current].stop()
+	// partEnd() // 播放下个音频
 }
 function nextRound(){ // 播放下一轮
     if(live.liveInfo.sort_type==2 && voiceArr.length>2){

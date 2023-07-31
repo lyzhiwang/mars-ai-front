@@ -247,3 +247,11 @@ export function sendFeedBack(data){
 		data
 	})
 }
+// 错误统计
+export function errorStatistics(data){
+	return request({
+		url: '/max',
+		method: 'post',
+		data
+	})
+}

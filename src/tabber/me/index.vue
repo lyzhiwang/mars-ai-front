@@ -64,6 +64,7 @@ function goToLogin(){
 function changePwdConfirm(){
 	changePwd(user.info.userId, {password: password.value}).then(res=>{
 		if(res){
+			showPwdPop.value = false
 			uni.showToast({title: '修改密码成功', icon: 'success', duration: 1500})
 			setTimeout(()=>{
 				user.logOut()
