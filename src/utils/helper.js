@@ -33,3 +33,40 @@ export function randomArr(data){
   }
   return newArr
 }
+
+// 同时下载多文件
+export function downLoadAudio(mediaArr, callBack){
+	uni.showLoading({title: '预下载音频资源', mask: true}) 
+	let progress = 0;
+	// 下载文件
+	const downloadList = mediaArr.map(item => {
+	  return new Promise((resolve, reject) => {
+	    uni.downloadFile({
+	      url: item.full_path,
+	      success(res) {
+	        // 下载成功
+			const { apFilePath, tempFilePath, statusCode } = res
+	        resolve({...item, tempFilePath});
+	      },
+	      fail(err) {
+	        // 下载失败
+			// reject(err);
+			resolve(item);
+	      },
+	      complete() {
+	        // 每个文件下载完成后更新进度
+	        progress++;
+	      }
+	    });
+	  });
+	});
+	// 判断所有文件是否下载成功
+	Promise.all(downloadList).then(results => {
+		// console.log('All files downloaded successfully:', results);
+		callBack(results)
+	}).catch(error => {
+		uni.showToast({title: '部分音频资源下载失败', icon: 'none'})
+	}).finally(()=>{
+		uni.hideLoading()
+	});
+}

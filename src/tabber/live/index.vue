@@ -62,7 +62,7 @@
 			<video
 				v-if="i<limit"
 				:id="`vDom${i}`"
-				:src="item.full_path" 
+				:src="item.tempFilePath||item.full_path" 
 				:key="i"
 				:autoplay="live.current===i"
 				:muted="live.isplay"
@@ -79,7 +79,7 @@
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import { useUserStore, useLiveStore } from '@/stores'
 import { getLiveRoom, addKeyword, errorStatistics } from '@/api'
-import { goTo, randomArr } from '@/utils/helper'
+import { goTo, randomArr, downLoadAudio } from '@/utils/helper'
 import { closeWebsocket } from '@/utils/socket'
 
 const user = useUserStore()
@@ -153,29 +153,33 @@ onShow(()=>{
 				vRef.push(vdom)
 				return getItem(media)
 			})
-			live.setLiveDom(vRef)
-			voiceArr = voice_media.map((item, index)=>index)
-			const info = {
-				sort_type,
-				voice_media,
-				answer_id,
-				reply: answer_keyword.map((item)=>{
-					return {
-						keywords: item.keywords,
-						media: item.get_midia.map(getItem)
-					}
+			// 开始下载音频资源
+			downLoadAudio(voice_media, (arr)=>{
+				console.log(111, arr)
+				live.setLiveDom(vRef)
+				voiceArr = voice_media.map((item, index)=>index)
+				const info = {
+					sort_type,
+					voice_media: arr,
+					answer_id,
+					reply: answer_keyword.map((item)=>{
+						return {
+							keywords: item.keywords,
+							media: item.get_midia.map(getItem)
+						}
+					})
+				}
+				live.setLiveInfo(info)
+				live.setCurrent(0)
+				// 先预加载第一段直播音频
+				nextTick(()=>{
+					if(vRef[0]) vRef[0].play()
 				})
-			}
-			live.setLiveInfo(info)
-			live.setCurrent(0)
-			// 先预加载第一段直播音频
-			nextTick(()=>{
-				if(vRef[0]) vRef[0].play()
+				// 打开获取评论的长连接
+				if(is_open===1&&is_kill===0){
+					live.openLonglink({live_url})
+				}
 			})
-			// 打开获取评论的长连接
-			if(is_open===1&&is_kill===0){
-				live.openLonglink({live_url})
-			}
 		}
 	})
 })
