@@ -4,7 +4,16 @@ import request from '@/utils/request'
 export function login(data) {
 	return request({
 		loading: true,
-		url: '/v1/user/login',
+		url: '/v1/login',
+		method: 'post',
+		data
+	})
+}
+
+// 注册
+export function register(data) {
+	return request({
+		url: '/v1/register',
 		method: 'post',
 		data
 	})

@@ -3,7 +3,7 @@ const tokenArr = window.location.search.split('=')
 // console.log('tokenArr',tokenArr[1])
 const qiniuToken = decodeURIComponent(tokenArr[1])
 
-// console.log('qiniuToken', qiniuToken)
+console.log('qiniuToken', qiniuToken)
 
 var input = document.getElementById("myFileInput");
     input.addEventListener("change", function() {
@@ -17,6 +17,8 @@ var params = {
 }
 
 function uploadFile(file){
+  const shade = document.getElementById('uploadBox1')
+  shade.style.display = "flex"
   let formData = new FormData();
   formData.append("file", file);
   formData.append("token",qiniuToken)
@@ -30,9 +32,11 @@ function uploadFile(file){
       var response = JSON.parse(xhr.responseText);
       console.log('response',response);
 	  params.upload_id = response.data.id
+	  shade.style.display = "none"
 	  alert('上传成功!')
     } else {
-		alert('上传失败.请重试!')
+		alert('上传失败.请确保上传文件类型为音频格式文件后重试!')
+		shade.style.display = "none"
 		console.log('Error: ' + xhr.status);
     }
   };

@@ -31,6 +31,7 @@
 		type = option.type
 		id = option.id
 		userStore.getQnToken()
+		console.log('encodeURIComponent(userStore.qnToken)', encodeURIComponent(userStore.qnToken))
 	})
 	
 	const postMessage = async(data)=>{

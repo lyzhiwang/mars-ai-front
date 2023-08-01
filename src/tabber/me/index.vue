@@ -18,11 +18,11 @@
 	</view>
 	<div class="function">
 		<u-cell-group :border="false">
-			<!-- <u-cell title="修改密码" size="large" isLink @click="showPwdPop = true">
+			<u-cell title="修改密码" size="large" isLink @click="showPwdPop = true">
 				<template #icon>
 					<u-image :width="35" :height="35" src="/static/images/me/exchange.png"></u-image>
 				</template>
-			</u-cell> -->
+			</u-cell>
 			<u-cell title="关于我们" size="large" isLink url="/pagesub/other/about">
 				<template #icon>
 					<u-image :width="35" :height="35" src="/static/images/me/about.png"></u-image>

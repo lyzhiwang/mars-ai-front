@@ -20,7 +20,16 @@
 		</view>
 		
 		<view class="recordBox flex-cc">
-			<image src="/static/images/voices/record.png" @click="handleRecord"></image>
+			<view class="aBox flex-rcc">
+				<view class="animate-wave" v-if="isRecord">
+					<view class="w1"></view>
+					<view class="w2"></view>
+					<view class="w3"></view>
+					<view class="w4"></view>
+				</view>
+				<image src="/static/images/voices/record.png" @click="handleRecord"></image>
+			</view>
+			<view class="isRecording" v-if="isRecord">正在录音中{{time}}s</view>
 			<view class="tips">点击开始录音，再次点击结束录音</view>
 		</view>
 		
@@ -57,6 +66,14 @@
 	
 	const show = ref(false)
 	const content = ref('请确认删除该语音?')
+	const time = ref(0)
+	// 计时
+	const timer = ref(null)
+	const timmerBegin = () =>{
+		timer.value = setInterval(()=>{
+			time.value++
+		},1000)
+	}
 	
 	const delItem = item =>{
 		show.value = true
@@ -132,7 +149,11 @@
 						duration: 1500,
 					})
 					recorderManager.start();
+					timmerBegin()
 				}else{
+					clearInterval(timer.value)
+					timer.value = null
+					time.value = 0
 					recorderManager.stop();
 				}
 			}
@@ -214,14 +235,31 @@
 	}
 	
 	onUnload(()=>{
-		if(audioQuickPlay.value){
-			audioQuickPlay.value.destroy()
-			audioQuickPlay.value = null
-		} 	
+		// if(audioQuickPlay.value){
+		// 	audioQuickPlay.value.destroy()
+		// 	audioQuickPlay.value = null
+		// } 	
 	})
 </script>
 
 <style lang="scss" scoped>
+	@keyframes opac {
+	    from {
+	        opacity: 1;
+	        width: 0;
+	        height: 0;
+	        top: 50%;
+	        left: 50%;
+	    }
+	
+	    to {
+	        opacity: .1;
+	        width: 100%;
+	        height: 100%;
+	        top: 0;
+	        left: 0;
+	    }
+	}
 	.content {
 	  display: flex;
 	  flex-direction: column;
@@ -276,9 +314,41 @@
 	  .recordBox{
 		  width: 100%;
 		  padding: 54rpx 0 44rpx 0;
+		  .aBox{
+			  width: 250rpx;
+			  height: 250rpx;
+			  border-radius: 50%;
+			  position: relative;
+			  // border: 1px solid red;
+		  }
+		  .isRecording{
+			  padding-top: 20rpx;
+			  font-size: 28rpx;
+			  color: #2281fe;
+		  }
+		  .animate-wave * {
+		      background: #2281FE;
+		      position: absolute;
+		      border-radius: 50%;
+			  animation: opac 4s infinite;
+		  }
+		  .animate-wave .w2 {
+		      animation-delay: 1s;
+		  }
+		  
+		  .animate-wave .w3 {
+		      animation-delay: 2s;
+		  }
+		  
+		  .animate-wave .w4 {
+		      animation-delay: 3s;
+		  }
+		  .animate-wave .w5 {
+		      animation-delay: 4s;
+		  }
 		  image{
-			  width: 180rpx;
-			  height: 180rpx;
+			  width: 140rpx;
+			  height: 140rpx;
 		  }
 		  .tips{
 			  padding-top: 34rpx;
@@ -295,4 +365,5 @@
 			margin-top: 100rpx;
 		}
 	}
+	
 </style>

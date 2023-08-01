@@ -74,7 +74,7 @@
 		const response = form.value.id? await voiceUpdate(form.value) : await voiceStore(form.value)
 		if(response){
 			uni.showToast({title: '操作成功!',icon: 'success',duration: 1000});
-			uni.navigateBack()
+			uni.redirectTo({url: '/pagesub/voices/index'})
 		}
 	}
 </script>

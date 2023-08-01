@@ -88,3 +88,31 @@ body{
 	justify-content: center;
 	align-items: center;
 }
+
+.tip{
+	padding: 50px 0;
+	font-size: 12px;
+	line-height: 30px;
+	color: red;
+}
+.tips_text{
+	padding-left: 20px;
+}
+
+#uploadBox1{
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, .6);
+	color: #ffffff;
+	font-weight: bold;
+	position: absolute;
+	z-index: 99999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	left: 0;
+	top: 0;
+	display: none;
+	/* margin-top: -100px;
+	margin-left: -150px; */
+}
