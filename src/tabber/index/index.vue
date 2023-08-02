@@ -2,7 +2,7 @@
 	<view class="content">
 		<view class="headerBox" :style="{marginTop: `${config.statusBar}px`}">
 			<image src="/static/logo.png" class="logo"></image>
-			<text>火星AI无人直播</text>
+			<text>{{config.app_name}}</text>
 		</view>
 		<view class="swiperBox">
 			<u-swiper

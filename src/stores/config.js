@@ -12,6 +12,7 @@ export const useConfigStore = defineStore('config', {
 		remeberPwd: false,
 		statusBar: 24, // 状态栏的高度
 		qnToken: null,
+		app_name: import.meta.env.VITE_APP_NAME,
 	}),
 	actions: {
 		setRemeberPwd(val) {

@@ -62,7 +62,7 @@ function goToLogin(){
 	uni.navigateTo({url: '/pagesub/login/index'})
 }
 function changePwdConfirm(){
-	if(!password.value) uni.showToast({title: '密码不能为空', icon: 'none'})
+	if(!password.value) return uni.showToast({title: '密码不能为空', icon: 'none'})
 	changePwd(user.info.userId, {password: password.value}).then(res=>{
 		if(res){
 			showPwdPop.value = false
