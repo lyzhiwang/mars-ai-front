@@ -36,7 +36,7 @@
 		</u-cell-group>
 	</div>
 	<!-- 修改密码弹窗 -->
-	<u-modal :show="showPwdPop" title="修改密码" showCancelButton @confirm="changePwdConfirm">
+	<u-modal :show="showPwdPop" title="修改密码" showCancelButton @confirm="changePwdConfirm" @cancel="showPwdPop = false">
 		<u--input
 		    placeholder="请输入您的新密码"
 		    border="surround"
@@ -62,6 +62,7 @@ function goToLogin(){
 	uni.navigateTo({url: '/pagesub/login/index'})
 }
 function changePwdConfirm(){
+	if(!password.value) uni.showToast({title: '密码不能为空', icon: 'none'})
 	changePwd(user.info.userId, {password: password.value}).then(res=>{
 		if(res){
 			showPwdPop.value = false
