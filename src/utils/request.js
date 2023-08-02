@@ -8,6 +8,7 @@ axios.defaults.retryDelay = 1000
 const baseURL = (process.env.NODE_ENV === "development") ? "http://gdytest.zwstk.cn/api" : "https://mars.lytklw.cn/api";
 // const baseURL = (process.env.NODE_ENV === "development") ? "https://mars.lytklw.cn/api" : "https://mars.lytklw.cn/api";
 // 创建axios实例
+const oemid = Number(import.meta.env.VITE_OEM_ID)
 const service = axios.create({
 	baseURL,
 	timeout: 30000, // 请求超时时间-
@@ -15,7 +16,7 @@ const service = axios.create({
 		'X-Requested-With': 'XMLHttpRequest',
 		'Content-Type': 'application/json',
 		'Accept': 'application/json',
-		'oemid': 5
+		'oemid': oemid
 	},
 	adapter: uniAdapter // 配置适配器
 })
