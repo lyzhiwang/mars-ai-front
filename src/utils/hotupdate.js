@@ -31,7 +31,7 @@ function compare(v1 = '0', v2 = '0') {
 	return result;
 }
 
-function updateUseModal(packageInfo){
+export function updateUseModal(packageInfo){
 	const {
 		title, // 标题
 		contents, // 升级内容
