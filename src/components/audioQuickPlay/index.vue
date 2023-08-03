@@ -17,7 +17,7 @@
 				@touchstart="lock= true"
 				@touchend="lock = false"
 				/>
-			<text class="ss">{{overTimer}}</text>
+			<text class="ss" v-if="showEndTime">{{overTimer}}</text>
 		</view>
 		
 		<!-- <button @tap="play">播放</button>
@@ -44,7 +44,8 @@
 				status: 1, // 1暂停 2播放
 				currentTime: 0,  //当前进度
 				duration: 100, // 总进度
-				videoContext: ''
+				videoContext: '',
+				showEndTime: false,
 			}
 		},
 		computed:{
@@ -55,10 +56,8 @@
 				return calcTimer(this.duration)
 			}
 		},
-		created() {
-			 this.videoContext = uni.createVideoContext('myVideo')
-		},
 		mounted() {
+			this.videoContext = uni.createVideoContext('myVideo')
 		},
 		methods: {
 			// 倍速
@@ -93,6 +92,7 @@
 				}
 				this.currentTime = currentTime
 				this.duration = duration
+				this.showEndTime = true
 			},
 			
 			// 拖动进度条
@@ -107,6 +107,7 @@
 			
 			// 视频加载完成
 			loadedmetadata(data) {
+				this.showEndTime = true
 				this.duration = data.detail.duration
 			}
 		}

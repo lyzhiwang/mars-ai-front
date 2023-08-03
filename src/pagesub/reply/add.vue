@@ -53,7 +53,7 @@ onLoad((option)=>{
 		// 进入编辑模式
 		const { title, keywords } = reply.replyTemp
 		form.title = title
-		form.keywords = keywords
+		form.keywords = keywords||[]
 		isEdit.value = true
 	}
 })

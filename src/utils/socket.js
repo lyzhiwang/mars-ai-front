@@ -118,7 +118,7 @@ const onWsOpen = (event) => {
 const onWsMessage = (event) => {
   const jsonStr = event.data
   const data = JSON.parse(jsonStr)
-  writeToScreen('onWsMessage back data: ', data)
+  writeToScreen('onWsMessage back data: ',  data)
   messageCallback(data)
 }
 const onWsClose = (event) => {
@@ -195,9 +195,9 @@ const heartCheck = {
     this.serverTimeoutObj && clearTimeout(this.serverTimeoutObj)
     // 15s之内如果没有收到后台的消息，则认为是连接断开了，需要重连
     this.timeoutObj = setInterval(() => {
-      writeToScreen('send ping')
       try {
-		 wsObj.send({data: 'ping'})
+		// writeToScreen('send ping')
+		// wsObj.send({data: 'ping'})
       } catch (err) {
         writeToScreen('发送ping异常')
       }

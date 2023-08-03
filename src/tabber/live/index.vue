@@ -145,7 +145,7 @@ onShow(()=>{
 	if(live.wsObj) return
 	getLiveRoom().then(res=>{
 		if(res&&res.data){
-			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id } = res.data
+			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url } = res.data
 			const { sort_type, get_media } = voice
 			const vRef = []
 			const voice_media = get_media.map((media, i)=>{
@@ -155,7 +155,6 @@ onShow(()=>{
 			})
 			// 开始下载音频资源
 			downLoadAudio(voice_media, (arr)=>{
-				console.log(111, arr)
 				live.setLiveDom(vRef)
 				voiceArr = voice_media.map((item, index)=>index)
 				const info = {
@@ -176,8 +175,8 @@ onShow(()=>{
 					if(vRef[0]) vRef[0].play()
 				})
 				// 打开获取评论的长连接
-				if(is_open===1&&is_kill===0){
-					live.openLonglink({live_url})
+				if(is_open===1){
+					live.openLonglink(live_url, useself, ws_url)
 				}
 			})
 		}

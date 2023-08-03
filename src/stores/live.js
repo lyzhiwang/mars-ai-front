@@ -60,16 +60,18 @@ export const useLiveStore = defineStore('live', {
 			this.replyVoice = file
 			this.currentMsg = msg
 		},
-		openLonglink(data) {
+		openLonglink(live_url, useself, ws_url) {
 			// 打开长连接
 			if(this.wsObj) return
 			const user = useUserStore()
 			if (!user.isLogin) return
-			const ws = 'wss://mars.lytklw.cn/socket.io'
-			// const ws = 'ws://water1.zwstk.cn' 
-			connectWebsocket(ws, { type: 'msg', ...data }, this.globelMessage, () => {
-				// 连接错误
-			})
+			if(useself){
+				// 使用自己的抓包地址
+				connectWebsocket(ws_url||'wss://mars.lytklw.cn/socket.io', {live_url}, this.globelMessage, () => {})
+			}else{
+				// 使用第三方
+				connectWebsocket(ws_url||'ws://42.193.254.253:3000/dy', {url: live_url}, this.globelMessage2, () => {})
+			}
 		},
 		startReply(msg, cb){
 			if(!this.innerAudioContext){
@@ -88,15 +90,17 @@ export const useLiveStore = defineStore('live', {
 				const { reply: replyList } = this.liveInfo
 				const findObj = replyList.find(opt=>opt.keywords&&msg.match(new RegExp(opt.keywords.join('|'), 'g')))
 				if(findObj){
-					// 先降低直播音频声音
-					this.isplay = true
 					// 从匹配结果的录音中随机选取一个播放
 					const randomItem = sample(findObj.media)
-					this.vRef[this.current].pause()
-					this.innerAudioContext.src = randomItem.full_path;
-					this.innerAudioContext.play();
-					// 显示当前正在回复的内容
-					this.setCurrentReply(randomItem.title, msg)
+					if(randomItem){
+						// 先降低直播音频声音
+						this.isplay = true
+						this.vRef[this.current].pause()
+						this.innerAudioContext.src = randomItem.full_path;
+						this.innerAudioContext.play();
+						// 显示当前正在回复的内容
+						this.setCurrentReply(randomItem.title, msg)
+					}
 				}else{
 					if(cb) cb()
 				}
@@ -108,6 +112,14 @@ export const useLiveStore = defineStore('live', {
 					this.addMsg(info); // 添加用户评论信息到列表
 					this.startReply(info); // 自动回复
 					break;
+			}
+		},
+		globelMessage2(data){
+			const { content } = data
+			console.log(3333, data)
+			if(content){
+				this.addMsg(content); // 添加用户评论信息到列表
+				this.startReply(content); // 自动回复
 			}
 		},
 		cancelSub(channel) {

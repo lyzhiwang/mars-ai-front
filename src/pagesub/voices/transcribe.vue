@@ -267,6 +267,7 @@
 	  padding: 36rpx 20rpx;
 	  box-sizing: border-box;
 	  position: relative;
+	  min-height: 100vh;
 	  
 	  .txtBox{
 		  width: 100%;
