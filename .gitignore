@@ -12,6 +12,7 @@ node_modules
 dist
 *.local
 .hbuilderx
+autoConfig.js
 
 # Editor directories and files
 .idea
