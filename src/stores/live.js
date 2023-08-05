@@ -85,7 +85,7 @@ export const useLiveStore = defineStore('live', {
 				this.innerAudioContext.autoplay = true;
 			}
 			if(!this.isplay){
-				// 匹配关键字，播放答案语音
+				// 匹配关键词，播放答案语音
 				// replyList 回复列表, msg 评论的内容
 				const { reply: replyList } = this.liveInfo
 				const findObj = replyList.find(opt=>opt.keywords&&msg.match(new RegExp(opt.keywords.join('|'), 'g')))
@@ -116,7 +116,6 @@ export const useLiveStore = defineStore('live', {
 		},
 		globelMessage2(data){
 			const { content } = data
-			console.log(3333, data)
 			if(content){
 				this.addMsg(content); // 添加用户评论信息到列表
 				this.startReply(content); // 自动回复

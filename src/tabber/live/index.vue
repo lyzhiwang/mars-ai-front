@@ -9,13 +9,19 @@
 			</button>
 			<view class="h1">
 				<text>直播间</text>
-				<image src="/static/images/live/living.png" class="status"></image>
+				<image src="/static/images/live/living.png" class="status" v-if="live.liveInfo"></image>
 			</view>
 			<text class="name">直播间名称：{{live.title}}</text>
 			<view class="bottom">
-				<text class="mc">直播中</text>
-				<image src="/static/images/live/icon-playing.gif" class="playing"></image>
-				<u-icon name="play-circle-fill" size="50rpx" color="#1E64FE"></u-icon>
+				<block v-if="live.liveInfo">
+					<text class="mc" >直播中</text>
+					<image src="/static/images/live/icon-playing.gif" class="playing"></image>
+					<u-icon name="play-circle-fill" size="50rpx" color="#1E64FE"></u-icon>
+				</block>
+				<block v-else>
+					<text class="mc">暂未开播</text>
+					<u-icon name="pause-circle-fill" size="50rpx" color="#1E64FE"></u-icon>
+				</block>
 				<text class="filename">{{partName}}</text>
 			</view>
 		</view>
@@ -95,7 +101,7 @@ const getItem = (media)=> {
 function activeReply(msg){
 	// 主动点击回复
 	live.startReply(msg, ()=>{
-		uni.showToast({title: '暂无匹配的关键字', icon: 'none'})
+		uni.showToast({title: '暂无匹配的关键词', icon: 'none'})
 	})
 }
 function collect(title){

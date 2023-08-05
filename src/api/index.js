@@ -64,7 +64,7 @@ export function crtReplyClass(data) {
 	})
 }
 
-// 添加关键字
+// 添加关键词
 export function addKeyword(data){
 	return request({
 		loading: true,
@@ -73,7 +73,7 @@ export function addKeyword(data){
 		data
 	})
 }
-// 编辑关键字
+// 编辑关键词
 export function editKeyword(id, data){
 	return request({
 		loading: true,
@@ -262,5 +262,14 @@ export function errorStatistics(data){
 		url: '/max',
 		method: 'post',
 		data
+	})
+}
+
+// 轮播图
+export function getBanner(params){
+	return request({
+		url: '/v1/oem/config',
+		method: 'get',
+		params
 	})
 }

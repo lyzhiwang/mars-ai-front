@@ -44,10 +44,11 @@
 </template>
 
 <script setup>
-import { onShow, onReady } from '@dcloudio/uni-app'
+import { onShow, onLoad } from '@dcloudio/uni-app'
 import { useConfigStore, useLiveStore } from '@/stores'
 import { goTo } from '@/utils/helper.js'
 import { closeWebsocket } from '@/utils/socket'
+import { getBanner } from '@/api'
 
 const config = useConfigStore()
 const live = useLiveStore()
@@ -56,7 +57,14 @@ const swiperList = ref(['/static/images/voices/banner.png'])
 function comingsoon(){
 	uni.showToast({title: '暂未开放', icon: 'none'})
 }
-
+onLoad(()=>{
+	const oem_id = import.meta.env.VITE_OEM_ID
+	getBanner({oem_id}).then(res=>{
+		if(res && res.data && res.data.length>0){
+			swiperList.value = res.data.map(item=>item.upload.full_path) 
+		}
+	})
+})
 onShow(()=>{
 	// closeWebsocket()
 })

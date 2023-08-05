@@ -5,10 +5,13 @@
 		<u--input placeholder="请输入标题" border="bottom" v-model.trim="form.title" :disabled="isEdit"></u--input>
 	</view>
 	<view class="panel">
-		<view class="title">关键字<text class="r">*关键字一行一个</text></view>
+		<view class="title fcc-sb">
+			<view>关键词<text class="r">*关键词一行一个</text></view>
+			<u-button type="primary" text="增加" class="addBtn" @click="addBtn" v-show="showAddBtn"></u-button>
+		</view>
 		<view class="iptBox" v-for="(item, i) in form.keywords" :key="i">
 			<u--input 
-				placeholder="请输入关键字" 
+				placeholder="请输入关键词" 
 				border="none" 
 				v-model.trim="form.keywords[i]" 
 				class="ipt" 
@@ -16,16 +19,18 @@
 				cursor-spacing="10"
 			></u--input>
 		</view>
-		<view class="iptBox">
-			<u--input 
-				class="ipt"
-				placeholder="请输入关键字" 
-				border="none" 
-				v-model.trim="iptword" 
-				@blur="updateKeyword" 
-				autoBlur
-			></u--input>
-		</view>
+		<transition>
+			<view class="iptBox" v-show="!showAddBtn">
+				<u--input 
+					class="ipt"
+					placeholder="请输入关键词" 
+					border="none" 
+					v-model.trim="iptword" 
+					@blur="updateKeyword" 
+					autoBlur
+				></u--input>
+			</view>
+		</transition>
 	</view>
 	<u-button type="primary" text="确定添加" shape="circle" class="submit" @click="backToList"></u-button>
 </view>
@@ -44,6 +49,7 @@ const form = reactive({
 })
 const iptword = ref('')
 const isEdit = ref(false)
+const showAddBtn = ref(false)
 
 const redirect = url => uni.redirectTo({url})
 onLoad((option)=>{
@@ -55,13 +61,18 @@ onLoad((option)=>{
 		form.title = title
 		form.keywords = keywords||[]
 		isEdit.value = true
+		showAddBtn.value = true
 	}
 })
 function updateKeyword(val){
 	if(val){
+		showAddBtn.value = true
 		iptword.value = ''
 		form.keywords.push(val)
 	}
+}
+function addBtn(){
+	showAddBtn.value = false
 }
 async function backToList(){
 	const res = isEdit.value ? await editKeyword(reply.replyTemp.id, {keywords: form.keywords}) : await addKeyword(form);
@@ -95,6 +106,11 @@ onBeforeUnmount(()=>{
 		.r{
 			font-size: 22rpx;
 			margin-left: 6rpx;
+		}
+		.addBtn{
+			font-size: 24px;
+			width: 100rpx;
+			margin: 0;
 		}
 	}
 	.submit{

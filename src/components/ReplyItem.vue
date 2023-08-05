@@ -6,7 +6,7 @@
 		<u--text :text="data.title" :lines="1" size="30rpx" bold color="#333"></u--text>
 	</view>
 	<view class="iptBox vcenter">
-		<text class="keyword">{{data.keywords?data.keywords.join('/'):'暂无关键字'}}</text>
+		<text class="keyword">{{data.keywords?data.keywords.join('/'):'暂无关键词'}}</text>
 	</view>
 	<view class="iptBox between" v-for="(item, i) in list">
 		<view class="vcenter">
@@ -18,7 +18,7 @@
 	<view class="btnGroup" v-if="!showMore">
 		<button class="btn" @click="goTo('/pagesub/voices/upload?type=2&id='+data.id)">上传</button>
 		<button class="btn" @click="goTo('/pagesub/voices/transcribe?type=2&id='+data.id)">录制</button>
-		<button class="btn" @click="editKeyword">添加关键字</button>
+		<button class="btn" @click="editKeyword">添加关键词</button>
 	</view>
 	<view class="center expand" v-if="showMore" @click="toggleExt"><u-icon name="arrow-down" color="#999" size="32rpx"></u-icon>&nbsp;展开更多</view>
 	<view class="center" v-else @click="toggleExt"><u-icon name="arrow-up" color="#999" size="32rpx"></u-icon>&nbsp;收起</view>
@@ -36,7 +36,7 @@ const props = defineProps({
         type: Object,
         require: true,
 		default: {
-			keywords: [], // 关键字
+			keywords: [], // 关键词
 			media: [] // 录音数据
 		}
     },
