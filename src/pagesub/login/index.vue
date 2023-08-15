@@ -21,11 +21,6 @@
 		<view class="tips" @click="isLogin=!isLogin">{{isLogin? '没有账号?去注册': '返回登录'}}</view>
 		<u-button type="primary" size="large" :text="isLogin? '立即登录': '马上注册'" :disabled="isLoading" color="#2281FE" shape="circle" :loadingText="isLogin? '登录中...': '注册中...'" :loading="isLoading" @click="submitLogin"></u-button>
 		
-		<!-- <u-modal :show="show" title="卡密激活" showCancelButton @confirm="confirm" @cancel="cancel" confirmText="激活">
-			<view class="slot-content">
-				<u--input v-model.trim="code" placeholder="请输入卡密" clearable class="codeBox"></u--input>
-			</view>
-		</u-modal> -->
 	</view>
 </template>
 
@@ -78,48 +73,27 @@
 	}
 	
 	const submitLogin = ()=>{
-		form1.value.validate().then(res => {
-			isLoading.value = true
-			if(isLogin.value){
-				// 登录
-				login(form).then(res=>{
-					if(res&&res.data){
-						user.setUserToken(res.data.token)
-						uni.switchTab({url:'/tabber/index/index'})
-					}
-				}).finally(()=>isLoading.value = false)
-			}else{
-				register(form).then(res=>{
-					if(res&&res.data){
-						uni.$u.toast('注册成功,请登录!')
-						isLogin.value = true
-					}
-				}).finally(()=>isLoading.value = false)
-			}	
-		}).catch(errors => {
-			uni.$u.toast('请确认填写的信息正确,再进行操作!')
-		})
+		if(!form.username) return uni.$u.toast('请输入正确的用户名!')
+		if(!form.password) return uni.$u.toast('请输入密码!')
+		if(!form.activation_code && !isLogin.value) return uni.$u.toast('请输入卡密!')
+		isLoading.value = true
+		if(isLogin.value){
+			// 登录
+			login(form).then(res=>{
+				if(res&&res.data){
+					user.setUserToken(res.data.token)
+					uni.switchTab({url:'/tabber/index/index'})
+				}
+			}).finally(()=>isLoading.value = false)
+		}else{
+			register(form).then(res=>{
+				if(res&&res.data){
+					uni.$u.toast('注册成功,请登录!')
+					isLogin.value = true
+				}
+			}).finally(()=>isLoading.value = false)
+		}
 	}
-	
-	// const confirm = () =>{
-	// 	if(!code.value) return uni.$u.toast('请输入正确的卡密')
-	// 	activateCode({code: code.value}).then(res=>{
-	// 		if(res && res.data){
-	// 			const { username, pwd } = res.data;
-	// 			form.username = username;
-	// 			form.password = pwd;
-	// 			show.value = false
-	// 			code.value = null
-	// 			isAct.value = true
-	// 			uni.$u.toast('请保存您的账号密码!')
-	// 		}
-	// 	})
-	// }
-	
-	// const cancel = ()=>{
-	// 	show.value = false
-	// 	code.value = null
-	// }
 </script>
 
 <style lang="scss" scoped>

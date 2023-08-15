@@ -300,3 +300,30 @@ export function chatGPT(params){
 		params
 	})
 }
+
+// 话术库分类列表
+export function getAnswerScript(params){
+	return request({
+		url: '/v1/answer/script',
+		method: 'get',
+		params
+	})
+}
+
+// 话术库子分类列表
+export function getSubAnswer(params){
+	return request({
+		url: '/v1/sub/answer/script',
+		method: 'get',
+		params
+	})
+}
+
+// 话术库子分类列表
+export function getAwScript(params){
+	return request({
+		url: '/v1/aw/script',
+		method: 'get',
+		params
+	})
+}

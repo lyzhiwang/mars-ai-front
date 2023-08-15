@@ -33,7 +33,7 @@
 					<u-image :width="35" :height="35" src="/static/images/me/feedback.png"></u-image>
 				</template>
 			</u-cell>
-			<u-cell title="AI创作" size="large" isLink url="/pagesub/ai/index">
+			<!-- <u-cell title="AI创作" size="large" isLink url="/pagesub/ai/index">
 				<template #icon>
 					<u-image :width="35" :height="35" src="/static/images/me/feedback.png"></u-image>
 				</template>
@@ -42,7 +42,7 @@
 				<template #icon>
 					<u-image :width="35" :height="35" src="/static/images/me/feedback.png"></u-image>
 				</template>
-			</u-cell>
+			</u-cell> -->
 		</u-cell-group>
 	</div>
 	<!-- 修改密码弹窗 -->

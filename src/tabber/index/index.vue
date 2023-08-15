@@ -30,13 +30,22 @@
 						<view class="line blue"></view>
 					</view>
 				</view>
-				<view class="r-box" @click="comingsoon">
+				<view class="r-box" @click="goTo('/pagesub/store/tasks')">
 					<image src="/static/images/voices/tasks.png"></image>
 					<view class="name name1">
 						<view>话术库</view>
 						<view class="line yellow"></view>
 					</view>
 				</view>
+			</view>
+		</view>
+		
+		<view class="menus menus1 flex">
+			<view class="r-box" @click="goTo('/pagesub/ai/index')">
+				<image src="/static/images/voices/ai.png"></image>
+			</view>
+			<view class="r-box" @click="goTo('/pagesub/common/voice')">
+				<image src="/static/images/voices/voices.png"></image>
 			</view>
 		</view>
 		
@@ -144,5 +153,8 @@ onShow(()=>{
 	.yellow{
 		background-color: #F4AE34;
 	}
+}
+.menus1{
+	margin-top: 23rpx;
 }
 </style>

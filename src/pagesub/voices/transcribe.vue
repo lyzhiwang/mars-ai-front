@@ -2,7 +2,7 @@
 	<view class="container content">
 		<view class="txtBox">
 			<u--textarea v-model="value1" placeholder="请输入内容" count height="616" maxlength="5000"></u--textarea>
-			<view class="export" @click="goTo('/pagesub/voices/taskStore?type=1')" v-if="type!=2">导入文档</view>
+			<!-- <view class="export" @click="goTo('/pagesub/voices/taskStore?type=1')" v-if="type!=2">导入文档</view> -->
 		</view>
 		
 		<view class="mediaBox">
@@ -87,7 +87,7 @@
 	
 	onShow(()=>{
 		if(Object.keys(useTask.task).length>0){
-			value1.value = useTask.task.detail
+			value1.value = useTask.task.content
 		}
 	})
 	
@@ -128,7 +128,11 @@
 		// })
 		
 		recorderManager.onStop(function (res) {
+			isRecord.value = false
 			voicePath.value = res.tempFilePath;
+			clearInterval(timer.value)
+			timer.value = null
+			time.value = 0
 			uni.showToast({title: '录音完成!', icon: 'success', duration: 1500})
 		});
 		// 获取七牛token
@@ -140,24 +144,21 @@
 	const handleRecord = ()=>{
 		isRecord.value = !isRecord.value
 		// 震动后开始
-		uni.vibrateLong({
-			success:()=>{
+		// uni.vibrateLong({
+		// 	success:()=>{
 				if(isRecord.value){
 					uni.showToast({
 						title: '录音开始!',
 						icon: 'success',
 						duration: 1500,
 					})
-					recorderManager.start();
+					recorderManager.start({duration: 600000}); // 录音时间 最多10分钟
 					timmerBegin()
 				}else{
-					clearInterval(timer.value)
-					timer.value = null
-					time.value = 0
 					recorderManager.stop();
 				}
-			}
-		})
+		// 	}
+		// })
 	}
 	
 	// 播放录音
@@ -235,10 +236,11 @@
 	}
 	
 	onUnload(()=>{
-		// if(audioQuickPlay.value){
-		// 	audioQuickPlay.value.destroy()
-		// 	audioQuickPlay.value = null
-		// } 	
+		if(audioQuickPlay.value){
+			clearInterval(timer.value)
+			audioQuickPlay.value.destroy()
+			audioQuickPlay.value = null
+		} 	
 	})
 </script>
 
