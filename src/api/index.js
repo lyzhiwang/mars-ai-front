@@ -177,11 +177,11 @@ export function voiceReaIndex(params) {
 }
 
 // 语音库内语音创建
-export function voiceReaCreate(params) {
+export function voiceReaCreate(data) {
 	return request({
 		url: '/v1/voice/rea',
 		method: 'post',
-		params
+		data
 	})
 }
 
@@ -269,6 +269,33 @@ export function errorStatistics(data){
 export function getBanner(params){
 	return request({
 		url: '/v1/oem/config',
+		method: 'get',
+		params
+	})
+}
+
+// 公共语音库分类
+export function commonVoiceCategory(params){
+	return request({
+		url: '/v1/voice/category',
+		method: 'get',
+		params
+	})
+}
+
+// 公共语音库列表
+export function commonVoiceList(params){
+	return request({
+		url: '/v1/public/voice',
+		method: 'get',
+		params
+	})
+}
+
+// AI创作
+export function chatGPT(params){
+	return request({
+		url: '/v1/chat',
 		method: 'get',
 		params
 	})

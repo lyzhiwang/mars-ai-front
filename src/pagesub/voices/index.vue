@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { onLoad, onBackPress, onShow, onReachBottom, onPullDownRefresh } from '@dcloudio/uni-app'
+import { onShow, onReachBottom, onPullDownRefresh } from '@dcloudio/uni-app'
 import { goTo } from '@/utils/helper.js'
 import { voiceIndex, voiceDestory } from '@/api'
 
@@ -36,7 +36,7 @@ const status = ref('loadmore')
 const show = ref(false)
 const content = ref('请确认删除该项目?')
 
-onLoad(()=>{
+onShow(()=>{
 	uni.startPullDownRefresh();	
 })
 

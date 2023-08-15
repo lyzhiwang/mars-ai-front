@@ -130,6 +130,18 @@
 					"style": {
 						"navigationBarTitleText": "话术库"
 					}
+				},
+				{
+					"path": "/ai/index",
+					"style": {
+						"navigationBarTitleText": "AI创作"
+					}
+				},
+				{
+					"path": "/common/voice",
+					"style": {
+						"navigationBarTitleText": "公共语音库"
+					}
 				}
             ]
 		}

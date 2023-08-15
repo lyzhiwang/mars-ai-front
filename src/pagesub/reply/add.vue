@@ -77,8 +77,8 @@ function addBtn(){
 async function backToList(){
 	const res = isEdit.value ? await editKeyword(reply.replyTemp.id, {keywords: form.keywords}) : await addKeyword(form);
 	if(res){
-		uni.showToast({title: '添加成功', icon: 'success', duration: 2000});
-		setTimeout(()=>redirect('/pagesub/reply/list'), 1000)
+		uni.showToast({title: '添加成功', icon: 'success', duration: 1000});
+		setTimeout(uni.navigateBack, 1000)
 	}
 }
 onBeforeUnmount(()=>{

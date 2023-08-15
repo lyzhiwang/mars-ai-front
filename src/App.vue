@@ -38,11 +38,11 @@ function checkVeision() {
 	});
 }
 onLaunch(()=>{
-	checkVeision()
 	const systemInfo = uni.getWindowInfo()
 	config.setStatusBar(systemInfo.statusBarHeight)
 })
 onShow(()=>{
+	checkVeision()
 	// console.log('App Show')
 })
 onHide(()=>{

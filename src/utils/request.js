@@ -11,7 +11,7 @@ const baseURL = (process.env.NODE_ENV === "development") ? "http://gdytest.zwstk
 const oemid = Number(import.meta.env.VITE_OEM_ID)
 const service = axios.create({
 	baseURL,
-	timeout: 30000, // 请求超时时间-
+	timeout: 60000, // 请求超时时间-
 	headers: {
 		'X-Requested-With': 'XMLHttpRequest',
 		'Content-Type': 'application/json',

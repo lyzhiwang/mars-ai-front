@@ -33,6 +33,16 @@
 					<u-image :width="35" :height="35" src="/static/images/me/feedback.png"></u-image>
 				</template>
 			</u-cell>
+			<u-cell title="AI创作" size="large" isLink url="/pagesub/ai/index">
+				<template #icon>
+					<u-image :width="35" :height="35" src="/static/images/me/feedback.png"></u-image>
+				</template>
+			</u-cell>
+			<u-cell title="公共语音库" size="large" isLink url="/pagesub/common/voice">
+				<template #icon>
+					<u-image :width="35" :height="35" src="/static/images/me/feedback.png"></u-image>
+				</template>
+			</u-cell>
 		</u-cell-group>
 	</div>
 	<!-- 修改密码弹窗 -->

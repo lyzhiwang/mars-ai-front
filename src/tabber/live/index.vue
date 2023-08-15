@@ -189,24 +189,23 @@ onShow(()=>{
 	})
 })
 onHide(()=>{
-	// const arr = Object.values(live.vRef)
-	// for(let item of arr){
-	// 	item.destroy()
-	// }
 	try{
 		// 重置数据
 		limit.value = 2
+		closeWebsocket()
 		if(live.vRef[live.current]) live.vRef[live.current].stop()
-		if(live.wsObj) {
-			closeWebsocket()
-			live.$patch({wsObj: null})
-		}
 		if(live.innerAudioContext) live.innerAudioContext.destroy()
-		live.setCurrent(0)
-		live.setLiveDom([])
-		live.setLiveInfo(null)
-		live.setCurrentReply('', '')
-		live.$patch({isplay: false, innerAudioContext: null, msgList: []})
+		live.$patch({
+			current: 0,
+			vRef: [], 
+			liveInfo: null, 
+			replyVoice: '', 
+			currentMsg: '', 
+			isplay: false, 
+			innerAudioContext: null, 
+			msgList: [], 
+			wsObj: null,
+		})
 		round = 1
 		i = 0
 		voiceArr = []
