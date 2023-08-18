@@ -50,8 +50,8 @@
 		<view class="btn-box" v-if="menusList.length>0 && subsList.length>0">
 			<u-button type="primary" shape="circle" size="large" text="导入" @click="add"></u-button>
 		</view>
-		<u-picker title="选择语音库" :show="showPop" :columns="columns" keyName="title" @confirm="confirm" @cancel="showPop = false" itemHeight="60"></u-picker>
 	</view>
+	<u-picker title="选择语音库" :show="showPop" :columns="columns" keyName="title" @confirm="confirm" @cancel="showPop = false" itemHeight="60"></u-picker>
 </template>
 
 <script setup>
@@ -173,10 +173,12 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		overflow: hidden;
 		.headerBox{
 			width: 100%;
 			min-height: 309rpx;
 			background: linear-gradient(180deg,#e1f2ff 27%, #ffffff 99%);
+			flex-shrink: 0;
 		}
 		.categoryBox{
 			width: 100%;
@@ -208,11 +210,12 @@
 			width: 100%;
 			margin-top: 20rpx;
 			display: flex;
+			flex: 1;
 			.leftBox{
 				width: 210rpx;
 				flex-shrink: 0;
 				.lscrollyBox{
-					height: 792rpx;
+					// height: 792rpx;
 					white-space: nowrap;
 					.l-item{
 						width: 100%;
@@ -248,7 +251,7 @@
 				flex: 1;
 				flex-shrink: 0;
 				.lscrollyBox{
-					height: 792rpx;
+					// height: 792rpx;
 					white-space: nowrap;
 					background: #FFFFFF;
 					.wBox{
@@ -283,11 +286,17 @@
 					}
 				}
 			}
+			.lscrollyBox{
+				height: calc(100vh - 510rpx - 20px);
+			}
 		}
 		.btn-box{
 			width: 100%;
-			padding: 0 20rpx;
-			padding-top: 100rpx;
+			height: 150rpx;
+			padding: 0 40rpx;
+			display: flex;
+			align-items: center;
+			flex-shrink: 0;
 		}
 		.btn{
 			font-size: 18px;

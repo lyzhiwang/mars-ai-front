@@ -15,7 +15,9 @@
 	<view class="content">
 		<template v-if="voiceList.length>0">
 			<view :class="['panel',{'act': currentItem&&currentItem.id===item.id}]" v-for="item in voiceList" @click="selectItem(item)">
-				<u-icon :name="isplay&&playId==item.id?'pause-circle-fill':'play-circle-fill'" size="37rpx" color="#1E64FE" @click="togglePlay(item)" class="leftIcon"></u-icon>
+				<view @click.stop.prevent class="leftIcon">
+					<u-icon :name="isplay&&playId==item.id?'pause-circle-fill':'play-circle-fill'" size="40rpx" color="#1E64FE" @click="togglePlay($event, item)"></u-icon>
+				</view>
 				<u--text :text="item.name" :lines="1" size="30rpx" color="#333"></u--text>
 			</view>
 			<!-- <view class="panel">
@@ -23,7 +25,7 @@
 				<u--text text="开播第一段" :lines="1" size="30rpx" color="#333"></u--text>
 			</view> -->
 		</template>
-		<u-empty v-else mode="data" textSize="28rpx" marginTop="50"></u-empty>
+		<u-empty v-else mode="data" textSize="28rpx" marginTop="50" text="暂无公共语音"></u-empty>
 	</view>
 	<view class="fixedArea">
 		<u-button type="primary" text="确定" shape="circle" class="submit" @click="importVoice"></u-button>
@@ -48,7 +50,8 @@ let page = 1, last = 0, innerAudioContext = null;
 const size = 20;
 
 
-function togglePlay(item){
+function togglePlay(e, item){
+	console.log(1111, JSON.stringify(e))
 	// if(playId.value===item.id) return
 	if(!innerAudioContext){
 		innerAudioContext = uni.createInnerAudioContext();
@@ -107,13 +110,17 @@ function queryList(init){
 	})
 }
 onLoad(()=>{
+	// 获取分组
 	commonVoiceCategory({page: 1, size: 200}).then(res=>{
 		if(res&&Array.isArray(res.data)){
 			tabs.value = res.data
-			cid.value = res.data[0].id
-			queryList(true)
+			if(res.data.length>0){
+				cid.value = res.data[0].id
+				queryList(true)
+			}
 		}
 	})
+	// 获取语音库（用于导入）
 	voiceIndex({page:1, size: 200}).then(res=>{
 		if(res&&res.data){
 			columns[0] = res.data.list
@@ -138,7 +145,7 @@ onBeforeUnmount(()=>{
 	background: #f9f9f9;
 	min-height: 100vh;
 	.content{
-		padding: 0 20rpx;
+		padding: 0 20rpx 150rpx;
 	}
 	.panel{
 		width: 710rpx;
@@ -146,6 +153,7 @@ onBeforeUnmount(()=>{
 		background: #ffffff;
 		border-radius: 20rpx;
 		display: flex;
+		align-items: center;
 		margin: 20rpx 0;
 		padding: 0 16rpx;
 		font-size: 30rpx;
@@ -153,7 +161,7 @@ onBeforeUnmount(()=>{
 		font-weight: bold;
 		box-sizing: border-box;
 		&.act{
-			border: 1rpx solid #207efe;
+			border: 2rpx solid #207efe;
 		}
 		.leftIcon{
 			margin-right: 20rpx;

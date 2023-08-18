@@ -7,7 +7,7 @@
 				<view class="msgBox">您好，很高兴为您服务，有什么可以帮助您？</view>
 			</view>
 			<template v-for="item in msgList">
-				<view :class="['msgRow',{'user': item.type===1}]">
+				<view :class="['msgRow',{'user': item.type===1}]" @longpress="copyText(item.msg)">
 					<u-avatar src="/static/images/ai/gpt.png" :size="72" class="bot" v-if="item.type===0"></u-avatar>
 					<view class="msgBox">{{item.msg}}</view>
 					<u-avatar src="/static/images/ai/humen.png" :size="72" class="human" v-if="item.type===1"></u-avatar>
@@ -26,6 +26,7 @@
 		    border="surround"
 		    v-model="question"
 			class="inputBox"
+			@confirm="submit"
 		></u--input>
 		<image src="/static/images/ai/send.png" class="send" @click="submit"></image>
 	</view>
@@ -44,11 +45,19 @@ const textWriter = ref('')
 const loading = ref(false)
 let query = null, typingStr= ''
 
+function copyText(data){
+	if(!data) return
+	uni.setClipboardData({
+		data,
+		success: function () {
+			uni.showToast({title: '内容复制成功', icon: 'success', duration: 1000});
+		}
+	});
+}
 function scrollBottom() {
     //聊天滚动底部方法
 	if(!query) query = uni.createSelectorQuery().select('.con').boundingClientRect()
     query.exec(function (res) {
-		console.log(1111, res[0].height)
         scrollTop.value = res[0].height
     });
 }
