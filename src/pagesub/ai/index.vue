@@ -7,9 +7,9 @@
 				<view class="msgBox">您好，很高兴为您服务，有什么可以帮助您？</view>
 			</view>
 			<template v-for="item in msgList">
-				<view :class="['msgRow',{'user': item.type===1}]" @longpress="copyText(item.msg)">
+				<view :class="['msgRow',{'user': item.type===1}]">
 					<u-avatar src="/static/images/ai/gpt.png" :size="72" class="bot" v-if="item.type===0"></u-avatar>
-					<view class="msgBox">{{item.msg}}</view>
+					<view class="msgBox" @longpress="copyText(item.msg)">{{item.msg}}</view>
 					<u-avatar src="/static/images/ai/humen.png" :size="72" class="human" v-if="item.type===1"></u-avatar>
 				</view>
 			</template>
@@ -37,9 +37,7 @@
 import { nextTick, onBeforeUnmount } from 'vue';
 import { chatGPT } from '@/api'
 const scrollTop = ref('')
-const msgList = ref([
-	// {msg:'', type: 1},
-])
+const msgList = ref([])
 const question = ref('')
 const textWriter = ref('')
 const loading = ref(false)
