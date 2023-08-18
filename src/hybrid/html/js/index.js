@@ -8,6 +8,7 @@ console.log('qiniuToken', qiniuToken)
 var input = document.getElementById("myFileInput");
     input.addEventListener("change", function() {
       var file = input.files[0];
+	  console.log('file', input)
       uploadFile(file);
     });
 
@@ -18,6 +19,7 @@ var params = {
 
 function uploadFile(file){
   const shade = document.getElementById('uploadBox1')
+  const fileNameInput = document.getElementById('nameInput')
   shade.style.display = "flex"
   let formData = new FormData();
   formData.append("file", file);
@@ -31,6 +33,8 @@ function uploadFile(file){
     if (xhr.status === 200) {
       var response = JSON.parse(xhr.responseText);
       console.log('response',response);
+	  let fileName = response.data.name.split('.').slice(0, -1).join('.')
+	  fileNameInput.value = fileName
 	  params.upload_id = response.data.id
 	  shade.style.display = "none"
 	  alert('上传成功!')

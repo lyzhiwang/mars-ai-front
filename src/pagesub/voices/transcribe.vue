@@ -188,7 +188,7 @@
 	}
 	function saveVoice(){
 		if(!voicePath.value) return uni.$u.toast('请录音完成后保存!')
-		title.value = null
+		title.value = voicePath.value.split('.').slice(0, -1).join('.')
 		showPopup.value = true
 		// if(type.value == 2){
 		// 	upLoadFile()
@@ -224,6 +224,7 @@
 					useTask.setTask({})
 					uni.showToast({title: '保存成功', icon: 'success', duration: 1500});
 					setTimeout(uni.navigateBack, 1500)
+					title.value = null
 				}
 			},
 			fail: (err) => {
