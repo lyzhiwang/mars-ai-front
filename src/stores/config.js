@@ -13,6 +13,7 @@ export const useConfigStore = defineStore('config', {
 		statusBar: 24, // 状态栏的高度
 		qnToken: null,
 		app_name: import.meta.env.VITE_APP_NAME,
+		app_version: null
 	}),
 	actions: {
 		setRemeberPwd(val) {
@@ -24,6 +25,9 @@ export const useConfigStore = defineStore('config', {
 		},
 		setStatusBar(height){
 			this.statusBar = height
+		},
+		setAPPVersion(info){
+			this.app_version = info
 		},
 		async getQnToken(){
 			try{

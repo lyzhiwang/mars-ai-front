@@ -188,12 +188,8 @@
 	}
 	function saveVoice(){
 		if(!voicePath.value) return uni.$u.toast('请录音完成后保存!')
-		title.value = voicePath.value.split('.').slice(0, -1).join('.')
+		// title.value = voicePath.value.split('.').slice(0, -1).join('.')
 		showPopup.value = true
-		// if(type.value == 2){
-		// 	upLoadFile()
-		// }else{
-		// }
 	}
 	
 	const save = ()=>{

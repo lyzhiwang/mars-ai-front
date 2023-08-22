@@ -33,6 +33,11 @@
 					<u-image :width="35" :height="35" src="/static/images/me/feedback.png"></u-image>
 				</template>
 			</u-cell>
+			<u-cell title="版本号" size="large" :value="config.app_version">
+				<template #icon>
+					<u-image :width="35" :height="35" src="/static/images/me/about.png"></u-image>
+				</template>
+			</u-cell>
 			<!-- <u-cell title="AI创作" size="large" isLink url="/pagesub/ai/index">
 				<template #icon>
 					<u-image :width="35" :height="35" src="/static/images/me/feedback.png"></u-image>
@@ -59,11 +64,12 @@
 
 <script setup>
 import { onShow } from '@dcloudio/uni-app'
-import { useUserStore, useLiveStore } from '@/stores/index'
+import { useUserStore, useLiveStore, useConfigStore } from '@/stores/index'
 import { closeWebsocket } from '@/utils/socket'
 import { changePwd } from '@/api'
 
 const user = useUserStore()
+const config = useConfigStore()
 const live = useLiveStore()
 const showPwdPop = ref(false)
 const password = ref('')

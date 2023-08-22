@@ -35,6 +35,7 @@ function uploadFile(file){
       console.log('response',response);
 	  let fileName = response.data.name.split('.').slice(0, -1).join('.')
 	  fileNameInput.value = fileName
+	  params.title = fileNameInput.value
 	  params.upload_id = response.data.id
 	  shade.style.display = "none"
 	  alert('上传成功!')

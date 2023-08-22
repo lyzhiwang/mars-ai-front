@@ -8,7 +8,8 @@ const config = useConfigStore()
 function checkVeision() {
 	// 获取manifest.json 的信息 版本信息
 	plus.runtime.getProperty(plus.runtime.appid, wgtinfo => {
-		const { versionCode } = wgtinfo
+		const { versionCode, version } = wgtinfo
+		config.setAPPVersion(version)
 		getAppVersion().then(res => {
 			if(!res.data) return
 			const { new_version, new_version_code, url, ishot } = res.data
