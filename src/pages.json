@@ -52,6 +52,12 @@
 					}
                 },
 				{
+					"path": "/live/sticker",
+					"style": {
+						"transparentTitle": "always"//状态栏透明
+					}
+				},
+				{
 				    "path" : "other/about",
 				    "style" :  {
 						"navigationBarTitleText": "关于我们"

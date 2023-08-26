@@ -41,15 +41,15 @@ export function updateUseModal(packageInfo){
 		type // 安装包类型
 	} = packageInfo;
 
-	let isWGT = type === 'wgt'
+	// let isWGT = type === 'wgt'
 	// let isiOS = !isWGT ? platform.includes('iOS') : false;
-	let confirmText = isiOS ? '立即跳转更新' : '立即下载更新'
+	// let confirmText = isiOS ? '立即跳转更新' : '立即下载更新'
 
 	return uni.showModal({
 		title,
 		content: contents,
 		showCancel: !is_mandatory,
-		confirmText,
+		confirmText: '立即下载更新',
 		success: res => {
 			if (res.cancel) return;
 

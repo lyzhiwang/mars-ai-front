@@ -1,0 +1,160 @@
+<template>
+<view class="liveScreen">
+	<live-pusher 
+		id='livePusher' 
+		ref="livePusher" 
+		class="livePusher" 
+		url=""
+	    mode="SD" 
+		:muted="true" 
+		:enable-camera="true" 
+		:auto-focus="true" 
+		:beauty="1" 
+		device-position="back"
+		whiteness="2"
+	    aspect="9:16" 
+		@statechange="statechange"
+		@error = "error"
+	></live-pusher>
+	<!-- 悬浮的可拖动区域 -->
+	<movable-area class="fixedScreen" :scale-area="true">
+		<movable-view 
+			class="block" 
+			:x="x" 
+			:y="y" 
+			:inertia="true" 
+			:scale="true"
+			direction="all" 
+			@change="onChange"
+		>text</movable-view>
+	</movable-area>
+	<!-- <button class="btn" @click="startPreview">开启摄像头预览</button>
+	<button class="btn" @click="stopPreview">关闭摄像头预览</button> -->
+</view>
+</template>
+
+<script>
+export default {
+	data() {
+		return {
+			context: null,
+			x: 0,
+			y: 0,
+		}
+	},
+	onReady() {
+		// 注意：需要在onReady中 或 onLoad 延时
+		if(!this.context){
+			this.context = uni.createLivePusherContext("livePusher", this);
+		}
+		this.startPreview()
+	},
+	beforeUnmount(){
+		if(this.context){
+			this.stopPreview()
+			this.context = null
+		}
+	},
+	methods: {
+		onChange: function(e) {
+			console.log(1111, e)
+			// this.old.x = e.detail.x
+			// this.old.y = e.detail.y
+		},
+		statechange(e) {
+			console.log("statechange:" + JSON.stringify(e));
+		},
+		netstatus(e) {
+			console.log("netstatus:" + JSON.stringify(e));
+		},
+		error(e) {
+			console.log("error:" + JSON.stringify(e));
+		},
+		start: function() {
+			this.context.start({
+				success: (a) => {
+					console.log("livePusher.start:" + JSON.stringify(a));
+				}
+			});
+		},
+		close: function() {
+			this.context.close({
+				success: (a) => {
+					console.log("livePusher.close:" + JSON.stringify(a));
+				}
+			});
+		},
+		snapshot: function() {
+			this.context.snapshot({
+				success: (e) => {
+					console.log(JSON.stringify(e));
+				}
+			});
+		},
+		resume: function() {
+			this.context.resume({
+				success: (a) => {
+					console.log("livePusher.resume:" + JSON.stringify(a));
+				}
+			});
+		},
+		pause: function() {
+			this.context.pause({
+				success: (a) => {
+					console.log("livePusher.pause:" + JSON.stringify(a));
+				}
+			});
+		},
+		stop: function() {
+			this.context.stop({
+				success: (a) => {
+					console.log(JSON.stringify(a));
+				}
+			});
+		},
+		switchCamera: function() {
+			this.context.switchCamera({
+				success: (a) => {
+					console.log("livePusher.switchCamera:" + JSON.stringify(a));
+				}
+			});
+		},
+		startPreview: function() {
+			this.context.startPreview({
+				success: (a) => {
+					console.log("livePusher.startPreview:" + JSON.stringify(a));
+				}
+			});
+		},
+		stopPreview: function() {
+			this.context.stopPreview({
+				success: (a) => {
+					console.log("livePusher.stopPreview:" + JSON.stringify(a));
+				}
+			});
+		}
+	}
+}
+</script>
+
+<style lang="scss" scoped>
+.liveScreen{
+	.livePusher {
+		width: 750rpx;
+		height: 1500rpx;
+		background-color: #808080;
+	}
+	.fixedScreen{
+		width: 750rpx;
+		height: 1500rpx;
+		position: fixed;
+		top: 0;
+		left: 0;
+		.block{
+			width: 400rpx;
+			height: 400rpx;
+			background-color: aqua;
+		}
+	}
+}
+</style>

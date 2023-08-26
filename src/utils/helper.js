@@ -70,3 +70,52 @@ export function downLoadAudio(mediaArr, callBack){
 		uni.hideLoading()
 	});
 }
+
+// 检测小程序权限
+export function checkPermissions(permiss, callback){
+	uni.getSetting({
+		success: (res) => {
+			if(!res.authSetting[`scope.${permiss}`]){
+				// 无权限先获取授权
+				uni.authorize({
+					scope: `scope.${permiss}`,
+					success () {
+					  console.log('授权成功')
+					  callback()
+					},
+					fail () {
+						uni.showToast({title: '授权失败', icon: 'error'})
+					}
+				})
+			}else{
+				// 有权限直接执行回调函数
+				callback()
+			}
+		}
+	})
+}
+
+// 检测APP权限
+export function checkAppPermissions(permiss, callback){
+	const appAuthSetting = uni.getAppAuthorizeSetting()
+	if(appAuthSetting[permiss]==='authorized'){
+		if(callback) callback()
+	}else{
+		// 没有相关权限
+		uni.showModal({
+			title: '获取权限失败', 
+			content: '没有对应的APP权限,是否跳转到权限设置？',
+			success: function (res) {
+				if (res.confirm) {
+					uni.openAppAuthorizeSetting({
+						success (res) {
+							console.log(res)
+						}
+					})
+				} else if (res.cancel) {
+					console.log('用户点击取消');
+				}
+			},
+		})
+	}
+}

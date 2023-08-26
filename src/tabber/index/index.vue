@@ -49,6 +49,12 @@
 			</view>
 		</view>
 		
+		<view class="menus menus1 flex">
+			<view class="r-box" @click="goTo('/pagesub/live/sticker')">
+				<image src="/static/images/voices/ai.png"></image>
+			</view>
+		</view>
+		
 	</view>
 </template>
 
