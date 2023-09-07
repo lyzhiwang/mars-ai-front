@@ -10,6 +10,7 @@
 		:enable-camera="true" 
 		:auto-focus="true" 
 		:beauty="1" 
+		:style="{'height': `${config.winHeight}px`}"
 		device-position="back"
 		whiteness="2"
 	    aspect="9:16" 
@@ -17,15 +18,19 @@
 		@error = "error"
 	></live-pusher>
 	<!-- 悬浮的可拖动区域 -->
-	<movable-area class="fixedScreen" :scale-area="true">
+	<movable-area class="fixedScreen" :style="{'height': `${config.winHeight}px`}" scale-area>
 		<movable-view 
 			class="block" 
+			direction="all" 
 			:x="x" 
 			:y="y" 
 			:inertia="true" 
-			:scale="true"
-			direction="all" 
+			scale 
+			:scale-min="0.5" 
+			:scale-max="4"
+			:scale-value="scale"
 			@change="onChange"
+			@scale="onScale"
 		>text</movable-view>
 	</movable-area>
 	<!-- <button class="btn" @click="startPreview">开启摄像头预览</button>
@@ -34,20 +39,39 @@
 </template>
 
 <script>
+import { useConfigStore } from '@/stores'
 export default {
 	data() {
 		return {
 			context: null,
 			x: 0,
 			y: 0,
+			scale: 1,
+			old: {
+				x: 0,
+				y: 0,
+				scale: 2
+			}
 		}
 	},
+	computed:{
+		// ...mapState('useConfigStore', ['winHeight'])
+	},
+	setup() {
+		const config = useConfigStore()
+		return { config }
+	},
 	onReady() {
+		// 隐藏顶部电池,时间等信息 
+		plus.navigator.setFullscreen(true);
 		// 注意：需要在onReady中 或 onLoad 延时
 		if(!this.context){
 			this.context = uni.createLivePusherContext("livePusher", this);
 		}
 		this.startPreview()
+	},
+	onBackPress(){
+		plus.navigator.setFullscreen(false);
 	},
 	beforeUnmount(){
 		if(this.context){
@@ -56,10 +80,14 @@ export default {
 		}
 	},
 	methods: {
+		onScale: function(e) {
+			console.log(1111, e.detail.scale)
+			this.old.scale = e.detail.scale
+		},
 		onChange: function(e) {
 			console.log(1111, e)
-			// this.old.x = e.detail.x
-			// this.old.y = e.detail.y
+			this.old.x = e.detail.x
+			this.old.y = e.detail.y
 		},
 		statechange(e) {
 			console.log("statechange:" + JSON.stringify(e));
@@ -141,12 +169,10 @@ export default {
 .liveScreen{
 	.livePusher {
 		width: 750rpx;
-		height: 1500rpx;
 		background-color: #808080;
 	}
 	.fixedScreen{
 		width: 750rpx;
-		height: 1500rpx;
 		position: fixed;
 		top: 0;
 		left: 0;

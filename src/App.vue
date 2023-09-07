@@ -41,6 +41,7 @@ function checkVeision() {
 onLaunch(()=>{
 	const systemInfo = uni.getWindowInfo()
 	config.setStatusBar(systemInfo.statusBarHeight)
+	config.setWinHeight(systemInfo.windowHeight)
 })
 onShow(()=>{
 	checkVeision()

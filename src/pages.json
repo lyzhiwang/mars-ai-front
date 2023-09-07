@@ -54,7 +54,7 @@
 				{
 					"path": "/live/sticker",
 					"style": {
-						"transparentTitle": "always"//状态栏透明
+						"navigationStyle": "custom"
 					}
 				},
 				{

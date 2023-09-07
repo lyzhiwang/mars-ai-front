@@ -11,6 +11,7 @@ export const useConfigStore = defineStore('config', {
 		password: '',
 		remeberPwd: false,
 		statusBar: 24, // 状态栏的高度
+		winHeight: 0,
 		qnToken: null,
 		app_name: import.meta.env.VITE_APP_NAME,
 		app_version: null
@@ -25,6 +26,9 @@ export const useConfigStore = defineStore('config', {
 		},
 		setStatusBar(height){
 			this.statusBar = height
+		},
+		setWinHeight(height){
+			this.winHeight = height
 		},
 		setAPPVersion(info){
 			this.app_version = info
