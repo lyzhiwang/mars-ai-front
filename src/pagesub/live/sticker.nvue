@@ -17,41 +17,45 @@
 		@statechange="statechange"
 		@error = "error"
 	></live-pusher>
-	<!-- 悬浮的可拖动区域 -->
-	<movable-area class="fixedScreen" :style="{'height': `${config.winHeight}px`}" scale-area>
-		<movable-view 
-			class="block" 
-			direction="all" 
-			:x="x" 
-			:y="y" 
-			:inertia="true" 
-			scale 
-			:scale-min="0.5" 
-			:scale-max="4"
-			:scale-value="scale"
-			@change="onChange"
-			@scale="onScale"
-		>text</movable-view>
-	</movable-area>
-	<!-- <button class="btn" @click="startPreview">开启摄像头预览</button>
-	<button class="btn" @click="stopPreview">关闭摄像头预览</button> -->
+	<template v-if="live.liveInfo">
+		<template v-for="(item,i) in live.liveInfo.voice_media">
+			<video
+				v-if="i<limit"
+				:id="`vDom${i}`"
+				:src="item.tempFilePath||item.full_path" 
+				:key="i"
+				:autoplay="live.current===i"
+				:muted="live.isplay"
+				@ended="partEnd" 
+				@error="interrupt"
+				class="none"
+			></video>
+		</template>
+	</template>
+	<!-- 直播间贴图区 -->
+	<image class="top" :src="top_img" mode="aspectFit" v-if="top_img"></image>
+	<image class="left" :src="left_img" mode="widthFix" v-if="left_img"></image>
+	<image class="right" :src="right_img" mode="widthFix" v-if="right_img"></image>
+	<image class="bottom" :src="bottom_img" mode="aspectFit" v-if="bottom_img"></image>
+	<!-- 商品图 -->
+	<view class="goods">
+		<image class="pic" src="" mode="aspectFill"></image>
+		<up-text :lines="1" text="中秋月饼礼盒抢鲜" color="#333" size="22rpx"></up-text>
+	</view>
 </view>
 </template>
 
 <script>
-import { useConfigStore } from '@/stores'
+import { onLoad, onHide } from '@dcloudio/uni-app'
+import { useConfigStore, useLiveStore } from '@/stores'
+import { getLiveRoom, errorStatistics } from '@/api'
+import { randomArr, downLoadAudio } from '@/utils/helper'
+import { ref } from 'vue'
+
 export default {
 	data() {
 		return {
 			context: null,
-			x: 0,
-			y: 0,
-			scale: 1,
-			old: {
-				x: 0,
-				y: 0,
-				scale: 2
-			}
 		}
 	},
 	computed:{
@@ -59,7 +63,90 @@ export default {
 	},
 	setup() {
 		const config = useConfigStore()
-		return { config }
+		const live = useLiveStore()
+		const limit = ref(2) // 控制video渲染个数
+		const top_img = ref('')
+		const left_img = ref('')
+		const right_img = ref('')
+		const bottom_img = ref('')
+		let round = 1, i = 0, voiceArr = []; // 轮数和当前播放的第几个
+		
+		const getItem = (media)=> {
+			const { title, upload } = media
+			return {"full_path": upload.full_path, "title": title||upload.name};
+		}
+		function interrupt(event){ // 播放中断
+			try{
+				errorStatistics({...event, media: live.liveInfo.voice_media[live.current]})
+			}catch(e){ }
+		}
+		function nextRound(){ // 播放下一轮
+		    if(live.liveInfo.sort_type==2 && voiceArr.length>2){
+				// 开启了随机播放
+				voiceArr = randomArr(voiceArr)
+		    }
+		    i = 0
+		    round++
+		}
+		function partEnd(){
+			if(i===(voiceArr.length-1)){ // 下一轮 播放第一个音频
+			    nextRound()
+			}else{ // 当前轮 播放下一个音频
+			    i++
+				if(limit.value < voiceArr.length){
+					limit.value++
+				}
+			}
+			live.setCurrent(voiceArr[i])
+			var vdom = live.vRef[live.current]
+			vdom.play()
+		}
+		onLoad(()=>{
+			getLiveRoom().then(res=>{
+				if(res&&res.data){
+					const { voice, answer_keyword, answer_id, get_top, get_left, get_right, get_bottom } = res.data
+					const { sort_type, get_media } = voice
+					const vRef = []
+					console.log(1111, voice)
+					top_img.value = get_top ? get_top.full_path : '';
+					left_img.value = get_left ? get_left.full_path : '';
+					right_img.value = get_right ? get_right.full_path : ''; 
+					bottom_img.value = get_bottom ? get_bottom.full_path : ''; 
+
+					const voice_media = get_media.map((media, i)=>{
+						const vdom = uni.createVideoContext(`vDom${i}`)
+						vRef.push(vdom)
+						return getItem(media)
+					})
+					// 开始下载音频资源
+					downLoadAudio(voice_media, (arr)=>{
+						live.setLiveDom(vRef)
+						voiceArr = voice_media.map((item, index)=>index)
+						const info = {
+							sort_type,
+							voice_media: arr,
+							answer_id,
+							reply: answer_keyword.map((item)=>{
+								return {
+									keywords: item.keywords,
+									media: item.get_midia.map(getItem)
+								}
+							})
+						}
+						live.setLiveInfo(info)
+						live.setCurrent(0)
+						// 先预加载第一段直播音频
+						nextTick(()=>{
+							if(vRef[0]) vRef[0].play()
+						})
+					})
+				}
+			})
+		})
+		
+		return { 
+			config, live, limit, interrupt, partEnd, top_img, left_img, right_img, bottom_img,
+		}
 	},
 	onReady() {
 		// 隐藏顶部电池,时间等信息 
@@ -80,66 +167,6 @@ export default {
 		}
 	},
 	methods: {
-		onScale: function(e) {
-			console.log(1111, e.detail.scale)
-			this.old.scale = e.detail.scale
-		},
-		onChange: function(e) {
-			console.log(1111, e)
-			this.old.x = e.detail.x
-			this.old.y = e.detail.y
-		},
-		statechange(e) {
-			console.log("statechange:" + JSON.stringify(e));
-		},
-		netstatus(e) {
-			console.log("netstatus:" + JSON.stringify(e));
-		},
-		error(e) {
-			console.log("error:" + JSON.stringify(e));
-		},
-		start: function() {
-			this.context.start({
-				success: (a) => {
-					console.log("livePusher.start:" + JSON.stringify(a));
-				}
-			});
-		},
-		close: function() {
-			this.context.close({
-				success: (a) => {
-					console.log("livePusher.close:" + JSON.stringify(a));
-				}
-			});
-		},
-		snapshot: function() {
-			this.context.snapshot({
-				success: (e) => {
-					console.log(JSON.stringify(e));
-				}
-			});
-		},
-		resume: function() {
-			this.context.resume({
-				success: (a) => {
-					console.log("livePusher.resume:" + JSON.stringify(a));
-				}
-			});
-		},
-		pause: function() {
-			this.context.pause({
-				success: (a) => {
-					console.log("livePusher.pause:" + JSON.stringify(a));
-				}
-			});
-		},
-		stop: function() {
-			this.context.stop({
-				success: (a) => {
-					console.log(JSON.stringify(a));
-				}
-			});
-		},
 		switchCamera: function() {
 			this.context.switchCamera({
 				success: (a) => {
@@ -167,6 +194,10 @@ export default {
 
 <style lang="scss" scoped>
 .liveScreen{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	position: relative;
 	.livePusher {
 		width: 750rpx;
 		background-color: #808080;
@@ -181,6 +212,46 @@ export default {
 			height: 400rpx;
 			background-color: aqua;
 		}
+	}
+	.none{
+		position: absolute;
+		top: 0;
+		z-index: 0;
+		width: 1px;
+		height: 1px;
+		opacity: 0;
+	}
+	.top{
+		width: 750rpx;
+		height: 374rpx;
+		position: fixed;
+		top: 0;
+		left: 0;
+	}
+	.bottom{
+		width: 750rpx;
+		height: 270rpx;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+	}
+	.left{
+		width: 260rpx;
+		position: absolute;
+		left: 0;
+	}
+	.right{
+		width: 260rpx;
+		position: absolute;
+		right: 0;
+	}
+	.goods{
+		width: 230rpx;
+		height: 356rpx;
+		background: #ffffff;
+		border: 2rpx solid;
+		border-image: linear-gradient(0deg, #ffa000 0%, #f1341f 100%) 2 2;
+		border-radius: 10rpx;
 	}
 }
 </style>

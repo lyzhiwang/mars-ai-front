@@ -33,9 +33,10 @@ export const useConfigStore = defineStore('config', {
 		setAPPVersion(info){
 			this.app_version = info
 		},
-		async getQnToken(){
+		async getQnToken(type){
 			try{
-				const res = await qiniuToken({file_type: 'audio'})
+				const file_type = type ? type : 'audio'
+				const res = await qiniuToken({file_type})
 				if(res&&res.data){
 					this.qnToken = res.data.qiniuToken
 				}

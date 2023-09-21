@@ -231,11 +231,12 @@ export function createLiveRoom(data){
 }
 
 // 获取直播间信息
-export function getLiveRoom(){
+export function getLiveRoom(params){
 	return request({
 		loading: true,
 		url: '/v1/get/live',
 		method: 'get',
+		params
 	})
 }
 

@@ -2,13 +2,37 @@
 <view class="createPage">
 	<image src="/static/images/live/bg2.png" class="bg2"></image>
 	<view class="contBox">
-		<!-- <view :style="{'height': `${config.statusBar}px`}"></view>-->
 		<u-navbar 
-			title="创建新直播" 
+			title="创建贴图直播" 
 			bgColor="transparent" 
 			:titleStyle="{'color':'#fff','font-size':'36rpx'}" 
 			placeholder
 		></u-navbar>
+		<!-- 上传区域 -->
+		<view class="uploadArea">
+			<view class="title">
+				<text>直播间贴图</text>
+				<text class="tip">*最多可上传4张贴图</text>
+			</view>
+			<view class="goToBtn" @click="goTo('/pagesub/live/uploadimg')" v-if="live.liveRoomStick">
+				<template v-for="(item, key) in live.liveRoomStick">
+					<u-image class="pic" :src="live.liveRoomStick[key][0].url" width="140rpx" height="140rpx" v-if="live.liveRoomStick[key][0]"></u-image>
+					<view class="upBox bor" v-else>
+						<u-icon name="plus" color="#999999" size="36rpx"></u-icon>
+						<view class="text">上传贴图</view>
+					</view>
+				</template>
+				<!-- <u-image class="pic" :src="live.liveRoomStick.left_img.url" width="140rpx" height="140rpx"></u-image>
+				<u-image class="pic" :src="live.liveRoomStick.right_img.url" width="140rpx" height="140rpx"></u-image>
+				<u-image class="pic" :src="live.liveRoomStick.bottom_img.url" width="140rpx" height="140rpx"></u-image> -->
+			</view>
+			<view class="goToBtn" @click="goTo('/pagesub/live/uploadimg')" v-else>
+				<view class="upBox">
+					<u-icon name="plus" color="#999999" size="36rpx"></u-icon>
+					<view class="text">上传贴图</view>
+				</view>
+			</view>
+		</view>
 		<u--form
 			class="panel"
 			:model="form"
@@ -31,7 +55,6 @@
 				<text class="searchText mc" @click="searchLive">搜索</text>
 			</u-form-item>
 			<view class="liveName">直播间：<text>{{title}}</text></view>
-			<!-- <image src="/static/images/live/icon-msg.png" class="icon-msg"></image> -->
 		</u--form>
 		<view class="panel">
 			<view class="flex between">
@@ -62,19 +85,13 @@
 </template>
 
 <script setup>
-import { onPageScroll } from '@dcloudio/uni-app'
 import { useConfigStore, useTaskStore, useLiveStore } from '@/stores'
-import { getLiveTit, createLiveRoom } from '@/api'
+import { getLiveTit, createLiveRoom, getLiveRoom } from '@/api'
 import { goTo } from '@/utils/helper'
 
 const config = useConfigStore()
 const task = useTaskStore()
 const live = useLiveStore()
-// const bgColor = ref('transparent')
-// onPageScroll((e)=>{
-// 	console.log(111, JSON.stringify(e))
-// 	bgColor.value = e.scrollTop>10 ? '#519af8' :'transparent'
-// })
 const urlForm = ref()
 const form = reactive({
 	live_id: null,
@@ -86,14 +103,7 @@ const rules = reactive({
 			required: true,
 			message: '请输入直播账号的抖音号',
 			trigger: ['blur', 'change'],
-		},
-		// {
-		// 	validator: (rule, value, callback) => {
-		// 		return uni.$u.test.url(value)
-		// 	},
-		// 	message: '请填写正确的直播地址',
-		// 	trigger: ['blur', 'change'],
-		// }
+		}
 	]
 })
 let url_validate = false, live_url = '';
@@ -124,11 +134,17 @@ function startLive(){
 	if(!form.live_id || !url_validate) return uni.$u.toast('未填写抖音号或不正确')
 	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
 	if(!task.selectReply) return uni.$u.toast('请选择回复')
-	createLiveRoom({voice_id: task.selectVoice.id, answer_id: task.selectReply.id, live_url, type: 1}).then(res=>{
+	const arr = Object.keys(live.liveRoomStick)
+	const form2 = {}
+	for(let key of arr){
+		form2[`${key}_img`] = live.liveRoomStick[key][0] ? live.liveRoomStick[key][0].id : null
+	}
+	const parame = {...form2, voice_id: task.selectVoice.id, answer_id: task.selectReply.id, live_url, type: 2}
+	createLiveRoom(parame).then(res=>{
 		if(res){
 			// 开始直播
-			live.setTitle(title.value)
-			uni.switchTab({url: '/tabber/live/index'})
+			// live.setTitle(title.value)
+			uni.redirectTo({url: '/pagesub/live/sticker'})
 		}
 	})
 }
@@ -145,6 +161,54 @@ onBeforeUnmount(()=>{
 	.bg2{
 		width: 750rpx;
 		height: 1127rpx;
+	}
+	.uploadArea{
+		width: 710rpx;
+		min-height: 270rpx;
+		background: #ffffff;
+		border-radius: 20rpx;
+		margin: 30rpx 0 0;
+		padding: 30rpx;
+		.title{
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			color: #333333;
+			font-size: 30rpx;
+		}
+		.tip{
+			font-size: 22rpx;
+			color: #999999;
+		}
+		.goToBtn{
+			width: 100%;
+			height: 160rpx;
+			background: #ffffff;
+			border: 2rpx dashed #2281fe;
+			border-radius: 10rpx;
+			margin-top: 22rpx;
+			box-sizing: border-box;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-size: 24rpx;
+			color: #999999;
+			.pic{
+				margin: 0 7rpx;
+			}
+			.upBox{
+				width: 140rpx;
+				height: 140rpx;
+				margin: 0 7rpx;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+			}
+			.bor{
+				border: 2rpx dashed #999999;
+			}
+		}
 	}
 }
 .contBox{

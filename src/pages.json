@@ -29,6 +29,12 @@
 			}
 		},
 		{
+		    "path" : "tabber/live/type",
+		    "style" :  {
+				"navigationBarTitleText": "直播方式"
+			}
+		},
+		{
 			"path": "tabber/me/index",
 			"style": {
 				"transparentTitle": "always" ,//状态栏透明
@@ -52,9 +58,24 @@
 					}
                 },
 				{
+				    "path" : "live/create2",
+				    "style" :  {
+						"transparentTitle": "auto",
+						"navigationBarBackgroundColor": "#519af8",
+						"navigationBarTitleText": "创建贴图直播",
+						"navigationBarTextStyle": "white"
+					}
+				},
+				{
 					"path": "/live/sticker",
 					"style": {
 						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "/live/uploadimg",
+					"style": {
+						"navigationBarTitleText": "添加贴图"
 					}
 				},
 				{
@@ -169,7 +190,7 @@
 			"selectedIconPath": "static/tabber/index_s.png",
 			"text": "首页"
 		}, {
-			"pagePath": "tabber/live/index",
+			"pagePath": "tabber/live/type",
 			"iconPath": "static/tabber/live.png",
 			"selectedIconPath": "static/tabber/live_s.png",
 			"text": "直播"

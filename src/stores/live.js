@@ -22,6 +22,7 @@ export const useLiveStore = defineStore('live', {
 		currentMsg: '', // 当前正在回复的评论消息
 		replyVoice: '', // 当前正在回复的音频的名称
 		liveInfo: null,
+		liveRoomStick: null, // 直播间贴图地址对象
 		// live_url: '',
 		// autoplay: false, // 当前的片段是否自动播放
 	}),
@@ -32,6 +33,9 @@ export const useLiveStore = defineStore('live', {
 		// setLiveUrl(url){
 		// 	this.live_url = url
 		// },
+		setLiveRoomStick(obj){
+			this.liveRoomStick = obj
+		},
 		setTitle(tit){
 			// 开播前设置title,清除wsObj
 			this.title = tit
