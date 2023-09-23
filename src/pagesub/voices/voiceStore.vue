@@ -12,19 +12,29 @@
 						  class="swiperItem"
 						  @click="delItem(item)"
 						>
-						<view class="item flex-item-col-center" @click="handleItem(item)">
-							<image :src="`/static/images/voices/${item.id === playDataId? 'pause': 'play'}.png`" class="sImage"></image>
-							<view class="name u-line-1">{{item.title}}</view>
-							
-							<view class="delBox flex-rcc">
-								<view class="iconBox flex-rcc" :class="{iconBox1: index<list.length-1}" @click.stop="changeSort(item,index, 1)" v-if="index>0">
-									<u-icon name="arrow-upward" color="#2979ff" bold size="28"></u-icon>
+						<view class="item">
+							<view class="flex-item-col-center" @click="handleItem(item)">
+								<image :src="`/static/images/voices/${item.id === playDataId? 'pause': 'play'}.png`" class="sImage"></image>
+								<view class="name u-line-1">{{item.title}}</view>
+								
+								<view class="delBox flex">
+									<view class="iconBox flex-rcc" :class="{iconBox1: index<list.length-1}" @click.stop="changeSort(item,index, 1)" v-if="index>0">
+										<u-icon name="arrow-upward" color="#2979ff" bold size="28"></u-icon>
+									</view>
+									<view class="iconBox flex-rcc" @click.stop="changeSort(item,index, 2)" v-if="index<list.length-1">
+										<u-icon name="arrow-downward" color="#2979ff" bold size="28"></u-icon>
+									</view>
+									<!-- <image src="/static/images/voices/top.png" @click.stop="changeSort(item,index, 1)"></image>
+									<image src="/static/images/voices/down.png" @click.stop="changeSort(item,index, 2)"></image> -->
 								</view>
-								<view class="iconBox flex-rcc" @click.stop="changeSort(item,index, 2)" v-if="index<list.length-1">
-									<u-icon name="arrow-downward" color="#2979ff" bold size="28"></u-icon>
+							</view>
+							<view class="goodsbox fcc-sb" @click="onClick(item)">
+								<view>{{item.get_goods? item.get_goods?.other?.title: '未上传商品图'}}</view>
+								<view class="flex-rcc goodsImgStatus">
+									<image :src="`/static/images/goods/${item.get_goods? 'edit': 'create'}.png`"></image>
+									{{item.get_goods? '修改商品图': '请选择商品图'}}
+									
 								</view>
-								<!-- <image src="/static/images/voices/top.png" @click.stop="changeSort(item,index, 1)"></image>
-								<image src="/static/images/voices/down.png" @click.stop="changeSort(item,index, 2)"></image> -->
 							</view>
 						</view>
 						</u-swipe-action-item>
@@ -38,12 +48,13 @@
 		</view>
 		
 		<u-modal :show="show" title="提示" :content='content' showCancelButton @confirm="ok" @cancel="show=false"></u-modal>
+		<u-picker :show="isPickerShow" ref="uPicker" :defaultIndex="defaultIndex" :itemHeight="80" :visibleItemCount="5" :columns="columns" @confirm="confirm" @change="changeHandler" keyName="name" @cancel="isPickerShow=false"></u-picker>
 	</view>
 </template>
 
 <script setup>
 	import { onLoad,onShow, onHide, onUnload } from '@dcloudio/uni-app'
-	import { voiceReaIndex, voiceReaDestory, voiceRelationSort } from '@/api'
+	import { voiceReaIndex, voiceReaDestory, voiceRelationSort, goodsCategoryIndex, goodsIndex, voiceGoods } from '@/api'
 	import { useConfigStore } from '@/stores'
 	
 	const list = ref([])
@@ -56,6 +67,10 @@
                 }]) 
 	
 	const show = ref(false)
+	const isPickerShow = ref(false)
+	const columns = ref([]);
+	const columnData = ref([]);
+	const defaultIndex = ref([0,0])
 	const content = ref('请确认删除该语音?')
 	const id = ref(null)
 	let innerAudioContext = null
@@ -63,6 +78,7 @@
 		config.getQnToken()
 		id.value = option.id
 		getList()
+		getShopList()
 	})
 	
 	onShow(()=>{
@@ -160,6 +176,58 @@
 		} 	
 	})
 	
+	// 获取商品库列表
+	function getShopList(){
+		goodsCategoryIndex({page:1, size: 1000}).then(res=>{
+			columns.value[0] = res.data
+			getGoodsList(res.data[0].id)
+		})
+	}
+	
+	function getGoodsList(category_id){
+		goodsIndex({page:1, size: 1000, category_id}).then(res=>{
+			const arr = []
+			res.data.map(v=>{
+				let obj = {
+					id: v.id,
+					name: v.other.title
+				}
+				arr.push(obj)
+			})
+			columns.value[1] = arr
+			columnData.value[0] = arr
+		})
+	}
+	
+	const voiceId = ref(null)
+	
+	function onClick(item){
+		defaultIndex.value = [0,0]
+		getShopList()
+		isPickerShow.value = true
+		voiceId.value = item.id
+	}
+	
+	// 语音关联图片
+	function confirm(e){
+		const goods_id = columnData.value[0][e.indexs[1]].id
+		const title = columnData.value[0][e.indexs[1]].name
+		voiceGoods({id: voiceId.value, goods_id}).then(res =>{
+			uni.showToast({title: '关联商品成功!',icon: 'none',duration: 2000});
+			const index = list.value.findIndex(v=>{return v.id===voiceId.value})
+			list.value[index].get_goods = {other:{title}} 
+			isPickerShow.value = false
+		})
+	}
+	
+	function changeHandler(e){
+		const {columnIndex,value,values,index,picker} = e;
+		if(columnIndex===0){
+			columns.value[1] = []
+			getGoodsList(columns.value[0][index].id)
+		}
+	}
+	
 	onUnload(()=>{
 		playDataId.value = null
 		if(innerAudioContext){
@@ -194,13 +262,35 @@
 		  }
 		  .item{
 			  width: 100%;
-			  height: 100rpx;
+			  min-height: 100rpx;
 			  font-size: 30rpx;
 			  background: #ffffff;
 			  color: #333333;
 			  font-weight: bold;
 			  padding: 0 18rpx;
+			  padding-top: 16rpx;
 			  position: relative;
+			  .goodsbox{
+				  margin:15rpx 6rpx;
+				  // margin-top: 16rpx;
+				  height: 45rpx;
+				  background: #f9f9f9;
+				  border-radius: 10rpx;
+				  padding: 0 16rpx;
+				  align-items: center;
+				  font-size: 20rpx;
+				  font-family: Microsoft YaHei, Microsoft YaHei-Regular;
+				  color: #666666;
+				  .goodsImgStatus{
+					  color: #2281fe;
+					  image{
+						  width: 18rpx;
+						  height: 18rpx;
+						  margin-right: 8rpx;
+					  }
+				  }
+				  
+			  }
 			  .sImage{
 				  width: 36rpx;
 				  height: 36rpx;
@@ -211,14 +301,15 @@
 			  }
 			  .delBox{
 				  width: 18%;
-				  height: 100%;
+				  height: 50%;
 				  position: absolute;
 				  top: 0;
-				  right: 10rpx;
+				  right: 25rpx;
+				  align-items: center;
 				  justify-content: flex-end;
 				  .iconBox{
-					  width: 50rpx;
-					  height: 50rpx;
+					  width: 40rpx;
+					  height: 40rpx;
 					  box-shadow: 0rpx 0rpx 5rpx #2281fe;
 					  border-radius: 50%;
 					  font-weight: bold;  

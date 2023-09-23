@@ -2,7 +2,8 @@
 	<view class="container content">
 		<view class="txtBox">
 			<u--textarea v-model="value1" placeholder="请输入内容" count height="616" maxlength="5000"></u--textarea>
-			<!-- <view class="export" @click="goTo('/pagesub/voices/taskStore?type=1')" v-if="type!=2">导入文档</view> -->
+			<view class="export" @click="testWord">检测敏感词</view>
+			<view class="checkBox" v-if="tips.length>0">检测到上述话术存在敏感词: <text v-for="item in tips" :key="item" class="word">{{item}}&nbsp;</text>请修改后录制!</view>
 		</view>
 		
 		<view class="mediaBox">
@@ -52,10 +53,10 @@
 
 <script setup>
 	import { onLoad,onShow, onUnload } from '@dcloudio/uni-app'
-	import { goTo } from '@/utils/helper.js'
+	import { goTo } from '@/utils/helper.js' 
 	import AudioQuickPlay from '@/components/audioQuickPlay/index.vue'
 	import { useConfigStore, useTaskStore } from '@/stores'
-	import { addVoiceAtReply, voiceReaCreate } from '@/api'
+	import { addVoiceAtReply, voiceReaCreate, checkWords } from '@/api'
 	
 	const config = useConfigStore()
 	const useTask = useTaskStore()
@@ -63,6 +64,7 @@
 	const showPopup = ref(false)
 	const voicePath = ref(null)
 	const title = ref(null)
+	const tips = ref([]) // 检测结果
 	
 	const show = ref(false)
 	const content = ref('请确认删除该语音?')
@@ -90,6 +92,14 @@
 			value1.value = useTask.task.content
 		}
 	})
+	
+	function testWord(){
+		if(!value1.value) return uni.$u.toast('话术不能为空!')	
+		checkWords({str: value1.value}).then(res =>{
+			tips.value = res.data
+			if(res.data.length===0) return uni.$u.toast('未检测到敏感词,请放心录制!')	
+		})
+	}
 	
 	const handleItem = item =>{
 		if(playDataId.value === null){
@@ -270,7 +280,7 @@
 	  
 	  .txtBox{
 		  width: 100%;
-		  height: 616rpx;
+		  min-height: 616rpx;
 		  background: #ffffff;
 		  border-radius: 20rpx;
 		  .u-textarea{
@@ -288,10 +298,21 @@
 			  margin-left: 10rpx;
 			  z-index: 999;
 		  }
+		  .checkBox{
+			  width: 100%;
+			  padding: 20rpx;
+			  font-size: 24rpx;
+			  color: #FF5589;
+			  .word{
+				color: red;
+				font-size: 34rpx;
+				font-weight: bolder;
+			  }
+		  }
 	  }
 	  .mediaBox{
 		  width: 100%;
-		  padding-top: 80rpx;
+		  padding-top: 20rpx;
 		  .btn{
 			  width: 336rpx;
 			  height: 98rpx;

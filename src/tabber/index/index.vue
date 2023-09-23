@@ -48,6 +48,12 @@
 				<image src="/static/images/voices/voices.png"></image>
 			</view>
 		</view>
+		<view class="menus menus1 flex">
+			<view class="r-box" @click="goTo('/pagesub/goods/index')">
+				<image src="/static/images/voices/shop.png"></image>
+			</view>
+		</view>
+		
 	</view>
 </template>
 

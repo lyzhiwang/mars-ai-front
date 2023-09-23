@@ -328,3 +328,91 @@ export function getAwScript(params){
 		params
 	})
 }
+
+// 创建商品库
+export function goodsCategoryStore(data) {
+	return request({
+		url: '/v1/goods/category',
+		method: 'post',
+		data
+	})
+}
+
+// 删除商品库
+export function goodsCategoryDestory(params) {
+	return request({
+		url: '/v1/goods/category/'+ params.id,
+		method: 'delete'
+	})
+}
+
+// 编辑商品库
+export function goodsCategoryUpdate(data) {
+	return request({
+		url: '/v1/goods/category/'+data.id,
+		method: 'put',
+		data
+	})
+}
+
+// 商品库列表
+export function goodsCategoryIndex(params) {
+	return request({
+		url: '/v1/goods/category',
+		method: 'get',
+		params
+	})
+}
+
+// 创建商品
+export function goodsStore(data) {
+	return request({
+		url: '/v1/goods',
+		method: 'post',
+		data
+	})
+}
+
+// 删除商品
+export function goodsDestory(params) {
+	return request({
+		url: '/v1/goods/'+ params.id,
+		method: 'delete'
+	})
+}
+
+// 编辑商品
+export function goodsUpdate(data) {
+	return request({
+		url: '/v1/goods/'+data.id,
+		method: 'put',
+		data
+	})
+}
+
+// 商品列表
+export function goodsIndex(params) {
+	return request({
+		url: '/v1/goods',
+		method: 'get',
+		params
+	})
+}
+
+// 语音商品关联
+export function voiceGoods(data) {
+	return request({
+		url: '/v1/voice/goods',
+		method: 'post',
+		data
+	})
+}
+
+// 检测敏感词
+export function checkWords(data) {
+	return request({
+		url: '/v1/check/words',
+		method: 'post',
+		data
+	})
+}

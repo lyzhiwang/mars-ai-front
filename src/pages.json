@@ -175,6 +175,31 @@
 					"style": {
 						"transparentTitle": "always"//状态栏透明
 					}
+				},
+				{
+					"path": "goods/index",
+					"style": {
+						"navigationBarTitleText": "商品库",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "goods/add",
+					"style": {
+						"navigationBarTitleText": "添加新项目"
+					}
+				},
+				{
+					"path": "goods/list",
+					"style": {
+						"navigationBarTitleText": "商品库"
+					}
+				},
+				{
+					"path": "goods/create",
+					"style": {
+						"navigationBarTitleText": "添加新商品"
+					}
 				}
             ]
 		}
