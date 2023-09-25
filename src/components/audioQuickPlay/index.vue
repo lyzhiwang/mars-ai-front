@@ -78,6 +78,9 @@
 				this.videoContext.pause()
 				this.status = 1
 			},
+			destroy(){
+				this.videoContext.stop()
+			},
 			
 			// 更新进度条
 			timeupdate(event) {

@@ -416,3 +416,10 @@ export function checkWords(data) {
 		data
 	})
 }
+// 获取直播间描述
+export function getLiveDesc() {
+	return request({
+		url: '/live/desc',
+		method: 'get',
+	})
+}

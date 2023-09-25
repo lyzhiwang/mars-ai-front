@@ -5,22 +5,27 @@
 		<view class="li" @click="goTo('/tabber/live/index')">
 			<image src="/static/images/live/default.png" class="topIcon" mode="widthFix"></image>
 			<text class="name">AI专业直播</text>
-			<text class="desc">ai语音库   智能回复  公屏互动 </text>
+			<text class="desc">{{desc.pt}}</text>
 		</view>
 		<u-gap height="1" bgColor="#D7D8D9"></u-gap>
 		<view class="li" @click="selectHigh">
 			<image src="/static/images/live/senior.png" class="topIcon" mode="widthFix"></image>
 			<text class="name blue">AI高级直播</text>
-			<text class="desc">ai语音库   智能回复  直播间搭建  公屏互动  自动弹商品卡片  </text>
+			<text class="desc">{{desc.vip}}</text>
 		</view>
 	</view>
 </view>
 </template>
 
 <script setup>
-import { getLiveRoom } from '@/api'
+import { onLoad } from '@dcloudio/uni-app'
+import { getLiveRoom, getLiveDesc } from '@/api'
 import { goTo } from '@/utils/helper.js'
 
+const desc = reactive({
+	pt: 'ai语音库   智能回复  公屏互动',
+	vip: 'ai语音库   智能回复  直播间搭建  公屏互动  自动弹商品卡片',
+})
 function selectHigh(){
 	getLiveRoom({type: 2}).then(res=>{
 		if(res && res.data){
@@ -46,6 +51,14 @@ function selectHigh(){
 		}
 	}).catch(()=>goTo('/pagesub/live/create2'))
 }
+onLoad(()=>{
+	getLiveDesc().then(res=>{
+		if(res && res.data){
+			desc.pt = res.data.pt
+			desc.vip = res.data.vip
+		}
+	})
+})
 </script>
 
 <style lang="scss" scoped>
