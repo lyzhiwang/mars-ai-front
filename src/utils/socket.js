@@ -23,6 +23,8 @@ let sendDatas = {}
  * @param {function} errCallback ws连接错误的回调函数
  */
 export const connectWebsocket = (url, agentData, successCallback, errCallback) => {
+  const live = useLiveStore()
+  live.setIsManualClose(false)
   wsUrl = url
   createWebSoket()
   messageCallback = successCallback
@@ -32,17 +34,18 @@ export const connectWebsocket = (url, agentData, successCallback, errCallback) =
 
 // 手动关闭websocket （这里手动关闭会执行onclose事件）
 export const closeWebsocket = () => {
-  if (wsObj) {
-    writeToScreen('手动关闭websocket')
-    wsObj.close() // 关闭websocket
-    // wsObj.onclose() // 关闭websocket(如果上面的关闭不生效就加上这一条)
-    // 不需要重连 则 关闭重连
-    lockReconnect = true
-    wsCreateHandler && clearTimeout(wsCreateHandler)
-    // 关闭心跳检查
-    heartCheck.stop()
+	writeToScreen('手动关闭websocket')
+	if (wsObj) {
+		wsObj.close() // 关闭websocket
+	}
 	wsObj = null
-  }
+	// 不需要重连 则 关闭重连
+	lockReconnect = true
+	const live = useLiveStore()
+	live.setIsManualClose(true)
+	if(wsCreateHandler) clearTimeout(wsCreateHandler)
+	// 关闭心跳检查
+	heartCheck.stop()
 }
 
 // 向服务器发送对应通道到请求参数
@@ -53,17 +56,19 @@ export const sendDateByChannel = (data) => {
 
 // 创建ws函数
 const createWebSoket = () => {
-  if(wsObj){
-    closeWebsocket()
-  }
+	// const live = useLiveStore()
+	// if(live.isManualClose) return
+	if(wsObj){
+		wsObj.close()
+	}
 
-  try {
-    wsObj = uni.connectSocket({url: wsUrl, complete: ()=> {}})
-    initWsEventHandle()
-  } catch (e) {
-    writeToScreen('连接异常，开始重连')
-    reconnect()
-  }
+	try {
+		wsObj = uni.connectSocket({url: wsUrl, complete: ()=> {}})
+		initWsEventHandle()
+	} catch (e) {
+		writeToScreen('连接异常，开始重连')
+		reconnect()
+	}
 }
 
 const initWsEventHandle = () => {
@@ -144,7 +149,8 @@ const writeToScreen = (massage) => {
 
 // 重连函数
 const reconnect = () => {
-  if (lockReconnect) {
+  const live = useLiveStore()
+  if (lockReconnect || live.isManualClose) {
     return
   }
   writeToScreen('3秒后重连')
@@ -152,6 +158,7 @@ const reconnect = () => {
   // 没连接上会一直重连，设置延迟避免请求过多
   wsCreateHandler && clearTimeout(wsCreateHandler)
   wsCreateHandler = setTimeout(() => {
+	if(live.isManualClose) return
     writeToScreen('重连...' + wsUrl)
     createWebSoket()
     lockReconnect = false
@@ -180,18 +187,18 @@ const heartCheck = {
   serverTimeoutObj: null,
   // 重启
   reset() {
-    clearInterval(this.timeoutObj)
-    clearTimeout(this.serverTimeoutObj)
+    this.timeoutObj && clearInterval(this.timeoutObj)
+    this.serverTimeoutObj && clearTimeout(this.serverTimeoutObj)
     this.start()
   },
   // 停止
   stop() {
-    clearInterval(this.timeoutObj)
-    clearTimeout(this.serverTimeoutObj)
+    this.timeoutObj && clearInterval(this.timeoutObj)
+    this.serverTimeoutObj && clearTimeout(this.serverTimeoutObj)
   },
   // 开启定时器
   start() {
-    this.timeoutObj && clearTimeout(this.timeoutObj)
+    this.timeoutObj && setInterval(this.timeoutObj)
     this.serverTimeoutObj && clearTimeout(this.serverTimeoutObj)
     // 15s之内如果没有收到后台的消息，则认为是连接断开了，需要重连
     this.timeoutObj = setInterval(() => {

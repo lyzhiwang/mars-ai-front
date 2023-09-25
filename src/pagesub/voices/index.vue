@@ -42,7 +42,7 @@ onShow(()=>{
 
 onPullDownRefresh(()=>{
 	init()
-	getList()
+	getList(true)
 	setTimeout(function () {
 		uni.stopPullDownRefresh();
 	}, 1000);
@@ -54,7 +54,7 @@ const init = () =>{
 		size: 10 
 	}
 	total.value = 0
-	data.value = []
+	// data.value = []
 }
 
 const params = ref({
@@ -63,9 +63,9 @@ const params = ref({
 })
 const total = ref(0)
 // 获取语音库列表
-const getList =()=>{
+const getList =(init)=>{
 	voiceIndex(params.value).then(res=>{
-		data.value = data.value.concat(res.data.list) 
+		data.value = init ? res.data.list : data.value.concat(res.data.list) 
 		total.value = res.data.total
 		if(data.value.length>=res.data.total) status.value = 'nomore'
 	})

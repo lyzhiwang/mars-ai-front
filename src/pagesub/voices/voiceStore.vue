@@ -179,8 +179,10 @@
 	// 获取商品库列表
 	function getShopList(){
 		goodsCategoryIndex({page:1, size: 1000}).then(res=>{
-			columns.value[0] = res.data
-			getGoodsList(res.data[0].id)
+			// 过滤掉项目内没有实际内容的
+			const list = res.data.filter(item=>item.get_goods&&item.get_goods.length!==0)
+			columns.value[0] = list
+			getGoodsList(list[0].id)
 		})
 	}
 	

@@ -3,7 +3,7 @@
 	<view class="panel">
 		<view class="h2">直播贴图</view>
 		<view class="con">
-			<template v-for="(item, key) in fileList">
+			<view v-for="(item, key) in fileList" class="box">
 				<u-upload
 					:fileList="fileList[key]"
 					capture="album"
@@ -15,7 +15,8 @@
 				>
 					<image :src="`/static/images/live/${key}.png`" class="noUp"></image>
 				</u-upload>
-			</template>
+				<view v-if="fileList[key].length>0" class="bottomTip">{{ transLocation(key) }}贴图</view>
+			</view>
 		</view>
 		<u-gap height="2rpx" bgColor="#d7d8d9" marginTop="20rpx" marginBottom="30rpx"></u-gap>
 		<view class="h2">图片位置</view>
@@ -94,6 +95,18 @@ function uploadFilePromise(url){
 		});
 	});
 }
+function transLocation(key){
+	switch (key){
+		case 'top':
+			return '顶部'
+		case 'left':
+			return '左边'
+		case 'right':
+			return '右边'
+		case 'bottom':
+			return '底部'
+	}
+}
 function submit(){
 	if(Object.values(fileList).some(arr=>arr.length>0)){
 		// const arr = Object.keys(fileList)
@@ -133,6 +146,24 @@ function submit(){
 	}
 	.con{
 		display: flex;
+		justify-content: space-between;
+	}
+	.box{
+		position: relative;
+		width: 128rpx;
+		height: 128rpx;
+	}
+	.bottomTip{
+		width: 128rpx;
+		height: 42rpx;
+		line-height: 42rpx;
+		text-align: center;
+		background-color: rgba(0,0,0, .6);
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		font-size: 22rpx;
+		color: #fff;
 	}
 	.noUp{
 		width: 128rpx;
@@ -157,7 +188,7 @@ function submit(){
 		justify-content: center;
 		align-items: center;
 		background-color: #000;
-		z-index: 1;
+		z-index: 10;
 	}
 	.exampleImg{
 		width: 100%;

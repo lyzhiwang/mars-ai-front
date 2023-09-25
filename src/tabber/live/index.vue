@@ -52,7 +52,7 @@
 		<view class="panel">
 			<view class="tit">直播间回复列表</view>
 			<view class="li" v-for="(item, i) in live.msgList" :key="i">
-				<view class="state">未回复</view>
+				<!-- <view class="state">未回复</view> -->
 				<view class="quesion">{{item}}</view>
 				<view class="btnGroup">
 					<button type="default" class="btn reply" @click="activeReply(item)"><image src="/static/images/live/msg.png" class="lIcon"></image>回复</button>
@@ -149,7 +149,7 @@ onLoad(()=>{
 })
 onShow(()=>{
 	if(live.wsObj) return
-	getLiveRoom().then(res=>{
+	getLiveRoom({type: 1}).then(res=>{
 		if(res&&res.data){
 			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url } = res.data
 			const { sort_type, get_media } = voice

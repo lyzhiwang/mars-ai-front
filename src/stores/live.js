@@ -25,6 +25,7 @@ export const useLiveStore = defineStore('live', {
 		liveRoomStick: null, // 直播间贴图地址对象
 		// live_url: '',
 		// autoplay: false, // 当前的片段是否自动播放
+		isManualClose: false, // 是否手动关闭WS
 	}),
 	actions: {
 		// setPartAutoPlay(bool){
@@ -33,6 +34,9 @@ export const useLiveStore = defineStore('live', {
 		// setLiveUrl(url){
 		// 	this.live_url = url
 		// },
+		setIsManualClose(data){
+			this.isManualClose = data
+		},
 		setLiveRoomStick(obj){
 			this.liveRoomStick = obj
 		},
