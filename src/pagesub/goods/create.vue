@@ -20,10 +20,9 @@
 			<view class="title">{{texts[type-1]}}名称</view>
 			<view class="inputBox">
 				<u--input
-			    :placeholder="`请填写${texts[type-1]}名称，最多6个字~`"
+			    :placeholder="`请填写${texts[type-1]}名称`"
 				v-model="form.other.title"
 			    border="none"
-				:maxlength="6"
 			    clearable
 			  ></u--input>
 			</view>
@@ -33,10 +32,11 @@
 				<view class="title">{{type===1? '商品价格': '优惠券规格'}}</view>
 				<view class="inputBox">
 					<u--input
-					placeholder="例：19.9元"
+					placeholder="例：19.9"
 					v-model="form.other.price"
+					showWordLimit
 					border="none"
-					:maxlength="8"
+					:maxlength="5"
 					clearable
 				  ></u--input>
 				</view>
@@ -61,7 +61,7 @@
 			</view>
 		</u-popup>
 		<view class="btnBox">
-			<view class="btn flex-rcc" @click="save">确定添加</view>
+			<view class="btn flex-rcc" @click="save">确定{{form.id? '编辑': '添加'}}</view>
 		</view>
 	</view>
 </template>

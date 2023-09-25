@@ -11,7 +11,7 @@
 			  
 		</view>
 		
-		<view class="selectBox">
+		<view class="selectBox" v-if="!form.id">
 			<u-radio-group v-model="form.type" :size="34" :iconSize="28" >
 				<u-radio 
 				  :labelSize="28"

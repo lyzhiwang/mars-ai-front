@@ -9,14 +9,18 @@
 				<view class="itemBox" v-for="(item, index) in data" :key="index">
 					<image :src="item.get_img.full_path" class="goodsImg"></image>
 					<view class="infoBox">
-						<view class="u-line-1">商品名称：{{item.other.title}}</view>
+						<view class="u-line-1 goodsTitle">商品名称：{{item.other.title}}</view>
 						<view class="price"><text v-if="item.other?.price">价格：￥{{item.other.price}}</text></view>
 						<view class="fcc-sb"><view>图片位置：{{locations[item.location-1]}}</view><view class="tbtn" @click="edit(item)">修改商品信息</view></view>
 					</view>
+					<!-- <view class="delBox flex-rcc" @click.stop="handleDel(item)">
+						<image src="/static/images/voices/del.png"></image>
+					</view> -->
 				</view>
 			</template>
 			<u-empty v-else mode="data" text="暂无项目,请新建项目!" :marginTop="160" iconSize="160" textSize="28" style="width: 100%;"></u-empty>
 		</view>
+		<u-modal :show="show" title="提示" :content='content' showCancelButton @confirm="ok" @cancel="show=false"></u-modal>
 	</view>
 </template>
 
@@ -29,7 +33,7 @@
 	const data = ref([])
 	const status = ref('loadmore')
 	const show = ref(false)
-	const content = ref('请确认删除该项目?')
+	const content = ref('请确认删除该商品?')
 	
 	onLoad((option)=>{
 		params.value.category_id = option.id
@@ -90,7 +94,7 @@
 	
 	// 确认删除
 	const ok = ()=>{
-		voiceDestory({id: currentId.value}).then(res=>{
+		goodsDestory({id: currentId.value}).then(res=>{
 			uni.showToast({title: '删除成功!',icon: 'success',duration: 2000});
 			show.value = false
 			const index = data.value.findIndex(v=> {return v.id===currentId.value})
@@ -149,6 +153,20 @@
 		  display: flex;
 		  padding: 20rpx;
 		  margin-bottom: 20rpx;
+		  position: relative;
+		  .delBox{
+		  		  width: 53rpx;
+		  		  height: 53rpx;
+		  		  background: #2281fe;
+		  		  border-radius: 0px 20rpx 0px 20rpx;
+		  		  image{
+		  			  width: 27rpx;
+		  			  height: 29rpx;
+		  		  }
+		  		  position: absolute;
+		  		  top: 0;
+		  		  right: 0;
+		  }
 		  .goodsImg{
 			  width: 160rpx;
 			  height: 160rpx;
@@ -163,6 +181,9 @@
 			  color: #333333;
 			  line-height: 55rpx;
 			  flex: 1;
+			  .goodsTitle{
+				  padding-right: 20rpx;
+			  }
 			  .price{
 				  height: 45rpx;
 				  line-height: 45rpx;
