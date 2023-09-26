@@ -128,7 +128,8 @@ function startLive(){
 		if(res){
 			// 开始直播
 			live.setTitle(title.value)
-			uni.switchTab({url: '/tabber/live/index'})
+			uni.navigateBack()
+			// uni.switchTab({url: '/tabber/live/index'})
 		}
 	})
 }

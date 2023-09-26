@@ -22,11 +22,14 @@ import { onLoad } from '@dcloudio/uni-app'
 import { getLiveRoom, getLiveDesc } from '@/api'
 import { goTo } from '@/utils/helper.js'
 
+let flag = false
 const desc = reactive({
 	pt: 'ai语音库   智能回复  公屏互动',
 	vip: 'ai语音库   智能回复  直播间搭建  公屏互动  自动弹商品卡片',
 })
 function selectHigh(){
+	if(flag) return
+	flag = true
 	getLiveRoom({type: 2}).then(res=>{
 		if(res && res.data){
 			// const { get_top, get_left, get_right, get_bottom } = res.data
@@ -43,14 +46,24 @@ function selectHigh(){
 				showCancel: true,
 				success: res => {
 					const path = res.confirm ? 'sticker' : 'create2'
-					goTo('/pagesub/live/'+path)
+					goTo('/pagesub/live/'+path, ()=>{
+						flag = false
+					})
+					
 				}
 			})
 		}else{
-			goTo('/pagesub/live/create2')
+			goTo('/pagesub/live/create2', ()=>{
+				flag = false
+			})
 		}
-	}).catch(()=>goTo('/pagesub/live/create2'))
+	}).catch(()=>{
+		goTo('/pagesub/live/create2', ()=>{
+			flag = false
+		})
+	})
 }
+
 onLoad(()=>{
 	getLiveDesc().then(res=>{
 		if(res && res.data){

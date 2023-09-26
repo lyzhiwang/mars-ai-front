@@ -1,10 +1,10 @@
 import { useUserStore } from '@/stores'
 import { last, shuffle, nth } from 'lodash-es'
 
-export const goTo = url => {
+export const goTo = (url, cb) => {
 	const user = useUserStore()
 	if(user.isLogin){
-		uni.navigateTo({url})
+		uni.navigateTo({url, complete: cb})
 	}else{
 		uni.showModal({
 			title: '提示',
@@ -13,7 +13,8 @@ export const goTo = url => {
 				if (res.confirm) {
 					uni.navigateTo({ url: '/pagesub/login/index' })
 				}
-			}
+			},
+			complete: cb
 		})
 	}
 }

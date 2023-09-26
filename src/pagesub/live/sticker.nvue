@@ -230,10 +230,18 @@ export default {
 	beforeUnmount(){
 		if(this.context){
 			this.stopPreview()
+			this.stop()
 			this.context = null
 		}
 	},
 	methods: {
+		stop: function() {
+			this.context.stop({
+				success: (a) => {
+					console.log("livePusher.close:" + JSON.stringify(a));
+				}
+			});
+		},
 		switchCamera: function() {
 			this.context.switchCamera({
 				success: (a) => {

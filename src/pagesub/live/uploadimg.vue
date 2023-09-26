@@ -115,7 +115,7 @@ function submit(){
 		// 	form[`${key}_img`] = fileList[key][0] ? fileList[key][0].id : null
 		// }
 		live.setLiveRoomStick(fileList)
-		uni.redirectTo({url: '/pagesub/live/create2'})
+		uni.navigateBack()
 	}else{
 		uni.$u.toast('您未上传直播贴图，无法提交')
 	}
