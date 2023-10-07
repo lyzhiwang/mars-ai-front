@@ -78,7 +78,7 @@ const initWsEventHandle = () => {
 	wsObj.onOpen(event => {
       useLiveStore().$patch({ wsObj })
       onWsOpen(event)
-      heartCheck.start()
+      // heartCheck.start()
     })
 
     // 监听服务器端返回的信息

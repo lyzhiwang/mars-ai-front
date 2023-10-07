@@ -91,6 +91,7 @@ onShow(()=>{
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  padding-bottom: 40rpx;
 }
 .swiperBox{
 	width: 100%;

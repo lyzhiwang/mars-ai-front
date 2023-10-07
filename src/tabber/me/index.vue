@@ -18,7 +18,7 @@
 	</view>
 	<div class="function">
 		<u-cell-group :border="false">
-			<u-cell title="修改密码" size="large" isLink @click="showPwdPop = true">
+			<u-cell title="修改密码" size="large" isLink @click="showPwdPop = true" v-if="user.isLogin">
 				<template #icon>
 					<u-image :width="35" :height="35" src="/static/images/me/exchange.png"></u-image>
 				</template>

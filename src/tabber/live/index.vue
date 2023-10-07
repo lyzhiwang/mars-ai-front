@@ -82,7 +82,7 @@
 </template>
 
 <script setup>
-import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
+import { onLoad, onShow, onHide, onBackPress } from '@dcloudio/uni-app'
 import { useUserStore, useLiveStore } from '@/stores'
 import { getLiveRoom, addKeyword, errorStatistics } from '@/api'
 import { goTo, randomArr, downLoadAudio } from '@/utils/helper'
@@ -145,6 +145,32 @@ function partEnd(){
 	// vdom.autoplay = true
 	vdom.play()
 }
+function exit(){
+	try{
+		// 重置数据
+		limit.value = 2
+		closeWebsocket()
+		if(live.vRef[live.current]) live.vRef[live.current].stop()
+		if(live.innerAudioContext) live.innerAudioContext.destroy()
+		live.$patch({
+			current: 0,
+			vRef: [], 
+			liveInfo: null, 
+			replyVoice: '', 
+			currentMsg: '', 
+			isplay: false, 
+			innerAudioContext: null, 
+			msgList: [], 
+			wsObj: null,
+		})
+		round = 1
+		i = 0
+		voiceArr = []
+	}catch(e){
+		console.log(444, e)
+		//TODO handle the exception
+	}
+}
 onLoad(()=>{
 })
 onShow(()=>{
@@ -188,31 +214,8 @@ onShow(()=>{
 		}
 	})
 })
-onHide(()=>{
-	try{
-		// 重置数据
-		limit.value = 2
-		closeWebsocket()
-		if(live.vRef[live.current]) live.vRef[live.current].stop()
-		if(live.innerAudioContext) live.innerAudioContext.destroy()
-		live.$patch({
-			current: 0,
-			vRef: [], 
-			liveInfo: null, 
-			replyVoice: '', 
-			currentMsg: '', 
-			isplay: false, 
-			innerAudioContext: null, 
-			msgList: [], 
-			wsObj: null,
-		})
-		round = 1
-		i = 0
-		voiceArr = []
-	}catch(e){
-		//TODO handle the exception
-	}
-})
+onBackPress(exit)
+onHide(exit)
 </script>
 
 <style lang="scss" scoped>

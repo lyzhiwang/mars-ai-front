@@ -38,6 +38,8 @@ async function startBuild(branchArr){
 				} catch (err) {
 					console.error(`重命名文件出错: ${err}`);
 				}
+			}else{
+				console.error(`重命名文件出错: 未找到对应appid:${appid}的文件`);
 			}
 		}
 	});
