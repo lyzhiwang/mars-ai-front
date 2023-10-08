@@ -201,7 +201,7 @@
 				}
 			}
 			.action-item{
-				border: 1rpx solid #2281FE;
+				border: 2rpx solid #2281FE;
 				color: #2276E4;
 			}
 		}

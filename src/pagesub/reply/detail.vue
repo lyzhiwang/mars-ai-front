@@ -1,5 +1,5 @@
 <template>
-<view class="page2">
+<SafeAreaPage class="page2">
 	<button class="create" @click="goTo('/pagesub/reply/add?id='+answer_id)">
 		<image src="/static/images/reply/icon-msg.png" class="icon-crt"></image>
 		<text>添加新回复</text>
@@ -9,7 +9,7 @@
 		<u-loadmore v-if="plist.length>=size" :status="listStatus" fontSize="28rpx" iconSize="30rpx" line/>
 	</template>
 	<u-empty v-else mode="data" textSize="28rpx"></u-empty>
-</view>
+</SafeAreaPage>
 </template>
 
 <script setup>
@@ -17,6 +17,7 @@ import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app'
 import { goTo } from '@/utils/helper.js'
 import { replyList } from '@/api'
 import ReplyItem from '@/components/ReplyItem'
+import SafeAreaPage from '@/components/SafeAreaPage'
 
 const answer_id = ref(null)
 const plist = ref([])

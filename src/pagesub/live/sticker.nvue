@@ -82,6 +82,7 @@ export default {
 	data() {
 		return {
 			context: null,
+			camera_open: false,
 		}
 	},
 	// computed:{
@@ -223,6 +224,11 @@ export default {
 			this.context = uni.createLivePusherContext("livePusher", this);
 		}
 		this.startPreview()
+		setTimeout(()=>{
+			if(!this.camera_open){
+				this.startPreview()
+			}
+		},1000)
 	},
 	onBackPress(){
 		plus.navigator.setFullscreen(false);
@@ -230,8 +236,9 @@ export default {
 	beforeUnmount(){
 		if(this.context){
 			this.stopPreview()
-			this.stop()
+			// this.stop()
 			this.context = null
+			this.camera_open = false
 		}
 	},
 	methods: {
@@ -251,9 +258,18 @@ export default {
 		},
 		startPreview: function() {
 			this.context.startPreview({
-				success: (a) => {
-					console.log("livePusher.startPreview:" + JSON.stringify(a));
-				}
+				success: (data) => {
+					this.camera_open = true
+					if(plus.os.name==='iOS'){
+						this.switchCamera()
+					}
+				},
+				fail:(data)=>{
+					console.log("startPreview fail" + JSON.stringify(data));
+				},
+				complete: (data)=>{
+					console.log("startPreview complete" + JSON.stringify(data));
+				},
 			});
 		},
 		stopPreview: function() {
@@ -337,7 +353,7 @@ export default {
 		}
 		&.location3{
 			right: 40rpx;
-			bottom: 50rpx;
+			bottom: 80rpx;
 		}
 		&.location4{
 			left: 40rpx;
@@ -348,7 +364,7 @@ export default {
 		}
 		&.location6{
 			left: 40rpx;
-			bottom: 50rpx;
+			bottom: 80rpx;
 		}
 		.triangle{
 			width: 30rpx;
