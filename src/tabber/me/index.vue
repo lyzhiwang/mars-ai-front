@@ -23,6 +23,11 @@
 					<u-image :width="35" :height="35" src="/static/images/me/exchange.png"></u-image>
 				</template>
 			</u-cell>
+			<u-cell title="用户隐私服务协议" size="large" isLink url="/pagesub/other/policy">
+				<template #icon>
+					<u-image :width="35" :height="35" src="/static/images/me/about.png"></u-image>
+				</template>
+			</u-cell>
 			<u-cell title="关于我们" size="large" isLink url="/pagesub/other/about">
 				<template #icon>
 					<u-image :width="35" :height="35" src="/static/images/me/about.png"></u-image>

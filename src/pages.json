@@ -79,6 +79,12 @@
 					}
 				},
 				{
+					"path": "other/policy",
+					"style": {
+						"navigationBarTitleText": "用户隐私服务协议"
+					}
+				},
+				{
 				    "path" : "other/about",
 				    "style" :  {
 						"navigationBarTitleText": "关于我们"
