@@ -33,6 +33,12 @@
 				</view>
 			</view>
 		</view>
+		<view class="uploadArea" @click="goTo('/pagesub/live/uploadvideo')">
+			<view class="title">
+				<text>直播视频</text>
+				<text class="tip">*横置在屏幕中央的视频贴图</text>
+			</view>
+		</view>
 		<u--form
 			class="panel"
 			:model="form"
@@ -56,7 +62,7 @@
 			</u-form-item>
 			<view class="liveName">直播间：<text>{{title}}</text></view>
 		</u--form>
-		<view class="panel">
+		<view class="panel shadow">
 			<view class="flex between">
 				<view class="lebel">选择语音库</view>
 				<u-button plain type="primary" text="添加" icon="plus" shape="circle" class="add" @click="goTo('/pagesub/voices/taskStore?type=2')"></u-button>
@@ -139,7 +145,8 @@ function startLive(){
 	for(let key of arr){
 		form2[`${key}_img`] = live.liveRoomStick[key][0] ? live.liveRoomStick[key][0].id : null
 	}
-	const parame = {...form2, voice_id: task.selectVoice.id, answer_id: task.selectReply.id, live_url, type: 2}
+	console.log(2222, live.liveRoomVideo)
+	const parame = {...form2, video: (live.liveRoomVideo?live.liveRoomVideo.id:undefined), voice_id: task.selectVoice.id, answer_id: task.selectReply.id, live_url, type: 2}
 	createLiveRoom(parame).then(res=>{
 		if(res){
 			// 开始直播
@@ -164,7 +171,7 @@ onBeforeUnmount(()=>{
 	}
 	.uploadArea{
 		width: 710rpx;
-		min-height: 270rpx;
+		// min-height: 270rpx;
 		background: #ffffff;
 		border-radius: 20rpx;
 		margin: 30rpx 0 0;

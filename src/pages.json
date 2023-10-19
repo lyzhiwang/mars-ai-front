@@ -79,6 +79,12 @@
 					}
 				},
 				{
+					"path": "/live/uploadvideo",
+					"style": {
+						"navigationBarTitleText": "添加直播视频"
+					}
+				},
+				{
 					"path": "other/policy",
 					"style": {
 						"navigationBarTitleText": "用户隐私服务协议"

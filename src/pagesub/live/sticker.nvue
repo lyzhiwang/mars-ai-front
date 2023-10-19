@@ -9,8 +9,9 @@
 		:muted="true" 
 		:enable-camera="true" 
 		:enable-mic="false"
-		:auto-focus="true" 
+		:auto-focus="false" 
 		:beauty="1" 
+		:min-bitrate="1000"
 		:style="{'height': `${config.winHeight}px`}"
 		device-position="back"
 		whiteness="2"
@@ -39,6 +40,19 @@
 	<image class="left" :src="left_img" mode="widthFix" v-if="left_img"></image>
 	<image class="right" :src="right_img" mode="widthFix" v-if="right_img"></image>
 	<image class="bottom" :src="bottom_img" mode="aspectFit" v-if="bottom_img"></image>
+	<video 
+		class="videoSticker"
+		v-if="videoSticker" 
+		:src="videoSticker" 
+		:muted="true" 
+		:autoplay="true" 
+		:loop="true" 
+		:controls="false"
+		:show-progress="false" 
+		:show-loading="false"
+		:enable-progress-gesture="false"
+		object-fit="cover"
+	></video>
 	<!-- 商品图 -->
 	<!-- <u-transition :show="goods&&showGoodsCard" mode="fade-up"> -->
 		<view :class="['fixedBox',`location${goods.location}`]" v-if="goods&&showGoodsCard">
@@ -97,6 +111,7 @@ export default {
 		const left_img = ref('')
 		const right_img = ref('')
 		const bottom_img = ref('')
+		const videoSticker = ref('')
 		const showGoodsCard = ref(false)
 		let round = 1, i = 0, voiceArr = [], timer = null; // 轮数和当前播放的第几个
 		const goods= computed(()=>live.liveInfo&&live.liveInfo.voice_media[live.current] ? live.liveInfo.voice_media[live.current].goods : null)
@@ -151,15 +166,14 @@ export default {
 		onLoad(()=>{
 			getLiveRoom({type: 2}).then(res=>{
 				if(res&&res.data){
-					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom } = res.data
+					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video } = res.data
 					const { sort_type, get_media } = voice
 					const vRef = []
-					// console.log(1111, voice)
 					top_img.value = get_top ? get_top.full_path : '';
 					left_img.value = get_left ? get_left.full_path : '';
 					right_img.value = get_right ? get_right.full_path : ''; 
 					bottom_img.value = get_bottom ? get_bottom.full_path : ''; 
-
+					if(get_video) videoSticker.value = get_video.full_path
 					const voice_media = get_media.map((media, i)=>{
 						const vdom = uni.createVideoContext(`vDom${i}`)
 						vRef.push(vdom)
@@ -214,7 +228,7 @@ export default {
 			}
 		})
 		return { 
-			config, live, limit, interrupt, partEnd, top_img, left_img, right_img, bottom_img, goods, showGoodsCard
+			config, live, limit, interrupt, partEnd, top_img, left_img, right_img, bottom_img, goods, showGoodsCard, videoSticker
 		}
 	},
 	onReady() {
@@ -443,7 +457,7 @@ export default {
 			position: absolute;
 			top: 5rpx;
 			left: 8rpx;
-			z-index: 11;
+			z-index: 1;
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -462,6 +476,14 @@ export default {
 				font-weight: 700;
 			}
 		}
+	}
+	.videoSticker{
+		width: 750rpx;
+		height: 460rpx;
+		position: absolute;
+		left: 0;
+		z-index: 9;
+		background: transparent;
 	}
 }
 </style>
