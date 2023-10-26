@@ -17,6 +17,10 @@
 <script setup>
 import Template1 from '@/components/home/Template1'
 import Template2 from '@/components/home/Template2'
+import Template3 from '@/components/home/Template3'
+import Template4 from '@/components/home/Template4'
+import Template5 from '@/components/home/Template5'
+import Template6 from '@/components/home/Template6'
 import { onLoad } from '@dcloudio/uni-app'
 import { useConfigStore, useLiveStore } from '@/stores'
 import { getBanner } from '@/api'
