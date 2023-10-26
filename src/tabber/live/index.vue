@@ -162,6 +162,7 @@ function exit(){
 			innerAudioContext: null, 
 			msgList: [], 
 			wsObj: null,
+			synthesizing: false,
 		})
 		round = 1
 		i = 0
@@ -177,7 +178,7 @@ onShow(()=>{
 	if(live.wsObj) return
 	getLiveRoom({type: 1}).then(res=>{
 		if(res&&res.data){
-			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url } = res.data
+			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url, is_welcome, welcome_interval, id } = res.data
 			const { sort_type, get_media } = voice
 			const vRef = []
 			const voice_media = get_media.map((media, i)=>{
@@ -190,9 +191,12 @@ onShow(()=>{
 				live.setLiveDom(vRef)
 				voiceArr = voice_media.map((item, index)=>index)
 				const info = {
+					id,
 					sort_type,
 					voice_media: arr,
 					answer_id,
+					is_welcome,
+					welcome_interval,
 					reply: answer_keyword.map((item)=>{
 						return {
 							keywords: item.keywords,
@@ -207,9 +211,9 @@ onShow(()=>{
 					if(vRef[0]) vRef[0].play()
 				})
 				// 打开获取评论的长连接
-				if(is_open===1){
-					live.openLonglink(live_url, useself, ws_url)
-				}
+				// if(is_open===1){
+				live.openLonglink(live_url, useself, ws_url)
+				// }
 			})
 		}
 	})

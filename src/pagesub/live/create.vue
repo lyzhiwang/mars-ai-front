@@ -53,6 +53,28 @@
 				<text>{{task.selectReply.title}}</text>
 			</view>
 		</view>
+		<view class="panel shadow">
+			<view class="flex between mar20">
+				<text class="h1">欢迎语</text>
+				<view>
+					<u-switch v-model="welcome" size="40"></u-switch>
+				</view>
+			</view>
+			<view class="flex between">
+				<view class="lebel">间隔时间</view>
+				<view class="flex">
+					<u-number-box
+						v-model="welcome_interval" 
+						:min="30" 
+						:step="5" 
+						:disabled="!welcome" 
+						inputWidth="80" 
+						buttonSize="50"
+						integer
+					></u-number-box>&nbsp;秒
+				</view>
+			</view>
+		</view>
 		<view class="placeholder"></view>
 		<view class="fixedArea">
 			<u-button type="primary" text="确定" shape="circle" class="submit" @click="startLive"></u-button>
@@ -70,16 +92,13 @@ import { goTo } from '@/utils/helper'
 const config = useConfigStore()
 const task = useTaskStore()
 const live = useLiveStore()
-// const bgColor = ref('transparent')
-// onPageScroll((e)=>{
-// 	console.log(111, JSON.stringify(e))
-// 	bgColor.value = e.scrollTop>10 ? '#519af8' :'transparent'
-// })
 const urlForm = ref()
 const form = reactive({
 	live_id: null,
 })
 const title = ref('')
+const welcome = ref(false) // 是否开启欢迎语
+const welcome_interval = ref(30) // 欢迎的间隔时间
 const rules = reactive({
 	live_id: [
 		{
@@ -124,7 +143,11 @@ function startLive(){
 	if(!form.live_id || !url_validate) return uni.$u.toast('未填写抖音号或不正确')
 	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
 	if(!task.selectReply) return uni.$u.toast('请选择回复')
-	createLiveRoom({voice_id: task.selectVoice.id, answer_id: task.selectReply.id, live_url, type: 1}).then(res=>{
+	const parame = {voice_id: task.selectVoice.id, answer_id: task.selectReply.id, is_welcome: welcome.value, live_url, type: 1}
+	if(welcome.value){
+		parame.welcome_interval = welcome_interval.value
+	}
+	createLiveRoom(parame).then(res=>{
 		if(res){
 			// 开始直播
 			live.setTitle(title.value)
@@ -213,6 +236,16 @@ onBeforeUnmount(()=>{
 		.lebel{
 			font-size: 32rpx;
 		}
+		.mar20{
+			margin-bottom: 20rpx;
+		}
+	}
+	.h1{
+		font-size: 36rpx;
+		display: flex;
+		align-items: center;
+		font-weight: 700;
+		color: #1e64fe;
 	}
 	.between{
 		flex-direction: row!important;

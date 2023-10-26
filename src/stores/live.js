@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { dropRight, sample } from 'lodash-es'
 import { connectWebsocket, sendDateByChannel } from '../utils/socket'
 import { useUserStore } from '@/stores'
+import { aliJob, checkJob } from '@/api/index'
 
 export const useLiveStore = defineStore('live', {
 	persist: {
@@ -27,6 +28,7 @@ export const useLiveStore = defineStore('live', {
 		// live_url: '',
 		// autoplay: false, // 当前的片段是否自动播放
 		isManualClose: false, // 是否手动关闭WS
+		synthesizing: false, // 欢迎语合成状态
 	}),
 	actions: {
 		// setPartAutoPlay(bool){
@@ -35,6 +37,9 @@ export const useLiveStore = defineStore('live', {
 		// setLiveUrl(url){
 		// 	this.live_url = url
 		// },
+		setSynthesiStatus(bool){
+			this.synthesizing = bool
+		},
 		setIsManualClose(data){
 			this.isManualClose = data
 		},
@@ -90,13 +95,15 @@ export const useLiveStore = defineStore('live', {
 				// 初次创建音频对象
 				this.innerAudioContext = uni.createInnerAudioContext();
 				this.innerAudioContext.onEnded(()=>{
+					// this.innerAudioContext.destroy()
+					// this.innerAudioContext = null
 					this.vRef[this.current].play()
 					this.isplay = false
 					this.setCurrentReply('', '')
 				});
 				this.innerAudioContext.autoplay = true;
 			}
-			if(!this.isplay){
+			if(!this.isplay && this.liveInfo){
 				// 匹配关键词，播放答案语音
 				// replyList 回复列表, msg 评论的内容
 				const { reply: replyList } = this.liveInfo
@@ -124,7 +131,71 @@ export const useLiveStore = defineStore('live', {
 					this.addMsg(info); // 添加用户评论信息到列表
 					this.startReply(info); // 自动回复
 					break;
+				case 'enter': // 进入直播间
+					if(this.liveInfo){
+						const { is_welcome, id } = this.liveInfo
+						if(is_welcome==1 && !this.synthesizing){
+							this.setSynthesiStatus(true)
+							// 先发起请求告诉服务器开始合成音频
+							aliJob({room_id: id, content: info}).then((res)=>{
+								if(res){
+									// 轮询接口查看音频合成状态
+									this.checkTaskJob(id)
+								}else{
+									this.setSynthesiStatus(false)
+								}
+							}).catch((err)=>{
+								this.setSynthesiStatus(false)
+							})
+						}
+					}
+					break;
 			}
+		},
+		playWelcomeWord(url){
+			const welcome = uni.createInnerAudioContext();
+			const interval = this.liveInfo.welcome_interval*1000||30000
+			// 然后再播放欢迎语
+			welcome.src = url
+			welcome.autoplay = true
+			welcome.volume = 1
+			welcome.onCanplay(()=>{
+				// 先暂停当前其他正在播放的声音
+				// (this.innerAudioContext && !this.innerAudioContext.paused) ? this.innerAudioContext.pause() : this.vRef[this.current].pause();
+				if(this.innerAudioContext && !this.innerAudioContext.paused){
+					this.innerAudioContext.pause()
+				}else{
+					this.vRef[this.current].pause()
+				}
+			})
+			welcome.onEnded(()=>{
+				if(this.innerAudioContext && this.innerAudioContext.paused && this.innerAudioContext.currentTime>0 && this.innerAudioContext.currentTime<this.innerAudioContext.duration) {
+					// 被暂停的回复继续播放
+					this.innerAudioContext.play()
+				}else{
+					this.vRef[this.current].play()
+				}
+				welcome.destroy()
+				// (this.innerAudioContext && this.innerAudioContext.paused) ? this.innerAudioContext.play() : this.vRef[this.current].play();
+				setTimeout(()=>this.setSynthesiStatus(false), interval)
+			})
+			welcome.play();
+		},
+		checkTaskJob(room_id){
+			if(!this.liveInfo) return
+			checkJob({room_id}).then(res=>{
+				if(res&&res.data.length>0){
+					// 播放欢迎语
+					const url = res.data[0]
+					this.playWelcomeWord(url)
+					return
+				}else{
+					this.checkTaskJob(room_id)
+				}
+			}).catch(()=>{
+				// console.log(4444, err)
+				this.checkTaskJob(room_id)
+			})
 		},
 		globelMessage2(data){
 			const { content } = data

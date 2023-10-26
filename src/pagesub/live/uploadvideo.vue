@@ -83,7 +83,7 @@ function submit(){
 <style lang="scss" scoped>
 .page{
 	min-height: 100vh;
-	padding: 36rpx 30rpx;
+	padding: 36rpx 20rpx;
 	background: #f8f8f8;
 	display: flex;
 	flex-direction: column;

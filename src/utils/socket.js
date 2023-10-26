@@ -123,7 +123,7 @@ const onWsOpen = (event) => {
 const onWsMessage = (event) => {
   const jsonStr = event.data
   const data = JSON.parse(jsonStr)
-  writeToScreen('onWsMessage back data: ',  data)
+  // writeToScreen('onWsMessage back data: ',  jsonStr)
   messageCallback(data)
 }
 const onWsClose = (event) => {

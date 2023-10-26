@@ -12,7 +12,8 @@ function checkVeision() {
 		config.setAPPVersion(version)
 		getAppVersion().then(res => {
 			if(!res.data) return
-			const { new_version, new_version_code, url, ishot, ios_url, ios_version_code } = res.data
+			const { new_version, new_version_code, url, ishot, ios_url, ios_version_code, template } = res.data
+			config.setHomeTem(template)
 			const is_ios = (plus.os.name === 'iOS')
 			if(is_ios && Number(versionCode) < Number(ios_version_code)){
 				// ios版本更新 直接跳转到AppStore

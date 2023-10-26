@@ -9,6 +9,8 @@ const baseURL = (process.env.NODE_ENV === "development") ? "http://gdytest.zwstk
 // const baseURL = (process.env.NODE_ENV === "development") ? "https://mars.lytklw.cn/api" : "https://mars.lytklw.cn/api";
 // 创建axios实例
 const oemid = Number(import.meta.env.VITE_OEM_ID)
+// 错误白名单
+const errorWhiteList = ['/v1/oem/config','/v1/ali/job','/v1/check/job']
 const service = axios.create({
 	baseURL,
 	timeout: 60000, // 请求超时时间-
@@ -50,7 +52,7 @@ service.interceptors.response.use(
     if (res) {
 		if (res.code === 0) { // code 为0请求正常
 		    return res
-		} else {
+		} else if(errorWhiteList.indexOf(response.config.url)==-1) {
 			// console.log(999, res)
 			// 先提示错误信息
 			if (res.message){

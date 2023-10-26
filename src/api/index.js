@@ -423,3 +423,21 @@ export function getLiveDesc() {
 		method: 'get',
 	})
 }
+
+// 创建合成任务
+export function aliJob(data) {
+	return request({
+		url: '/v1/ali/job',
+		method: 'post',
+		data
+	})
+}
+
+// 检查合成任务的状态
+export function checkJob(params) {
+	return request({
+		url: '/v1/check/job',
+		method: 'get',
+		params
+	})
+}

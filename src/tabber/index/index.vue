@@ -33,15 +33,34 @@ const currentComponent = shallowRef(null)
 function comingsoon(){
 	uni.showToast({title: '暂未开放', icon: 'none'})
 }
+function renderTem(){
+	switch (config.template){
+		case 1:
+			return Template1
+		case 2:
+			return Template2
+		case 3:
+			return Template3
+		case 4:
+			return Template4
+		case 5:
+			return Template5
+		case 6:
+			return Template6
+	}
+}
 onLoad(()=>{
 	const oem_id = import.meta.env.VITE_OEM_ID
 	// 加载对应模板
-	currentComponent.value = Template2
+	currentComponent.value = renderTem()
 	getBanner({oem_id}).then(res=>{
 		if(res && res.data && res.data.length>0){
 			swiperList.value = res.data.map(item=>item.upload.full_path) 
 		}
 	})
+})
+watch(()=>config.template, ()=>{
+	currentComponent.value = renderTem()
 })
 </script>
 

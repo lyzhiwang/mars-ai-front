@@ -14,7 +14,8 @@ export const useConfigStore = defineStore('config', {
 		winHeight: 0,
 		qnToken: null,
 		app_name: import.meta.env.VITE_APP_NAME,
-		app_version: null
+		app_version: null,
+		template: 1, // 首页模板
 	}),
 	actions: {
 		setRemeberPwd(val) {
@@ -32,6 +33,9 @@ export const useConfigStore = defineStore('config', {
 		},
 		setAPPVersion(info){
 			this.app_version = info
+		},
+		setHomeTem(num){
+			this.template = num
 		},
 		async getQnToken(type){
 			try{

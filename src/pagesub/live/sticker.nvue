@@ -166,7 +166,7 @@ export default {
 		onLoad(()=>{
 			getLiveRoom({type: 2}).then(res=>{
 				if(res&&res.data){
-					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video } = res.data
+					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id } = res.data
 					const { sort_type, get_media } = voice
 					const vRef = []
 					top_img.value = get_top ? get_top.full_path : '';
@@ -184,8 +184,11 @@ export default {
 						live.setLiveDom(vRef)
 						voiceArr = voice_media.map((item, index)=>index)
 						const info = { 
+							id,
 							sort_type, 
 							voice_media: arr,
+							is_welcome,
+							welcome_interval,
 							reply: answer_keyword.map((item)=>{
 								return {
 									keywords: item.keywords,
@@ -222,6 +225,7 @@ export default {
 					innerAudioContext: null, 
 					msgList: [], 
 					wsObj: null,
+					synthesizing: false,
 				})
 			}catch(e){
 				//TODO handle the exception
