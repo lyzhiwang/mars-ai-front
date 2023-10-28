@@ -38,7 +38,7 @@
 		<view class="uploadArea" @click="goTo('/pagesub/live/uploadvideo')">
 			<view class="title">
 				<text>直播视频</text>
-				<text class="tip">*横置在屏幕中央的视频贴图</text>
+				<text class="tip">*悬浮在屏幕上部的视频贴图</text>
 			</view>
 		</view>
 		<u--form

@@ -12,7 +12,7 @@
 			width="128"
 			height="128"
 		></u-upload>
-		<view class="tip">*建议上传横屏视频</view>
+		<view class="tip">*建议上传竖屏视频</view>
 	</view>
 	<view class="placeholder"></view>
 	<view class="fixedArea">
