@@ -71,12 +71,9 @@ function uploadFilePromise(url){
 	});
 }
 function submit(){
-	if(video.value.length>0){
-		live.setLiveRoomVideo(video.value[0])
-		uni.navigateBack()
-	}else{
-		uni.$u.toast('您未上传直播视频，无法提交')
-	}
+	const data = video.value.length>0 ? video.value[0] : null
+	live.setLiveRoomVideo(data)
+	uni.navigateBack()
 }
 </script>
 

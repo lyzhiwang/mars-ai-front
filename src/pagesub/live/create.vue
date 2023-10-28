@@ -8,7 +8,9 @@
 			bgColor="transparent" 
 			:titleStyle="{'color':'#fff','font-size':'36rpx'}" 
 			placeholder
-		></u-navbar>
+		>
+			<template #left><text></text></template>
+		</u-navbar>
 		<u--form
 			class="panel"
 			:model="form"

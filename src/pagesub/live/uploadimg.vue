@@ -108,17 +108,9 @@ function transLocation(key){
 	}
 }
 function submit(){
-	if(Object.values(fileList).some(arr=>arr.length>0)){
-		// const arr = Object.keys(fileList)
-		// const form = {}
-		// for(let key of arr){
-		// 	form[`${key}_img`] = fileList[key][0] ? fileList[key][0].id : null
-		// }
-		live.setLiveRoomStick(fileList)
-		uni.navigateBack()
-	}else{
-		uni.$u.toast('您未上传直播贴图，无法提交')
-	}
+	const data = Object.values(fileList).some(arr=>arr.length>0) ? fileList : null
+	live.setLiveRoomStick(data)
+	uni.navigateBack()
 }
 </script>
 

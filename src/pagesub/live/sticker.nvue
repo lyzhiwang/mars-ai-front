@@ -11,6 +11,7 @@
 		:enable-mic="false"
 		:auto-focus="false" 
 		:beauty="1" 
+		:whiteness="1"
 		:min-bitrate="1000"
 		:style="{'height': `${config.winHeight}px`}"
 		device-position="back"

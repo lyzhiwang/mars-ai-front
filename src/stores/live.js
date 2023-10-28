@@ -95,8 +95,8 @@ export const useLiveStore = defineStore('live', {
 				// 初次创建音频对象
 				this.innerAudioContext = uni.createInnerAudioContext();
 				this.innerAudioContext.onEnded(()=>{
-					// this.innerAudioContext.destroy()
-					// this.innerAudioContext = null
+					this.innerAudioContext.destroy()
+					this.innerAudioContext = null
 					this.vRef[this.current].play()
 					this.isplay = false
 					this.setCurrentReply('', '')
@@ -161,7 +161,6 @@ export const useLiveStore = defineStore('live', {
 			welcome.volume = 1
 			welcome.onCanplay(()=>{
 				// 先暂停当前其他正在播放的声音
-				// (this.innerAudioContext && !this.innerAudioContext.paused) ? this.innerAudioContext.pause() : this.vRef[this.current].pause();
 				if(this.innerAudioContext && !this.innerAudioContext.paused){
 					this.innerAudioContext.pause()
 				}else{
@@ -169,7 +168,8 @@ export const useLiveStore = defineStore('live', {
 				}
 			})
 			welcome.onEnded(()=>{
-				if(this.innerAudioContext && this.innerAudioContext.paused && this.innerAudioContext.currentTime>0 && this.innerAudioContext.currentTime<this.innerAudioContext.duration) {
+				// if(this.innerAudioContext.currentTime>0 && this.innerAudioContext.currentTime<this.innerAudioContext.duration) {
+				if(this.innerAudioContext && this.innerAudioContext.paused) {
 					// 被暂停的回复继续播放
 					this.innerAudioContext.play()
 				}else{

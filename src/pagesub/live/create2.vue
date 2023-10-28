@@ -7,7 +7,9 @@
 			bgColor="transparent" 
 			:titleStyle="{'color':'#fff','font-size':'36rpx'}" 
 			placeholder
-		></u-navbar>
+		>
+			<template #left><text></text></template>
+		</u-navbar>
 		<!-- 上传区域 -->
 		<view class="uploadArea">
 			<view class="title">
@@ -164,10 +166,12 @@ function startLive(){
 	if(!form.live_id || !url_validate) return uni.$u.toast('未填写抖音号或不正确')
 	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
 	if(!task.selectReply) return uni.$u.toast('请选择回复')
-	const arr = Object.keys(live.liveRoomStick)
-	const form2 = {}
-	for(let key of arr){
-		form2[`${key}_img`] = live.liveRoomStick[key][0] ? live.liveRoomStick[key][0].id : null
+	let form2 = {}
+	if(live.liveRoomStick){
+		const arr = Object.keys(live.liveRoomStick)
+		for(let key of arr){
+			form2[`${key}_img`] = live.liveRoomStick[key][0] ? live.liveRoomStick[key][0].id : null
+		}
 	}
 	const parame = {...form2, video: (live.liveRoomVideo?live.liveRoomVideo.id:undefined), voice_id: task.selectVoice.id, answer_id: task.selectReply.id, is_welcome: welcome.value, live_url, type: 2}
 	if(welcome.value){
