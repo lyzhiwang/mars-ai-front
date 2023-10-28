@@ -14,6 +14,8 @@ let messageCallback = null
 let errorCallback = null
 // 发送给后台的数据
 let sendDatas = {}
+// 重连定时器
+let reconnect_timer = null 
 
 /**
  * 发起websocket请求函数
@@ -44,6 +46,9 @@ export const closeWebsocket = () => {
 	const live = useLiveStore()
 	live.setIsManualClose(true)
 	if(wsCreateHandler) clearTimeout(wsCreateHandler)
+	if(reconnect_timer){
+		reconnect_timer = clearInterval(reconnect_timer)
+	}
 	// 关闭心跳检查
 	heartCheck.stop()
 }
@@ -111,8 +116,10 @@ const onWsOpen = (event) => {
   // 添加状态判断，当为OPEN时，发送消息
   if (wsObj.readyState === wsObj.OPEN) { // wsObj.OPEN = 1
     // 发给后端的数据需要字符串化
-    // console.log('发送标识', sendDatas)
     wsObj.send({data: JSON.stringify(sendDatas)})
+	// 30分钟定时重连
+	if(reconnect_timer) clearInterval(reconnect_timer)
+	reconnect_timer = setInterval(reconnect, 420000)
   }
   if (wsObj.readyState === wsObj.CLOSED) { // wsObj.CLOSED = 3
     writeToScreen('wsObj.readyState=3, ws连接异常，开始重连')
@@ -127,10 +134,9 @@ const onWsMessage = (event) => {
   messageCallback(data)
 }
 const onWsClose = (event) => {
-  writeToScreen('DISCONNECT')
   // e.code === 1000  表示正常关闭。 无论为何目的而创建, 该链接都已成功完成任务。
   // e.code !== 1000  表示非正常关闭。
-  console.log('onclose event: ', event)
+  console.log('DISCONNECT: ', event)
   if (event && event.code !== 1000) {
     writeToScreen('非正常关闭')
     errorCallback()
@@ -153,7 +159,7 @@ const reconnect = () => {
   if (lockReconnect || live.isManualClose) {
     return
   }
-  writeToScreen('3秒后重连')
+  writeToScreen('1秒后重连')
   lockReconnect = true
   // 没连接上会一直重连，设置延迟避免请求过多
   wsCreateHandler && clearTimeout(wsCreateHandler)
@@ -163,7 +169,7 @@ const reconnect = () => {
     createWebSoket()
     lockReconnect = false
     writeToScreen('重连完成')
-  }, 3000)
+  }, 1000)
 }
 
 // 从浏览器地址中获取对应参数

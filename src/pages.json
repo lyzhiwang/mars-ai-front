@@ -17,6 +17,9 @@
 		{
 			"path": "tabber/index/index",
 			"style": {
+				// "transparentTitle": "auto",
+				// "navigationBarTitleText": "首页",
+				// "navigationBarBackgroundColor": "#519af8"
 				"transparentTitle": "always" //状态栏透明
 			}
 		},

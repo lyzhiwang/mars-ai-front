@@ -25,12 +25,12 @@
 			</u-cell>
 			<u-cell title="用户隐私服务协议" size="large" isLink url="/pagesub/other/policy">
 				<template #icon>
-					<u-image :width="35" :height="35" src="/static/images/me/about.png"></u-image>
+					<u-image :width="35" :height="35" src="/static/images/me/privacy.png"></u-image>
 				</template>
 			</u-cell>
 			<u-cell title="关于我们" size="large" isLink url="/pagesub/other/about">
 				<template #icon>
-					<u-image :width="35" :height="35" src="/static/images/me/about.png"></u-image>
+					<u-image :width="35" :height="35" src="/static/images/me/aboutus.png"></u-image>
 				</template>
 			</u-cell>
 			<u-cell title="反馈" size="large" isLink url="/pagesub/other/feedback">
@@ -39,6 +39,11 @@
 				</template>
 			</u-cell>
 			<u-cell title="版本号" size="large" :value="config.app_version">
+				<template #icon>
+					<u-image :width="35" :height="35" src="/static/images/me/about.png"></u-image>
+				</template>
+			</u-cell>
+			<u-cell title="注销用户" size="large" isLink @click="deleteUser" v-if="user.isLogin&&is_ios">
 				<template #icon>
 					<u-image :width="35" :height="35" src="/static/images/me/about.png"></u-image>
 				</template>
@@ -78,6 +83,7 @@ const config = useConfigStore()
 const live = useLiveStore()
 const showPwdPop = ref(false)
 const password = ref('')
+const is_ios = (plus.os.name === 'iOS');
 
 function goToLogin(){
 	uni.navigateTo({url: '/pagesub/login/index'})
@@ -92,6 +98,20 @@ function changePwdConfirm(){
 				user.logOut()
 				goToLogin()
 			}, 1500)
+		}
+	})
+}
+function deleteUser(){
+	uni.showModal({
+		title: '警告',
+		content: '注销用户操作，将删除当前登录账号的所有相关数据和资料，请谨慎操作是否继续？',
+		confirmText: '确定',
+		showCancel: true,
+		success: res => {
+			if(res.confirm){
+				user.logOut();
+				uni.showToast({title: '注销成功', icon: 'success', duration: 2000});
+			}
 		}
 	})
 }

@@ -47,6 +47,8 @@ function renderTem(){
 			return Template5
 		case 6:
 			return Template6
+		default:
+			return Template1
 	}
 }
 onLoad(()=>{
