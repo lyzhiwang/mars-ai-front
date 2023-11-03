@@ -227,6 +227,7 @@ export default {
 					msgList: [], 
 					wsObj: null,
 					synthesizing: false,
+					wlcPlaying: false,
 				})
 			}catch(e){
 				//TODO handle the exception

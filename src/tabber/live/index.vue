@@ -26,9 +26,12 @@
 			</view>
 		</view>
 		<view class="panel">
-			<view class="h1">
-				<text>直播间</text>
-				<image src="/static/images/live/reply.png" class="status"></image>
+			<view class="h1 between">
+				<view>
+					<text>直播间</text>
+					<image src="/static/images/live/reply.png" class="status"></image>
+				</view>
+				<view class="clearBtn" @click="clearLiveRoom" v-if="live.liveInfo">清除直播间</view>
 			</view>
 			<view class="trying">
 				<text>正在回复</text>
@@ -150,7 +153,7 @@ function exit(){
 		// 重置数据
 		limit.value = 2
 		closeWebsocket()
-		if(live.vRef[live.current]) live.vRef[live.current].stop()
+		// if(live.vRef[live.current]) live.vRef[live.current].stop()
 		if(live.innerAudioContext) live.innerAudioContext.destroy()
 		live.$patch({
 			current: 0,
@@ -163,6 +166,7 @@ function exit(){
 			msgList: [], 
 			wsObj: null,
 			synthesizing: false,
+			wlcPlaying: false,
 		})
 		round = 1
 		i = 0
@@ -170,6 +174,12 @@ function exit(){
 	}catch(e){
 		console.log(444, e)
 		//TODO handle the exception
+	}
+}
+function clearLiveRoom(){
+	if(live.liveInfo){
+		// live.setTitle('')
+		exit()
 	}
 }
 onLoad(()=>{
@@ -223,6 +233,11 @@ onHide(exit)
 </script>
 
 <style lang="scss" scoped>
+.between{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
 .livePage{
 	width: 100%;
 	min-height: 100vh;
@@ -330,6 +345,19 @@ onHide(exit)
 			font-size: 36rpx;
 			color: #333333;
 			margin-bottom: 10rpx;
+		}
+		.clearBtn{
+			width: 175rpx;
+			height: 50rpx;
+			background: #e8f2ff;
+			border: 2rpx solid #1e64fe;
+			border-radius: 25rpx;
+			font-size: 26rpx;
+			color: #1e64fe;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-weight: 400;
 		}
 		.li{
 			width: 650rpx;

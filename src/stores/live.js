@@ -24,11 +24,12 @@ export const useLiveStore = defineStore('live', {
 		replyVoice: '', // 当前正在回复的音频的名称
 		liveInfo: null,
 		liveRoomStick: null, // 直播间贴图地址对象
-		liveRoomVideo: null, // 直播间贴图地址对象
+		liveRoomVideo: null, // 直播间视频贴图对象
 		// live_url: '',
 		// autoplay: false, // 当前的片段是否自动播放
 		isManualClose: false, // 是否手动关闭WS
 		synthesizing: false, // 欢迎语合成状态
+		wlcPlaying: false, // 欢迎语是否再播报中
 	}),
 	actions: {
 		// setPartAutoPlay(bool){
@@ -90,20 +91,15 @@ export const useLiveStore = defineStore('live', {
 				connectWebsocket(ws_url||'ws://42.193.254.253:3000/dy', {url: live_url}, this.globelMessage2, () => {})
 			}
 		},
+		replyEnd(){
+			this.innerAudioContext.destroy()
+			this.innerAudioContext = null
+			this.vRef[this.current].play()
+			this.isplay = false
+			this.setCurrentReply('', '')
+		},
 		startReply(msg, cb){
-			if(!this.innerAudioContext){
-				// 初次创建音频对象
-				this.innerAudioContext = uni.createInnerAudioContext();
-				this.innerAudioContext.onEnded(()=>{
-					this.innerAudioContext.destroy()
-					this.innerAudioContext = null
-					this.vRef[this.current].play()
-					this.isplay = false
-					this.setCurrentReply('', '')
-				});
-				this.innerAudioContext.autoplay = true;
-			}
-			if(!this.isplay && this.liveInfo){
+			if(!this.isplay&&!this.wlcPlaying){
 				// 匹配关键词，播放答案语音
 				// replyList 回复列表, msg 评论的内容
 				const { reply: replyList } = this.liveInfo
@@ -111,12 +107,21 @@ export const useLiveStore = defineStore('live', {
 				if(findObj){
 					// 从匹配结果的录音中随机选取一个播放
 					const randomItem = sample(findObj.media)
-					if(randomItem){
+					if(randomItem&&!this.wlcPlaying){
+						if(!this.innerAudioContext){
+							// 初次创建音频对象
+							this.innerAudioContext = uni.createInnerAudioContext();
+							this.innerAudioContext.onEnded(this.replyEnd);
+							this.innerAudioContext.onError(this.replyEnd)
+							this.innerAudioContext.autoplay = true;
+						}
 						// 先降低直播音频声音
-						this.isplay = true
-						this.vRef[this.current].pause()
+						this.innerAudioContext.onCanplay(()=>{
+							this.isplay = true
+							this.vRef[this.current].pause()
+							this.innerAudioContext.play();
+						})
 						this.innerAudioContext.src = randomItem.full_path;
-						this.innerAudioContext.play();
 						// 显示当前正在回复的内容
 						this.setCurrentReply(randomItem.title, msg)
 					}
@@ -128,8 +133,10 @@ export const useLiveStore = defineStore('live', {
 		globelMessage({ type, info }) {
 			switch (type) {
 				case 'live': // 评论
-					this.addMsg(info); // 添加用户评论信息到列表
-					this.startReply(info); // 自动回复
+					if(this.liveInfo){
+						this.addMsg(info); // 添加用户评论信息到列表
+						this.startReply(info); // 自动回复
+					}
 					break;
 				case 'enter': // 进入直播间
 					if(this.liveInfo){
@@ -145,6 +152,7 @@ export const useLiveStore = defineStore('live', {
 									this.setSynthesiStatus(false)
 								}
 							}).catch((err)=>{
+								// console.log(111, err)
 								this.setSynthesiStatus(false)
 							})
 						}
@@ -152,39 +160,42 @@ export const useLiveStore = defineStore('live', {
 					break;
 			}
 		},
+		welcomeEnd(welcome){
+			this.wlcPlaying = false
+			const interval = this.liveInfo.welcome_interval*1000||30000
+			// if(this.innerAudioContext.currentTime>0 && this.innerAudioContext.currentTime<this.innerAudioContext.duration) {
+			if(this.innerAudioContext && this.innerAudioContext.paused && this.isplay) {
+				// 被暂停的回复继续播放
+				this.innerAudioContext.play()
+			}else{
+				this.vRef[this.current].play()
+			}
+			setTimeout(()=>this.setSynthesiStatus(false), interval)
+			welcome.destroy()
+		},
 		playWelcomeWord(url){
 			const welcome = uni.createInnerAudioContext();
-			const interval = this.liveInfo.welcome_interval*1000||30000
 			// 然后再播放欢迎语
 			welcome.src = url
 			welcome.autoplay = true
 			welcome.volume = 1
 			welcome.onCanplay(()=>{
+				this.wlcPlaying = true
 				// 先暂停当前其他正在播放的声音
 				if(this.innerAudioContext && !this.innerAudioContext.paused){
 					this.innerAudioContext.pause()
 				}else{
 					this.vRef[this.current].pause()
 				}
+				welcome.play();
 			})
-			welcome.onEnded(()=>{
-				// if(this.innerAudioContext.currentTime>0 && this.innerAudioContext.currentTime<this.innerAudioContext.duration) {
-				if(this.innerAudioContext && this.innerAudioContext.paused) {
-					// 被暂停的回复继续播放
-					this.innerAudioContext.play()
-				}else{
-					this.vRef[this.current].play()
-				}
-				welcome.destroy()
-				// (this.innerAudioContext && this.innerAudioContext.paused) ? this.innerAudioContext.play() : this.vRef[this.current].play();
-				setTimeout(()=>this.setSynthesiStatus(false), interval)
-			})
-			welcome.play();
+			welcome.onEnded(()=>this.welcomeEnd(welcome))
+			welcome.onError(()=>this.welcomeEnd(welcome))
 		},
 		checkTaskJob(room_id){
 			if(!this.liveInfo) return
 			checkJob({room_id}).then(res=>{
-				if(res&&res.data.length>0){
+				if(res&&res.data&&res.data.length>0){
 					// 播放欢迎语
 					const url = res.data[0]
 					this.playWelcomeWord(url)
@@ -192,7 +203,7 @@ export const useLiveStore = defineStore('live', {
 				}else{
 					this.checkTaskJob(room_id)
 				}
-			}).catch(()=>{
+			}).catch((err)=>{
 				// console.log(4444, err)
 				this.checkTaskJob(room_id)
 			})
