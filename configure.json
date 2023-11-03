@@ -10,7 +10,7 @@
     //android打包参数
     "android": {
       //安卓包名
-      "packagename":"com.test.android",
+      "packagename":"com.mars.zwwl",
       //安卓打包类型 默认值0 0 使用自有证书 1 使用公共证书 2 使用老版证书
       "androidpacktype":"0",
       //安卓使用自有证书自有打包证书参数
