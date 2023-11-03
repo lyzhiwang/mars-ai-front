@@ -55,9 +55,9 @@ onLaunch(()=>{
 	const systemInfo = uni.getWindowInfo()
 	config.setStatusBar(systemInfo.statusBarHeight)
 	config.setWinHeight(systemInfo.screenHeight)
+	checkVeision()
 })
 onShow(()=>{
-	checkVeision()
 	// console.log('App Show')
 })
 onHide(()=>{
