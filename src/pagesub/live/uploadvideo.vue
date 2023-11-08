@@ -4,6 +4,7 @@
 		<view class="h2">直播视频上传</view>
 		<u-upload
 			:fileList="video"
+			:compressed="false"
 			capture="album"
 			@afterRead="videoAfterRead"
 			@delete="deleteVideo"

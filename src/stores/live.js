@@ -205,7 +205,8 @@ export const useLiveStore = defineStore('live', {
 				}
 			}).catch((err)=>{
 				// console.log(4444, err)
-				this.checkTaskJob(room_id)
+				// this.checkTaskJob(room_id)
+				this.setSynthesiStatus(false)
 			})
 		},
 		globelMessage2(data){
