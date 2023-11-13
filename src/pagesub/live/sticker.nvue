@@ -485,7 +485,7 @@ export default {
 	}
 	.videoSticker{
 		width: 750rpx;
-		height: 1050rpx;
+		height: 1000rpx;
 		position: absolute;
 		top: 0;
 		left: 0;
