@@ -78,7 +78,7 @@ function typing(str){
 	}, 100)
 }
 function submit(){
-    if(!question.value) return
+    if(!question.value||loading.value) return
 	// 先显示用户发的信息
 	msgList.value.push({msg: question.value, type: 1})
 	loading.value = true

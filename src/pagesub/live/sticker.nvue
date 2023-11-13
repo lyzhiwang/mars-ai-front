@@ -68,7 +68,7 @@
 							<!-- 小黄车 商品购买 -->
 							<image class="typeImg" src="/static/images/live/type1.png" mode="aspectFit" v-if="goods.type==1"></image>
 							<!-- 小房子 优惠卷/团购卷 -->
-							<image class="typeImg" src="/static/images/live/type2.png" mode="aspectFit" v-else></image>
+							<image class="typeImg" src="/static/images/live/type3.png" mode="aspectFit" v-else></image>
 							<image class="arrow" src="/static/images/live/arrow.png" mode="aspectFit"></image>
 						</view>
 					</view>
