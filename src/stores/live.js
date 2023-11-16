@@ -111,16 +111,19 @@ export const useLiveStore = defineStore('live', {
 						if(!this.innerAudioContext){
 							// 初次创建音频对象
 							this.innerAudioContext = uni.createInnerAudioContext();
-							this.innerAudioContext.onEnded(this.replyEnd);
-							this.innerAudioContext.onError(this.replyEnd)
 							this.innerAudioContext.autoplay = true;
+							this.innerAudioContext.volume = 1;
+							this.innerAudioContext.onCanplay(()=>{
+								// 先降低直播音频声音
+								this.isplay = true
+								this.vRef[this.current].pause()
+								this.innerAudioContext.play();
+							})
+							this.innerAudioContext.onEnded(this.replyEnd);
+							if(plus.os.name!=='iOS'){
+								this.innerAudioContext.onError(this.replyEnd);
+							}
 						}
-						// 先降低直播音频声音
-						this.innerAudioContext.onCanplay(()=>{
-							this.isplay = true
-							this.vRef[this.current].pause()
-							this.innerAudioContext.play();
-						})
 						this.innerAudioContext.src = randomItem.full_path;
 						// 显示当前正在回复的内容
 						this.setCurrentReply(randomItem.title, msg)
