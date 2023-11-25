@@ -11,6 +11,17 @@
 		>
 			<template #left><text></text></template>
 		</u-navbar>
+		<!-- 平台选择 -->
+		<view class="fcc-sb platformArea">
+			<view 
+				:class="['platform',{'act': selectPlatform === item.id}]" 
+				v-for="item in platformList"
+				@click="changePla(item.id)"
+			>
+				<image class="icon" :src="item.icon"></image>
+				<text class="name">{{item.name}}</text>
+			</view>
+		</view>
 		<u--form
 			class="panel"
 			:model="form"
@@ -19,7 +30,8 @@
 			errorType="toast"
 		>
 			<image src="/static/images/live/title.png" class="title"></image>
-			<u-form-item prop="live_id">
+			<!-- 抖音直播 -->
+			<u-form-item prop="live_id" v-if="selectPlatform===1">
 				<view class="iptBox">
 					<u--input 
 						v-model.trim="form.live_id" 
@@ -32,8 +44,19 @@
 				</view>
 				<text class="searchText mc" @click="searchLive">搜索</text>
 			</u-form-item>
-			<view class="liveName">直播间：<text>{{title}}</text></view>
-			<!-- <image src="/static/images/live/icon-msg.png" class="icon-msg"></image> -->
+			<!-- 其他平台直播 -->
+			<view class="iptBox" v-else>
+				<u--input 
+					v-model.trim="form.live_url" 
+					border="none" 
+					class="ipt"
+					prefixIcon="search"
+					prefixIconStyle="font-size: 36rpx;color: #909399"
+					placeholder="请输入快手直播间地址 "
+					:formatter="formatter"
+				></u--input>
+			</view>
+			<view class="liveName"  v-if="selectPlatform===1">直播间：<text>{{title}}</text></view>
 		</u--form>
 		<view class="panel">
 			<view class="flex between">
@@ -97,10 +120,12 @@ const live = useLiveStore()
 const urlForm = ref()
 const form = reactive({
 	live_id: null,
+	live_url: '',
 })
 const title = ref('')
 const welcome = ref(false) // 是否开启欢迎语
 const welcome_interval = ref(30) // 欢迎的间隔时间
+const selectPlatform = ref(1) // 当前选择的直播平台
 const rules = reactive({
 	live_id: [
 		{
@@ -117,24 +142,32 @@ const rules = reactive({
 		// }
 	]
 })
-let url_validate = false, live_url = '';
+const platformList = [
+	{id: 1, name: '抖音直播', icon: '/static/images/live/dy.png'},
+	{id: 2, name: '快手直播', icon: '/static/images/live/ks.png'}
+]
 
 const formatter = (value) => {
 	// 过滤输入的汉字
     if(value.includes('http')){
-      const url = value.split('http')[1]
-      return `http${url}`
+		// 使用正则表达式匹配字符串中的 URL
+		const matches = value.match(/(https?:\/\/[^\s]+)/g);
+		return (matches && matches.length > 0) ? matches[0] : '';
     }else{
       return value
     }
 }
+function changePla(id){
+	selectPlatform.value = id
+	form.live_id = null
+	form.live_url = ''
+}
 function searchLive(){
 	urlForm.value.validate().then(res => {
-		url_validate = true
 		getLiveTit({live_id: form.live_id}).then(res=>{
 			if(res&&res.data){
 				title.value = res.data.title
-				live_url = res.data.live_url
+				form.live_url = res.data.live_url
 			}
 		})
 	}).catch(errors => {
@@ -142,10 +175,11 @@ function searchLive(){
 	})
 }
 function startLive(){
-	if(!form.live_id || !url_validate) return uni.$u.toast('未填写抖音号或不正确')
+	if(selectPlatform.value==1 && (!form.live_id || !form.live_url)) return uni.$u.toast('未填写抖音号或不正确')
+	else if(!form.live_url) return uni.$u.toast('未填写直播间地址')
 	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
 	if(!task.selectReply) return uni.$u.toast('请选择回复')
-	const parame = {voice_id: task.selectVoice.id, answer_id: task.selectReply.id, is_welcome: welcome.value, live_url, type: 1}
+	const parame = {voice_id: task.selectVoice.id, answer_id: task.selectReply.id, is_welcome: welcome.value, live_url: form.live_url, type: 1}
 	if(welcome.value){
 		parame.welcome_interval = welcome_interval.value
 	}
@@ -179,6 +213,36 @@ onBeforeUnmount(()=>{
 	left: 0;
 	z-index: 1;
 	padding: 0 20rpx;
+	.platformArea{
+		padding-top: 20rpx;
+	}
+	.platform{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 328rpx;
+		height: 96rpx;
+		background: #ffffff;
+		border-radius: 15rpx;
+		transition: all 500ms;
+		.icon{
+			width: 42rpx;
+			height: 42rpx;
+		}
+		.name{
+			font-size: 36rpx;
+			color: #333333;
+			margin-left: 6rpx;
+		}
+		&.act{
+			border: 2rpx solid #1e64fe;
+			box-shadow: -1rpx 2rpx 6rpx 0 rgba(0,0,0,0.22); 
+			.name{
+				color: #207efe;
+				font-weight: bold;
+			}
+		}
+	}
 	.panel{
 		width: 710rpx;
 		background: #ffffff;

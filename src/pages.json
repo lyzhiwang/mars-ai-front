@@ -17,17 +17,13 @@
 		{
 			"path": "tabber/index/index",
 			"style": {
-				// "transparentTitle": "auto",
-				// "navigationBarTitleText": "首页",
-				// "navigationBarBackgroundColor": "#519af8"
 				"transparentTitle": "always" //状态栏透明
 			}
 		},
 		{
 			"path": "tabber/live/index",
 			"style": {
-				"navigationBarBackgroundColor": "#1e64fe",
-				"navigationBarTitleText": "直播",
+				"navigationStyle": "custom",
 				"navigationBarTextStyle": "white"
 			}
 		},
@@ -50,6 +46,18 @@
 		{
 			"root": "pagesub",
 			"pages": [
+				{
+				    "path": "/live/record",
+				    "style": {
+				    	"navigationBarTitleText": "直播记录"
+				    }
+				},
+				{
+					"path": "/live/detail",
+					"style": {
+						"navigationBarTitleText": "直播记录详情"
+					}
+				},
 				{
                     "path" : "live/create",
                     "style" :  {

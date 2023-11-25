@@ -1,7 +1,18 @@
 <template>
 <view class="page">
 	<view class="panel">
-		<view class="h2">直播视频上传</view>
+		<view class="h2 fcc-sb">
+			<text>视频位置</text>
+			<text class="tip">*最多可上传1段视频</text>
+		</view>
+		<view class="con">
+			<view :class="['imgBox',{'act': mode==1}]" @click="mode=1"><image src="/static/images/live/horizontal.png" class="example"></image></view>
+			<view :class="['imgBox',{'act': mode==2}]" @click="mode=2"><image src="/static/images/live/vertical.png" class="example"></image></view>
+		</view>
+		<text class="tip">*请先选择视频比例</text>
+		<u-gap height="2rpx" bgColor="#d7d8d9" marginTop="20rpx" marginBottom="30rpx"></u-gap>
+		<view class="h2">宣传视频</view>
+		<!-- 上传区域 -->
 		<u-upload
 			:fileList="video"
 			:compressed="false"
@@ -10,10 +21,17 @@
 			@delete="deleteVideo"
 			:maxCount="1"
 			accept="video"
-			width="128"
-			height="128"
-		></u-upload>
-		<view class="tip">*建议上传竖屏视频</view>
+			:width="650"
+			:height="260"
+			class="uploadVideo"
+		>
+			<view class="goToBtn">
+				<view class="upBox">
+					<u-icon name="plus" color="#999999" size="36rpx"></u-icon>
+					<view class="text">上传视频</view>
+				</view>
+			</view>
+		</u-upload>
 	</view>
 	<view class="placeholder"></view>
 	<view class="fixedArea">
@@ -29,10 +47,12 @@ import { useConfigStore, useLiveStore } from '@/stores';
 const config = useConfigStore()
 const live = useLiveStore()
 const video = ref([])
+const mode = ref(1)
 onLoad((option)=>{
 	config.getQnToken('video')
 	if(live.liveRoomVideo){
 		video.value[0] = live.liveRoomVideo
+		mode.value = live.liveRoomVideo.video_model
 	}
 })
 
@@ -72,7 +92,7 @@ function uploadFilePromise(url){
 	});
 }
 function submit(){
-	const data = video.value.length>0 ? video.value[0] : null
+	const data = video.value.length>0 ? {...video.value[0], video_model: mode.value} : null
 	live.setLiveRoomVideo(data)
 	uni.navigateBack()
 }
@@ -103,6 +123,19 @@ function submit(){
 	.con{
 		display: flex;
 		justify-content: space-between;
+		padding: 0 60rpx 20rpx;
+		.imgBox{
+			padding: 8rpx;
+			border-radius: 10rpx;
+			border: 2rpx solid transparent;
+		}
+		.example{
+			width: 220rpx;
+			height: 391rpx;
+		}
+		.act{
+			border-color: #2281fe;
+		}
 	}
 	.fixedArea{
 		box-sizing: content-box;
@@ -133,6 +166,58 @@ function submit(){
 	.tip{
 		font-size: 22rpx;
 		color: #999999;
+	}
+	.goToBtn{
+		width: 650rpx;
+		height: 260rpx;
+		background: #ffffff;
+		border: 2rpx dashed #2281fe;
+		border-radius: 10rpx;
+		margin-top: 22rpx;
+		box-sizing: border-box;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 24rpx;
+		color: #999999;
+		.pic{
+			margin: 0 7rpx;
+		}
+		.upBox{
+			width: 140rpx;
+			height: 140rpx;
+			margin: 0 7rpx;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
+		.bor{
+			border: 2rpx dashed #999999;
+		}
+	}
+}
+</style>
+<style lang="scss">
+.uploadVideo{
+	.u-upload__wrap__preview__other{
+		width: 650rpx!important;
+		height: 260rpx!important;
+	}
+	.u-upload__deletable, .u-upload__success{
+		height: 40rpx!important;
+		width: 40rpx!important;
+		.u-icon__icon{
+			font-size: 30rpx!important;
+			line-height: 30rpx!important;
+		}
+	}
+	.u-upload__success{
+		border-width: 22rpx!important;
+	}
+	.u-upload__success__icon{
+		bottom: -24rpx!important;
+		right: -24rpx!important;
 	}
 }
 </style>

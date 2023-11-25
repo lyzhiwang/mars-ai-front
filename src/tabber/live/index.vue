@@ -2,6 +2,19 @@
 <view class="livePage">
 	<view class="bg"></view>
 	<view class="contBox">
+		<!-- 顶部header -->
+		<u-navbar 
+			bgColor="#1e64fe" 
+			:title="livePlatform" 
+			titleStyle="font-size:36rpx;color:#fff" 
+			leftIconSize="40rpx" 
+			leftIconColor="#fff"
+			fixed
+			autoBack 
+			placeholder
+		>
+			<template #right><text class="liveRecord" @click="toLiveRecord">直播记录</text></template>
+		</u-navbar>
 		<view class="panel">
 			<button class="create" @click="goTo('/pagesub/live/create')">
 				<image src="/static/images/live/crt.png" class="ion-crt"></image>
@@ -85,7 +98,7 @@
 </template>
 
 <script setup>
-import { onLoad, onShow, onHide, onBackPress } from '@dcloudio/uni-app'
+import { onLoad, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import { useUserStore, useLiveStore } from '@/stores'
 import { getLiveRoom, addKeyword, errorStatistics } from '@/api'
 import { goTo, randomArr, downLoadAudio } from '@/utils/helper'
@@ -94,12 +107,16 @@ import { closeWebsocket } from '@/utils/socket'
 const user = useUserStore()
 const live = useLiveStore()
 const limit = ref(2) // 控制video渲染个数
+const livePlatform = ref('直播')
 let round = 1, i = 0, voiceArr = []; // 轮数和当前播放的第几个
 
 const partName= computed(()=>live.liveInfo&&live.liveInfo.voice_media[live.current] ? live.liveInfo.voice_media[live.current].title : '')
 const getItem = (media)=> {
 	const { title, upload } = media
 	return {"full_path": upload.full_path, "title": title||upload.name};
+}
+function toLiveRecord(){
+	uni.redirectTo({url: '/pagesub/live/record'});
 }
 function activeReply(msg){
 	// 主动点击回复
@@ -190,6 +207,7 @@ onShow(()=>{
 		if(res&&res.data){
 			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url, is_welcome, welcome_interval, id } = res.data
 			const { sort_type, get_media } = voice
+			livePlatform.value = platform ? '快手直播' : '抖音直播'
 			const vRef = []
 			const voice_media = get_media.map((media, i)=>{
 				const vdom = uni.createVideoContext(`vDom${i}`)
@@ -228,8 +246,8 @@ onShow(()=>{
 		}
 	})
 })
-onBackPress(exit)
 onHide(exit)
+onUnload(exit)
 </script>
 
 <style lang="scss" scoped>
@@ -242,6 +260,10 @@ onHide(exit)
 	width: 100%;
 	min-height: 100vh;
 	position: relative;
+	.liveRecord{
+		font-size: 26rpx;
+		color: #fff;
+	}
 	.none{
 		position: absolute;
 		top: 0;
@@ -251,16 +273,18 @@ onHide(exit)
 		opacity: 0;
 	}
 	.bg{
-		height: 100vh;
-		background: linear-gradient(180deg,#1e64fe 0%, #f1f4ff 100%);
-		position: relative;
+		min-height: 100vh;
+		background: linear-gradient(180deg,#1e64fe 20%, #f1f4ff 100%);
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
 		z-index: 1;
 	}
 	.contBox{
-		position: absolute;
+		position: relative;
 		z-index: 2;
-		top: 0;
-		left: 0;
 		padding: 0 20rpx;
 		width: 100%;
 		overflow: hidden;
@@ -416,6 +440,9 @@ onHide(exit)
 				min-width: 132rpx;
 			}
 		}
+	}
+	.placeholder{
+		height: 500rpx;
 	}
 }
 </style>

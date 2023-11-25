@@ -42,7 +42,7 @@
 	<image class="right" :src="right_img" mode="widthFix" v-if="right_img"></image>
 	<image class="bottom" :src="bottom_img" mode="aspectFit" v-if="bottom_img"></image>
 	<video 
-		class="videoSticker"
+		:class="['videoSticker', videoType]"
 		v-if="videoSticker" 
 		:src="videoSticker" 
 		:muted="true" 
@@ -114,6 +114,7 @@ export default {
 		const bottom_img = ref('')
 		const videoSticker = ref('')
 		const showGoodsCard = ref(false)
+		const videoType = ref('horizontal')
 		let round = 1, i = 0, voiceArr = [], timer = null; // 轮数和当前播放的第几个
 		const goods= computed(()=>live.liveInfo&&live.liveInfo.voice_media[live.current] ? live.liveInfo.voice_media[live.current].goods : null)
 		function getItem(media){
@@ -167,13 +168,14 @@ export default {
 		onLoad(()=>{
 			getLiveRoom({type: 2}).then(res=>{
 				if(res&&res.data){
-					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id } = res.data
+					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id, video_model } = res.data
 					const { sort_type, get_media } = voice
 					const vRef = []
 					top_img.value = get_top ? get_top.full_path : '';
 					left_img.value = get_left ? get_left.full_path : '';
 					right_img.value = get_right ? get_right.full_path : ''; 
 					bottom_img.value = get_bottom ? get_bottom.full_path : ''; 
+					videoType.value = video_model===1 ? 'horizontal' : 'vertical';
 					if(get_video) videoSticker.value = get_video.full_path
 					const voice_media = get_media.map((media, i)=>{
 						const vdom = uni.createVideoContext(`vDom${i}`)
@@ -234,7 +236,7 @@ export default {
 			}
 		})
 		return { 
-			config, live, limit, interrupt, partEnd, top_img, left_img, right_img, bottom_img, goods, showGoodsCard, videoSticker
+			config, live, limit, interrupt, partEnd, top_img, left_img, right_img, bottom_img, goods, showGoodsCard, videoSticker, videoType
 		}
 	},
 	onReady() {
@@ -485,12 +487,17 @@ export default {
 	}
 	.videoSticker{
 		width: 750rpx;
-		height: 1000rpx;
 		position: absolute;
 		top: 0;
 		left: 0;
 		z-index: 9;
 		background: transparent;
+		&.horizontal{ 
+			height: 421.875rpx; // 16:9
+		}
+		&.vertical{
+			height: 1000rpx; // 3:4
+		}
 	}
 }
 </style>

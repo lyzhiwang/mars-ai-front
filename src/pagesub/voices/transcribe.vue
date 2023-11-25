@@ -117,7 +117,7 @@
 		
 	}
 	const type = ref(1) // 1 语音库， 2 回复
-	let recorderManager = null, innerAudioContext = null, id = null;
+	let recorderManager = null, innerAudioContext = null, id = null, isBack = false;
 	onLoad((option)=>{
 		id = option.id
 		type.value = option.type
@@ -143,7 +143,9 @@
 			clearInterval(timer.value)
 			timer.value = null
 			time.value = 0
-			uni.showToast({title: '录音完成!', icon: 'success', duration: 1500})
+			if(!isBack){
+				uni.showToast({title: '录音完成!', icon: 'success', duration: 1500})
+			}
 		});
 		// 获取七牛token
 		config.getQnToken()
@@ -247,7 +249,10 @@
 			clearInterval(timer.value)
 			audioQuickPlay.value.destroy()
 			audioQuickPlay.value = null
-		} 	
+		}
+		isBack = true
+		recorderManager.stop()
+		recorderManager = null
 	})
 </script>
 
