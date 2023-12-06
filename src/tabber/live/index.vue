@@ -205,9 +205,10 @@ onShow(()=>{
 	if(live.wsObj) return
 	getLiveRoom({type: 1}).then(res=>{
 		if(res&&res.data){
-			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url, is_welcome, welcome_interval, id } = res.data
+			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url, is_welcome, welcome_interval, id, platform, ws_ks_url } = res.data
 			const { sort_type, get_media } = voice
-			livePlatform.value = platform ? '快手直播' : '抖音直播'
+			livePlatform.value = platform===2 ? '快手直播' : '抖音直播'
+			const url = platform===2 ? ws_ks_url : ws_url
 			const vRef = []
 			const voice_media = get_media.map((media, i)=>{
 				const vdom = uni.createVideoContext(`vDom${i}`)
@@ -240,7 +241,7 @@ onShow(()=>{
 				})
 				// 打开获取评论的长连接
 				// if(is_open===1){
-				live.openLonglink(live_url, useself, ws_url)
+				live.openLonglink(live_url, useself, url)
 				// }
 			})
 		}

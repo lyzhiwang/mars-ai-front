@@ -1,12 +1,12 @@
 <template>
 <view class="page2">
 	<view class="panel shadow">
-		<view class="tit">直播店铺分店一（店铺名称）</view>
+		<view class="tit">{{platformName}}</view>
 		<view class="fcc-sb">
 			<view class="name">直播间</view>
 			<view class="iptBox">
 				<u--input 
-					v-model.trim="url" 
+					v-model.trim="detail.live_url" 
 					border="none" 
 					class="ipt"
 					prefixIcon="search"
@@ -39,39 +39,53 @@
 	</view>
 	<view class="placeholder"></view>
 	<view class="fixedArea">
-		<u-button type="primary" text="确定" shape="circle" class="submit" @click="reStart"></u-button>
+		<u-button type="primary" text="重新开播" shape="circle" class="submit" @click="reStart"></u-button>
 	</view>
 </view>
 </template>
 
 <script setup>
 import { onLoad, onReachBottom } from '@dcloudio/uni-app'
-import { useConfigStore, useTaskStore, useLiveStore } from '@/stores'
+import { useTaskStore } from '@/stores'
+import { getLiveById, createLiveRoom } from '@/api'
 import { goTo } from '@/utils/helper.js'
 
-const config = useConfigStore()
 const task = useTaskStore()
-const live = useLiveStore()
-const url = ref('https://www.58pic.com/')
+const detail = reactive({
+	live_url: '',
+	is_welcome: 0,
+	welcome_interval: 30,
+})
+const platformName = ref('')
 
 onLoad((option)=>{
 	const { id } = option
-	var pages = getCurrentPages();
-	console.log(1111, id, pages[0].route)
+	// var pages = getCurrentPages();
+	getLiveById({id}).then(res=>{
+		if(res&&res.data){
+			const { live_url, is_welcome, welcome_interval, platform, voice, answer } = res.data
+			platformName.value = platform ===1 ? '抖音直播' : '快手直播'
+			detail.live_url = live_url
+			detail.is_welcome = is_welcome
+			detail.welcome_interval = welcome_interval
+			task.setVoice({id: voice.id, title: voice.title})
+			task.setReply({id: answer[0].id, title: answer[0].title})
+		}
+	})
 })
 function reStart(){
-	if(!form.live_id || !url_validate) return uni.$u.toast('未填写抖音号或不正确')
 	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
 	if(!task.selectReply) return uni.$u.toast('请选择回复')
-	const parame = {voice_id: task.selectVoice.id, answer_id: task.selectReply.id, is_welcome: welcome.value, live_url, type: 1}
-	if(welcome.value){
-		parame.welcome_interval = welcome_interval.value
+	const parame = {
+		...detail,
+		voice_id: task.selectVoice.id,
+		answer_id: task.selectReply.id, 
+		type: 1,
 	}
 	createLiveRoom(parame).then(res=>{
 		if(res){
 			// 开始直播
-			live.setTitle(title.value)
-			uni.navigateBack()
+			uni.redirectTo({url: '/tabber/live/index'})
 			// uni.switchTab({url: '/tabber/live/index'})
 		}
 	})
@@ -119,11 +133,11 @@ onBeforeUnmount(()=>{
 		color: #1e64fe;
 	}
 	.iptBox{
-		width: 566rpx;
+		width: 620rpx;
 		height: 60rpx;
 		border: 2rpx solid #2281FE;
 		border-radius: 30rpx;
-		padding: 0 20rpx 0 30rpx;
+		padding: 0 20rpx 0 20rpx;
 		position: relative;
 		z-index: 2;
 		margin: 30rpx 0 26rpx;
@@ -188,5 +202,22 @@ onBeforeUnmount(()=>{
 	height: 168rpx;
 	padding-bottom: constant(safe-area-inset-bottom);
 	padding-bottom: env(safe-area-inset-bottom);
+}
+.selectItem{
+	min-height: 40px;
+	background: #ffffff;
+	border: 2rpx solid #2281fe;
+	border-radius: 10rpx;
+	display: flex;
+	align-items: center;
+	margin-top: 20rpx;
+	font-size: 28rpx;
+	color: #333;
+	padding: 20rpx;
+	.voice{
+		width: 36rpx;
+		height: 36rpx;
+		margin-right: 8rpx;
+	}
 }
 </style>

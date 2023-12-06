@@ -441,3 +441,20 @@ export function checkJob(params) {
 		params
 	})
 }
+
+// 直播历史记录
+export function liveHistory(params) {
+	return request({
+		url: '/v1/get/history',
+		method: 'get',
+		params
+	})
+}
+
+export function getLiveById(params) {
+	return request({
+		url: '/v1/get/live/id',
+		method: 'get',
+		params
+	})
+}

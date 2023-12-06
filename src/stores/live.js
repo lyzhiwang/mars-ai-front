@@ -134,6 +134,7 @@ export const useLiveStore = defineStore('live', {
 			}
 		},
 		globelMessage({ type, info }) {
+			// console.log(type, info)
 			switch (type) {
 				case 'live': // 评论
 					if(this.liveInfo){

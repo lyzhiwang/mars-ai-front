@@ -3,26 +3,30 @@
 	<template v-if="plist.length>0">
 		<view class="panel" v-for="(item, i) in plist" :key="item.id">
 			<!-- <view class="dele" @click="deleteItem(item)"><u-icon name="trash" size="34rpx" color="#fff"></u-icon></view> -->
-			<view class="tit ell">直播店铺名称/抖音号</view>
-			<view class="time">2023-10-21 12:02:12</view>
-			<view class="flex-rcc enter" @click="goTo('/pagesub/live/detail?id='+1)">进入</view>
+			<view class="tit ell">{{item.live_url}}</view>
+			<view class="time">{{item.created_at}}</view>
+			<view class="flex-rcc enter" @click="enterDetail(item.id)">进入</view>
 		</view>
 		<u-loadmore v-if="plist.length>=size" :status="listStatus" fontSize="28rpx" iconSize="30rpx" line/>
 	</template>
-	<u-empty v-else mode="data" textSize="28"></u-empty>
+	<u-empty v-else mode="data" textSize="28" :marginTop="50"></u-empty>
 </view>
 </template>
 
 <script setup>
-import { onLoad, onReachBottom } from '@dcloudio/uni-app'
-import { replyClassList, deleReplyClass } from '@/api'
+import { onLoad, onReachBottom, onPullDownRefresh } from '@dcloudio/uni-app'
+import { liveHistory } from '@/api'
 import { goTo } from '@/utils/helper.js'
 
-const plist = ref([1])
+const plist = ref([])
 const listStatus = ref('loadmore')
 let page = 1, last = 0;
 const size = 20;
 
+function enterDetail(id){
+	uni.redirectTo({url: '/pagesub/live/detail?id='+id})
+	// goTo('/pagesub/live/detail?id='+item.id)
+}
 function deleteItem(item){
 	const {id, title} = item
 	uni.showModal({
@@ -39,16 +43,18 @@ function deleteItem(item){
 	})
 }
 function queryList(init){
-	replyClassList({page, size}).then(res=>{
+	if(init) page = 1
+	liveHistory({type:1, page, size}).then(res=>{
 		if(res&&res.data){
 			const {list, total} = res.data
 			plist.value = init ? list : plist.value.concat(list);
 			last = Math.ceil(total/size)
 			if(page >= last) listStatus.value = 'nomore';
 		}
-	})
+	}).finally(()=>uni.stopPullDownRefresh())
 }
-onLoad(()=>queryList(true))
+onPullDownRefresh(()=>queryList(true))
+onLoad(()=>uni.startPullDownRefresh())
 onReachBottom(()=>{
 	if(page >= last) return;
 	listStatus.value = 'loading'
@@ -69,7 +75,7 @@ onReachBottom(()=>{
 		min-height: 135rpx;
 		background: #ffffff;
 		border-radius: 20rpx;
-		padding: 30rpx;
+		padding: 30rpx 140rpx 30rpx 30rpx;
 		position: relative;
 		margin: 15rpx 0;
 		.dele{
@@ -88,6 +94,8 @@ onReachBottom(()=>{
 			font-size: 30rpx;
 			font-weight: bold;
 			color: #333333;
+			white-space: normal;
+			word-break: break-all;
 		}
 		.time{
 			font-size: 24rpx;

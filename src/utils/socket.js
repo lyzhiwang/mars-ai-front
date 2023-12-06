@@ -115,10 +115,10 @@ const onWsOpen = (event) => {
   // wsObj.send('我发送消息给服务端');
   // 添加状态判断，当为OPEN时，发送消息
   if (wsObj.readyState === wsObj.OPEN) { // wsObj.OPEN = 1
+	if(reconnect_timer) clearInterval(reconnect_timer)
     // 发给后端的数据需要字符串化
     wsObj.send({data: JSON.stringify(sendDatas)})
-	// 30分钟定时重连
-	if(reconnect_timer) clearInterval(reconnect_timer)
+	// 7分钟定时重连
 	reconnect_timer = setInterval(reconnect, 420000)
   }
   if (wsObj.readyState === wsObj.CLOSED) { // wsObj.CLOSED = 3

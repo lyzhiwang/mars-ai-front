@@ -179,7 +179,7 @@ function startLive(){
 	else if(!form.live_url) return uni.$u.toast('未填写直播间地址')
 	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
 	if(!task.selectReply) return uni.$u.toast('请选择回复')
-	const parame = {voice_id: task.selectVoice.id, answer_id: task.selectReply.id, is_welcome: welcome.value, live_url: form.live_url, type: 1}
+	const parame = {voice_id: task.selectVoice.id, answer_id: task.selectReply.id, is_welcome: welcome.value, live_url: form.live_url, type: 1, platform: selectPlatform.value}
 	if(welcome.value){
 		parame.welcome_interval = welcome_interval.value
 	}

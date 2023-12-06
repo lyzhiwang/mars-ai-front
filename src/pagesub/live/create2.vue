@@ -208,7 +208,7 @@ function startLive(){
 			form2[`${key}_img`] = live.liveRoomStick[key][0] ? live.liveRoomStick[key][0].id : null
 		}
 	}
-	const parame = {...form2, voice_id: task.selectVoice.id, answer_id: task.selectReply.id, is_welcome: welcome.value, live_url: form.live_url, type: 2}
+	const parame = {...form2, voice_id: task.selectVoice.id, answer_id: task.selectReply.id, is_welcome: welcome.value, live_url: form.live_url, type: 2, platform: selectPlatform.value}
 	if(welcome.value){
 		parame.welcome_interval = welcome_interval.value
 	}
