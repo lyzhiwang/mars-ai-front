@@ -65,6 +65,7 @@ onLoad((option)=>{
 		if(res&&res.data){
 			const { live_url, is_welcome, welcome_interval, platform, voice, answer } = res.data
 			platformName.value = platform ===1 ? '抖音直播' : '快手直播'
+			detail.platform = platform
 			detail.live_url = live_url
 			detail.is_welcome = is_welcome
 			detail.welcome_interval = welcome_interval

@@ -15,10 +15,10 @@
 			<view 
 				:class="['platform',{'act': selectPlatform === item.id}]" 
 				v-for="item in platformList"
-				@click="changePla(item.id)"
+				@click="changePla(item.id, item.name)"
 			>
 				<image class="icon" :src="item.icon"></image>
-				<text class="name">{{item.name}}</text>
+				<text class="name">{{item.name}}直播</text>
 			</view>
 		</view>
 		<!-- 上传区域 -->
@@ -60,8 +60,8 @@
 			errorType="toast"
 		>
 			<image src="/static/images/live/title.png" class="title"></image>
-			<!-- 抖音直播 -->
-			<u-form-item prop="live_id" v-if="selectPlatform===1">
+			<!-- 抖音/快手 直播 -->
+			<u-form-item prop="live_id" >
 				<view class="iptBox">
 					<u--input 
 						v-model.trim="form.live_id" 
@@ -69,24 +69,23 @@
 						class="ipt"
 						prefixIcon="search"
 						prefixIconStyle="font-size: 36rpx;color: #909399"
-						placeholder="输入直播账号的抖音号"
+						:placeholder="`输入直播账号的${pltName}号`"
+						v-if="selectPlatform===1"
+					></u--input>
+					<u--input
+						v-else
+						v-model.trim="form.live_id" 
+						border="none" 
+						class="ipt"
+						prefixIcon="search"
+						prefixIconStyle="font-size: 36rpx;color: #909399"
+						placeholder="请输入快手直播间的分享链接"
+						:formatter="formatter"
 					></u--input>
 				</view>
 				<text class="searchText mc" @click="searchLive">搜索</text>
 			</u-form-item>
-			<!-- 其他平台直播 -->
-			<view class="iptBox" v-else>
-				<u--input 
-					v-model.trim="form.live_url" 
-					border="none" 
-					class="ipt"
-					prefixIcon="search"
-					prefixIconStyle="font-size: 36rpx;color: #909399"
-					placeholder="请输入快手直播间地址 "
-					:formatter="formatter"
-				></u--input>
-			</view>
-			<view class="liveName" v-if="selectPlatform===1">直播间：<text>{{title}}</text></view>
+			<view class="liveName">直播间：<text>{{title}}</text></view>
 		</u--form>
 		<view class="panel shadow">
 			<view class="flex between">
@@ -155,6 +154,7 @@ const title = ref('')
 const welcome = ref(false) // 是否开启欢迎语
 const welcome_interval = ref(30) // 欢迎的间隔时间
 const selectPlatform = ref(1) // 当前选择的直播平台
+const pltName = ref('抖音')
 const rules = reactive({
 	live_id: [
 		{
@@ -165,8 +165,8 @@ const rules = reactive({
 	]
 })
 const platformList = [
-	{id: 1, name: '抖音直播', icon: '/static/images/live/dy.png'},
-	{id: 2, name: '快手直播', icon: '/static/images/live/ks.png'}
+	{id: 1, name: '抖音', icon: '/static/images/live/dy.png'},
+	{id: 2, name: '快手', icon: '/static/images/live/ks.png'}
 ]
 
 const formatter = (value) => {
@@ -179,26 +179,29 @@ const formatter = (value) => {
       return value
     }
 }
-function changePla(id){
+function changePla(id, name){
 	selectPlatform.value = id
+	pltName.value = name
 	form.live_id = null
 	form.live_url = ''
+	title.value = ''
 }
 function searchLive(){
-	urlForm.value.validate().then(res => {
-		getLiveTit({live_id: form.live_id}).then(res=>{
-			if(res&&res.data){
-				title.value = res.data.title
-				form.live_url = res.data.live_url
-			}
-		})
-	}).catch(errors => {
-		uni.$u.toast(errors[0].message)
+	if(!form.live_id){
+		if(selectPlatform.value===1) return uni.$u.toast('请输入直播账号的抖音号')
+		else if(selectPlatform.value===2) return uni.$u.toast('请输入快手直播间的分享链接')
+	}
+	let parame = {live_id: form.live_id}
+	if(selectPlatform.value!=1) parame.type = selectPlatform.value
+	getLiveTit(parame).then(res=>{
+		if(res&&res.data){
+			title.value = res.data.title
+			form.live_url = res.data.live_url
+		}
 	})
 }
 function startLive(){
-	if(selectPlatform.value==1 && (!form.live_id || !form.live_url)) return uni.$u.toast('未填写抖音号或不正确')
-	else if(!form.live_url) return uni.$u.toast('未填写直播间地址')
+	if(!form.live_id || !form.live_url) return uni.$u.toast('请先根据提示填写直播间配置并搜索')
 	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
 	if(!task.selectReply) return uni.$u.toast('请选择回复')
 	let form2 = {}
