@@ -32,6 +32,7 @@
 				</view>
 			</view>
 		</u-upload>
+		<text class="tip r">*上传的视频最好小于60秒，不大于100M</text>
 	</view>
 	<view class="placeholder"></view>
 	<view class="fixedArea">

@@ -52,6 +52,7 @@
 		:show-progress="false" 
 		:show-loading="false"
 		:enable-progress-gesture="false"
+		@ended="vsEnd"
 		object-fit="cover"
 	></video>
 	<!-- 商品图 -->
@@ -165,6 +166,13 @@ export default {
 			vdom.play()
 			timer = setTimeout(()=>showGoodsCard.value = true, 1000)
 		}
+		function vsEnd(){
+			if(live.wlcObj){
+				live.wlcObj.play()
+			}else if(live.innerAudioContext){
+				live.innerAudioContext.play()
+			}
+		}
 		onLoad(()=>{
 			getLiveRoom({type: 2}).then(res=>{
 				if(res&&res.data){
@@ -219,6 +227,7 @@ export default {
 				// 重置数据
 				closeWebsocket()
 				if(live.innerAudioContext) live.innerAudioContext.destroy()
+				if(live.wlcObj) live.wlcObj.destroy()
 				live.$patch({
 					current: 0,
 					vRef: [], 
@@ -237,7 +246,7 @@ export default {
 			}
 		})
 		return { 
-			config, live, limit, interrupt, partEnd, top_img, left_img, right_img, bottom_img, goods, showGoodsCard, videoSticker, videoType
+			config, live, limit, interrupt, partEnd, top_img, left_img, right_img, bottom_img, goods, showGoodsCard, videoSticker, videoType, vsEnd
 		}
 	},
 	onReady() {

@@ -8,7 +8,7 @@ console.log('qiniuToken', qiniuToken)
 var input = document.getElementById("myFileInput");
     input.addEventListener("change", function() {
       var file = input.files[0];
-	  console.log('file', input)
+	  // console.log('file', input.files, file.name)
       uploadFile(file);
     });
 
@@ -33,7 +33,8 @@ function uploadFile(file){
     if (xhr.status === 200) {
       var response = JSON.parse(xhr.responseText);
       console.log('response',response);
-	  let fileName = response.data.name.split('.').slice(0, -1).join('.')
+	  const inputTit = file.name||response.data.name
+	  let fileName = inputTit.split('.').slice(0, -1).join('.')
 	  fileNameInput.value = fileName
 	  params.title = fileNameInput.value
 	  params.upload_id = response.data.id

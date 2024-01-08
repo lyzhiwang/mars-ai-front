@@ -30,6 +30,7 @@ export const useLiveStore = defineStore('live', {
 		isManualClose: false, // 是否手动关闭WS
 		synthesizing: false, // 欢迎语合成状态
 		wlcPlaying: false, // 欢迎语是否再播报中
+		wlcObj: null, // 欢迎的音频对象
 	}),
 	actions: {
 		// setPartAutoPlay(bool){
@@ -94,7 +95,9 @@ export const useLiveStore = defineStore('live', {
 		replyEnd(){
 			this.innerAudioContext.destroy()
 			this.innerAudioContext = null
-			this.vRef[this.current].play()
+			if(this.vRef.length>0){
+				this.vRef[this.current].play()
+			}
 			this.isplay = false
 			this.setCurrentReply('', '')
 		},
@@ -164,26 +167,27 @@ export const useLiveStore = defineStore('live', {
 					break;
 			}
 		},
-		welcomeEnd(welcome){
+		welcomeEnd(){
 			this.wlcPlaying = false
 			const interval = this.liveInfo.welcome_interval*1000||30000
 			// if(this.innerAudioContext.currentTime>0 && this.innerAudioContext.currentTime<this.innerAudioContext.duration) {
 			if(this.innerAudioContext && this.innerAudioContext.paused && this.isplay) {
 				// 被暂停的回复继续播放
 				this.innerAudioContext.play()
-			}else{
+			}else if(this.vRef.length>0){
 				this.vRef[this.current].play()
 			}
 			setTimeout(()=>this.setSynthesiStatus(false), interval)
-			welcome.destroy()
+			this.wlcObj.destroy()
+			this.wlcObj = null
 		},
 		playWelcomeWord(url){
-			const welcome = uni.createInnerAudioContext();
+			this.wlcObj = uni.createInnerAudioContext();
 			// 然后再播放欢迎语
-			welcome.src = url
-			welcome.autoplay = true
-			welcome.volume = 1
-			welcome.onCanplay(()=>{
+			this.wlcObj.src = url
+			this.wlcObj.autoplay = true
+			this.wlcObj.volume = 1
+			this.wlcObj.onCanplay(()=>{
 				this.wlcPlaying = true
 				// 先暂停当前其他正在播放的声音
 				if(this.innerAudioContext && !this.innerAudioContext.paused){
@@ -191,10 +195,12 @@ export const useLiveStore = defineStore('live', {
 				}else{
 					this.vRef[this.current].pause()
 				}
-				welcome.play();
+				this.wlcObj.play();
 			})
-			welcome.onEnded(()=>this.welcomeEnd(welcome))
-			welcome.onError(()=>this.welcomeEnd(welcome))
+			this.wlcObj.onEnded(this.welcomeEnd)
+			if(plus.os.name!=='iOS'){
+				this.wlcObj.onError(this.welcomeEnd)
+			}
 		},
 		checkTaskJob(room_id){
 			if(!this.liveInfo) return

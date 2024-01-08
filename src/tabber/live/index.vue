@@ -170,8 +170,8 @@ function exit(){
 		// 重置数据
 		limit.value = 2
 		closeWebsocket()
-		// if(live.vRef[live.current]) live.vRef[live.current].stop()
 		if(live.innerAudioContext) live.innerAudioContext.destroy()
+		if(live.wlcObj) live.wlcObj.destroy()
 		live.$patch({
 			current: 0,
 			vRef: [], 
