@@ -204,8 +204,9 @@ onLoad(()=>{
 onShow(()=>{
 	if(live.wsObj) return
 	getLiveRoom({type: 1}).then(res=>{
+		console.log('res1111', res)
 		if(res&&res.data){
-			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url, is_welcome, welcome_interval, id, platform, ws_ks_url } = res.data
+			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url, is_welcome, welcome_interval, id, platform, ws_ks_url, is_gift, name_before, name_after } = res.data
 			const { sort_type, get_media } = voice
 			livePlatform.value = platform===2 ? '快手直播' : '抖音直播'
 			const url = platform===2 ? ws_ks_url : ws_url
@@ -226,6 +227,9 @@ onShow(()=>{
 					answer_id,
 					is_welcome,
 					welcome_interval,
+					is_gift,
+					name_before,
+					name_after,
 					reply: answer_keyword.map((item)=>{
 						return {
 							keywords: item.keywords,
