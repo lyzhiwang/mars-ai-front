@@ -10,14 +10,17 @@
 			<u-button type="primary" text="增加" class="addBtn" @click="addBtn" v-show="showAddBtn"></u-button>
 		</view>
 		<view class="iptBox" v-for="(item, i) in form.keywords" :key="i">
-			<u--input 
+			<u-input 
 				placeholder="请输入关键词" 
 				border="none" 
 				v-model.trim="form.keywords[i]" 
 				class="ipt" 
-				readonly
 				cursor-spacing="10"
-			></u--input>
+			>
+				<template slot="suffix" #suffix>
+					<u-icon name="trash-fill" size="50rpx" color="#1E64FE" @click="delKeyword(i)"></u-icon>
+				</template>
+			</u-input>
 		</view>
 		<transition>
 			<view class="iptBox" v-show="!showAddBtn">
@@ -32,7 +35,7 @@
 			</view>
 		</transition>
 	</view>
-	<u-button type="primary" text="确定添加" shape="circle" class="submit" @click="backToList"></u-button>
+	<u-button type="primary" text="确定保存" shape="circle" class="submit" @click="backToList"></u-button>
 </view>
 </template>
 
@@ -74,10 +77,16 @@ function updateKeyword(val){
 function addBtn(){
 	showAddBtn.value = false
 }
+
+// 删除关键字
+function delKeyword(index){
+	form.keywords.splice(index, 1)
+}
+
 async function backToList(){
 	const res = isEdit.value ? await editKeyword(reply.replyTemp.id, {keywords: form.keywords}) : await addKeyword(form);
 	if(res){
-		uni.showToast({title: '添加成功', icon: 'success', duration: 1000});
+		uni.showToast({title: '保存成功', icon: 'success', duration: 1000});
 		setTimeout(uni.navigateBack, 1000)
 	}
 }

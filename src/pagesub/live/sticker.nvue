@@ -176,7 +176,7 @@ export default {
 		onLoad(()=>{
 			getLiveRoom({type: 2}).then(res=>{
 				if(res&&res.data){
-					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id, video_model, platform, ws_ks_url } = res.data
+					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id,is_gift,name_before,name_after, video_model, platform, ws_ks_url } = res.data
 					const { sort_type, get_media } = voice
 					const url = platform===2 ? ws_ks_url : ws_url
 					const vRef = []
@@ -201,6 +201,9 @@ export default {
 							voice_media: arr,
 							is_welcome,
 							welcome_interval,
+							is_gift,
+							name_before,
+							name_after,
 							reply: answer_keyword.map((item)=>{
 								return {
 									keywords: item.keywords,

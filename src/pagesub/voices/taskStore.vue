@@ -59,6 +59,7 @@
 		current.value = item.id
 	}
 	const handleAdd = ()=>{
+		if(!current.value) return uni.$u.toast('请选择对应内容再添加！')
 		switch (type.value){
 			case 1:
 				useTask.setTask(currentItem)

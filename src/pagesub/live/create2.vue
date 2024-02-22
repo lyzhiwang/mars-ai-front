@@ -128,6 +128,32 @@
 					></u-number-box>&nbsp;秒
 				</view>
 			</view>
+			<view class="flex1 mar-20">
+				<text class="h1">自定义欢迎语</text>
+				<view class="flex mt-10">
+					<u--input
+					    placeholder="请输入前置文字"
+						v-model="name_before"
+						:maxlength="10"
+					    clearable
+					  ></u--input>
+				</view>
+				<view class="flex mt-10 blue">某某(例:张三)</view>
+				<view class="flex mt-10">
+					<u--input
+					    placeholder="请输入后置文字"
+						v-model="name_after"
+						:maxlength="10"
+					    clearable
+					  ></u--input>
+				</view>
+			</view>
+			<view class="flex between mar-20">
+				<text class="h1">礼物感谢语</text>
+				<view>
+					<u-switch v-model="is_gift" size="40"></u-switch>
+				</view>
+			</view>
 		</view>
 		<view class="placeholder"></view>
 		<view class="fixedArea">
@@ -153,6 +179,9 @@ const form = reactive({
 const title = ref('')
 const welcome = ref(false) // 是否开启欢迎语
 const welcome_interval = ref(30) // 欢迎的间隔时间
+const is_gift = ref(false) // 是否开启礼物欢迎语
+const name_before = ref('欢迎') // 自定义欢迎语前置
+const name_after = ref('进入直播间') // 自定义欢迎语后置
 const selectPlatform = ref(1) // 当前选择的直播平台
 const pltName = ref('抖音')
 const rules = reactive({
@@ -211,7 +240,18 @@ function startLive(){
 			form2[`${key}_img`] = live.liveRoomStick[key][0] ? live.liveRoomStick[key][0].id : null
 		}
 	}
-	const parame = {...form2, voice_id: task.selectVoice.id, answer_id: task.selectReply.id, is_welcome: welcome.value, live_url: form.live_url, type: 2, platform: selectPlatform.value}
+	const parame = {
+		...form2, 
+		voice_id: task.selectVoice.id, 
+		answer_id: task.selectReply.id, 
+		is_welcome: welcome.value, 
+		live_url: form.live_url, 
+		type: 2, 
+		platform: selectPlatform.value,
+		is_gift: is_gift.value,
+		name_before: name_before.value ? name_before.value: '欢迎',
+		name_after: name_after.value ? name_after.value :'进入直播间'
+		}
 	if(welcome.value){
 		parame.welcome_interval = welcome_interval.value
 	}
@@ -220,6 +260,7 @@ function startLive(){
 		parame.video_model = live.liveRoomVideo.video_model
 	}
 	createLiveRoom(parame).then(res=>{
+		console.log('parame', parame)
 		if(res){
 			// 开始直播
 			// live.setTitle(title.value)
@@ -240,6 +281,13 @@ onBeforeUnmount(()=>{
 }
 .mar10{
 	margin-bottom: 10rpx;
+}
+.mar-20{
+	margin-top: 20rpx;
+	margin-bottom: 20rpx;
+}
+.mt-10{
+	margin-top: 10rpx;
 }
 .createPage{
 	width: 100%;
