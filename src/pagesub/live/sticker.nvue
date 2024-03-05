@@ -42,8 +42,9 @@
 	<image class="right" :src="right_img" mode="widthFix" v-if="right_img"></image>
 	<image class="bottom" :src="bottom_img" mode="aspectFit" v-if="bottom_img"></image>
 	<video 
-		:class="['videoSticker', videoType]"
-		v-if="videoSticker" 
+		:class="['videoSticker']"
+		:style="{'height': `${screen_height}rpx`}"
+		v-if="videoSticker && screen_height" 
 		:src="videoSticker" 
 		:muted="true" 
 		:autoplay="true" 
@@ -116,6 +117,8 @@ export default {
 		const videoSticker = ref('')
 		const showGoodsCard = ref(false)
 		const videoType = ref('horizontal')
+		const screen_height = ref(null)
+		const full_height = ref('1672')
 		let round = 1, i = 0, voiceArr = [], timer = null; // 轮数和当前播放的第几个
 		const goods= computed(()=>live.liveInfo&&live.liveInfo.voice_media[live.current] ? live.liveInfo.voice_media[live.current].goods : null)
 		function getItem(media){
@@ -174,6 +177,11 @@ export default {
 			}
 		}
 		onLoad(()=>{
+			uni.getSystemInfo({
+				success: function (res) {
+					full_height.value = (res.screenHeight + res.statusBarHeight) * 2
+				}
+			});
 			getLiveRoom({type: 2}).then(res=>{
 				if(res&&res.data){
 					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id,is_gift,name_before,name_after, video_model, platform, ws_ks_url } = res.data
@@ -184,7 +192,7 @@ export default {
 					left_img.value = get_left ? get_left.full_path : '';
 					right_img.value = get_right ? get_right.full_path : ''; 
 					bottom_img.value = get_bottom ? get_bottom.full_path : ''; 
-					videoType.value = video_model===1 ? 'horizontal' : 'vertical';
+					screen_height.value = video_model===1 ? '421.875' :video_model===2 ? '1000': full_height.value;
 					if(get_video) videoSticker.value = get_video.full_path
 					const voice_media = get_media.map((media, i)=>{
 						const vdom = uni.createVideoContext(`vDom${i}`)
@@ -249,7 +257,7 @@ export default {
 			}
 		})
 		return { 
-			config, live, limit, interrupt, partEnd, top_img, left_img, right_img, bottom_img, goods, showGoodsCard, videoSticker, videoType, vsEnd
+			config, live, limit, interrupt, partEnd, top_img, left_img, right_img, bottom_img, goods,screen_height, showGoodsCard, videoSticker, videoType, vsEnd
 		}
 	},
 	onReady() {
@@ -510,6 +518,9 @@ export default {
 		}
 		&.vertical{
 			height: 1000rpx; // 3:4
+		}
+		&.full{
+			height: 1672rpx;
 		}
 	}
 }

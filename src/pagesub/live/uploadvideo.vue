@@ -8,6 +8,7 @@
 		<view class="con">
 			<view :class="['imgBox',{'act': mode==1}]" @click="mode=1"><image src="/static/images/live/horizontal.png" class="example"></image></view>
 			<view :class="['imgBox',{'act': mode==2}]" @click="mode=2"><image src="/static/images/live/vertical.png" class="example"></image></view>
+			<view :class="['imgBox',{'act': mode==3}]" @click="mode=3"><image src="/static/images/live/full.png" class="example"></image></view>
 		</view>
 		<text class="tip">*请先选择视频比例</text>
 		<u-gap height="2rpx" bgColor="#d7d8d9" marginTop="20rpx" marginBottom="30rpx"></u-gap>
@@ -124,15 +125,15 @@ function submit(){
 	.con{
 		display: flex;
 		justify-content: space-between;
-		padding: 0 60rpx 20rpx;
+		padding: 0 0rpx 20rpx;
 		.imgBox{
 			padding: 8rpx;
 			border-radius: 10rpx;
 			border: 2rpx solid transparent;
 		}
 		.example{
-			width: 220rpx;
-			height: 391rpx;
+			width: 200rpx;
+			height: 356rpx;
 		}
 		.act{
 			border-color: #2281fe;
