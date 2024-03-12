@@ -30,7 +30,7 @@
 	const list = ref([])
 	const listStatus = ref('loadmore')
 	let page = 1, last = 0, currentItem = {};
-	const size = 20;
+	const size = 50;
 	
 	onLoad((option)=>{
 		type.value = Number(option.type)
