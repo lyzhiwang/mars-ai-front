@@ -48,13 +48,42 @@
 		</view>
 		
 		<u-modal :show="show" title="提示" :content='content' showCancelButton @confirm="ok" @cancel="show=false"></u-modal>
-		<u-picker :show="isPickerShow" ref="uPicker" :defaultIndex="defaultIndex" :itemHeight="80" :visibleItemCount="5" :columns="columns" @confirm="confirm" @change="changeHandler" keyName="name" @cancel="isPickerShow=false"></u-picker>
+		<!-- <u-picker :show="isPickerShow"
+		 ref="uPicker"
+		  :defaultIndex="defaultIndex" 
+		  :loading="loading"  
+		  keyName="name" 
+		  :itemHeight="80" 
+		  :visibleItemCount="5" 
+		  :columns="columns"
+		  immediateChange 
+		  @confirm="confirm" 
+		  @change="changeHandler" 
+		  @cancel="isPickerShow=false">
+		</u-picker> -->
+		<u-popup :show="isPickerShow" @close="isPickerShow=false">
+			<view class="selectBox">
+				<view class="btns">
+					<text @click="isPickerShow=false">取消</text>
+					<text class="blue" @click="confirm">确定</text>
+				</view>
+				<picker-view indicator-style="height: 50px;" :value="defaultIndex" @change="bindChange" class="picker-view">
+					<picker-view-column>
+						<view class="item" v-for="(item,index) in columns" :key="index">{{item.name}}</view>
+					</picker-view-column>
+					<picker-view-column>
+						<view class="item" v-for="(item,index) in columnData" :key="index">{{item.other.title}}</view>
+					</picker-view-column>
+				</picker-view>
+			</view>
+			
+		</u-popup>
 	</view>
 </template>
 
 <script setup>
 	import { onLoad,onShow, onHide, onUnload } from '@dcloudio/uni-app'
-	import { voiceReaIndex, voiceReaDestory, voiceRelationSort, goodsCategoryIndex, goodsIndex, voiceGoods } from '@/api'
+	import { voiceReaIndex, voiceReaDestory, voiceRelationSort, goodsCategoryIndex, voiceGoods } from '@/api'
 	import { useConfigStore } from '@/stores'
 	
 	const list = ref([])
@@ -71,6 +100,7 @@
 	const columns = ref([]);
 	const columnData = ref([]);
 	const defaultIndex = ref([0,0])
+	const loading = ref(false);
 	const content = ref('请确认删除该语音?')
 	const id = ref(null)
 	let innerAudioContext = null
@@ -181,29 +211,27 @@
 		goodsCategoryIndex({page:1, size: 1000}).then(res=>{
 			// 过滤掉项目内没有实际内容的
 			const list = res.data.filter(item=>item.get_goods&&item.get_goods.length!==0)
-			columns.value[0] = list
-			getGoodsList(list[0].id)
+			columns.value = list
+			if(list.length) {
+				columnData.value = list[0].get_goods
+			}
 		})
 	}
-	
-	function getGoodsList(category_id){
-		goodsIndex({page:1, size: 1000, category_id}).then(res=>{
-			const arr = []
-			res.data.map(v=>{
-				let obj = {
-					id: v.id,
-					name: v.other.title
-				}
-				arr.push(obj)
-			})
-			columns.value[1] = arr
-			columnData.value[0] = arr
-		})
+	const selectItem = ref([0,0])
+	function bindChange(e) {
+		const val = e.detail.value
+		selectItem.value = val
+		columnData.value = columns.value[val[0]].get_goods
+		if(columnData.value.length-1<val[1]){
+			defaultIndex.value = [val[0],0]
+			selectItem.value = [val[0],0]
+		}
 	}
 	
 	const voiceId = ref(null)
 	
 	function onClick(item){
+		selectItem.value = [0,0]
 		defaultIndex.value = [0,0]
 		getShopList()
 		isPickerShow.value = true
@@ -211,23 +239,15 @@
 	}
 	
 	// 语音关联图片
-	function confirm(e){
-		const goods_id = columnData.value[0][e.indexs[1]].id
-		const title = columnData.value[0][e.indexs[1]].name
+	function confirm(){
+		const goods_id = columnData.value[selectItem.value[1]].id
+		const title = columnData.value[selectItem.value[1]].other.title
 		voiceGoods({id: voiceId.value, goods_id}).then(res =>{
 			uni.showToast({title: '关联商品成功!',icon: 'none',duration: 2000});
 			const index = list.value.findIndex(v=>{return v.id===voiceId.value})
 			list.value[index].get_goods = {other:{title}} 
 			isPickerShow.value = false
 		})
-	}
-	
-	function changeHandler(e){
-		const {columnIndex,value,values,index,picker} = e;
-		if(columnIndex===0){
-			columns.value[1] = []
-			getGoodsList(columns.value[0][index].id)
-		}
 	}
 	
 	onUnload(()=>{
@@ -349,4 +369,29 @@
 		  }
 	  }
 	}
+	.selectBox{
+		.btns{
+			width: 100%;
+			display: flex;
+			align-items: center;
+			padding: 30rpx;
+			box-sizing: border-box;
+			justify-content: space-between;
+			color: #666;
+			.blue{
+				color: #2281fe;
+			}
+		}
+		.picker-view {
+			width: 750rpx;
+			height: 600rpx;
+			margin-top: 20rpx;
+			.item {
+				line-height: 100rpx;
+				text-align: center;
+			}
+		}
+	}
+	
+		
 </style>
