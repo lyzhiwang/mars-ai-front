@@ -5,8 +5,8 @@ import { uniAdapter } from 'fant-axios-adapter'
 // 设置全局的请求次数，请求的间隙
 axios.defaults.retry = 2
 axios.defaults.retryDelay = 1000
-const baseURL = (process.env.NODE_ENV === "development") ? "http://gdytest.zwstk.cn/api" : "https://mars.lytklw.cn/api";
-// const baseURL = (process.env.NODE_ENV === "development") ? "https://mars.lytklw.cn/api" : "https://mars.lytklw.cn/api";
+// const baseURL = (process.env.NODE_ENV === "development") ? "http://gdytest.zwstk.cn/api" : "https://mars.lytklw.cn/api";
+const baseURL = (process.env.NODE_ENV === "development") ? "https://mars.lytklw.cn/api" : "https://mars.lytklw.cn/api";
 // 创建axios实例
 const oemid = Number(import.meta.env.VITE_OEM_ID)
 // 错误白名单
@@ -92,7 +92,7 @@ service.interceptors.response.use(
 		'301': '请求需要重定向',
 		'400': '网络错误，请重新尝试',
 		'403': '请求被拒绝',
-		'404': '请求资源不存在',
+		'404': '请连接网络后重试!',
 		'500': '服务器错误',
 	}
     const response = error.response || { status: 404 }
