@@ -108,6 +108,7 @@
 			</view>
 		</view>
 		<view class="panel shadow">
+			<template v-if="selectPlatform===1">
 			<view class="flex between mar20">
 				<text class="h1">欢迎语</text>
 				<view>
@@ -148,6 +149,7 @@
 					  ></u--input>
 				</view>
 			</view>
+			</template>
 			<view class="flex between mar-20">
 				<text class="h1">礼物感谢语</text>
 				<view>

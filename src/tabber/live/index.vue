@@ -245,7 +245,7 @@ onShow(()=>{
 				})
 				// 打开获取评论的长连接
 				// if(is_open===1){
-				live.openLonglink(live_url, useself, url)
+				live.openLonglink(live_url, useself, url, platform)
 				// }
 			})
 		}

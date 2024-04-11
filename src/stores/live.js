@@ -79,17 +79,25 @@ export const useLiveStore = defineStore('live', {
 			this.replyVoice = file
 			this.currentMsg = msg
 		},
-		openLonglink(live_url, useself, ws_url) {
+		openLonglink(live_url, useself, ws_url, type) {
 			// 打开长连接
 			if(this.wsObj) return
 			const user = useUserStore()
 			if (!user.isLogin) return
 			if(useself){
 				// 使用自己的抓包地址
-				connectWebsocket(ws_url||'wss://mars.lytklw.cn/socket.io', {live_url}, this.globelMessage, () => {})
+				console.log('ws_url', ws_url)
+				console.log('live_url', live_url)
+				if(type===2){
+					// 快手直播
+					connectWebsocket(2,ws_url||'wss://mars.lytklw.cn/socket.io', {path:live_url,type: 1}, this.globelMessage3, () => {})
+				}else{
+					// 抖音
+					connectWebsocket(1,ws_url||'wss://mars.lytklw.cn/socket.io', {live_url}, this.globelMessage, () => {})
+				}
 			}else{
 				// 使用第三方
-				connectWebsocket(ws_url||'ws://42.193.254.253:3000/dy', {url: live_url}, this.globelMessage2, () => {})
+				connectWebsocket(1,ws_url||'ws://42.193.254.253:3000/dy', {url: live_url}, this.globelMessage2, () => {})
 			}
 		},
 		replyEnd(){
@@ -189,6 +197,36 @@ export const useLiveStore = defineStore('live', {
 					break;
 			}
 		},
+		globelMessage3(data){
+			// console.log('data', data)
+			if(this.liveInfo){
+				if(data.commentFeeds){
+					// 评论
+					this.addMsg(data.commentFeeds[0].content); // 添加用户评论信息到列表
+					this.startReply(data.commentFeeds[0].content); // 自动回复
+				}else if(data.giftFeeds){
+					const username = data.giftFeeds[0].user.userName
+					// 礼物
+					const { is_gift, id } = this.liveInfo
+					if(is_gift==1 && !this.synthesizing){
+						this.setSynthesiStatus(true)
+						// 先发起请求告诉服务器开始合成音频
+						const text = username.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '')
+						aliJob({room_id: id, content: `感谢${text}送来的礼物`,type:1}).then((res)=>{
+							if(res){
+								// 轮询接口查看音频合成状态
+								this.checkTaskJob(id)
+							}else{
+								this.setSynthesiStatus(false)
+							}
+						}).catch((err)=>{
+							// console.log(111, err)
+							this.setSynthesiStatus(false)
+						})
+					}
+				}
+			}
+		},
 		welcomeEnd(){
 			this.wlcPlaying = false
 			const interval = this.liveInfo.welcome_interval*1000||30000
@@ -248,6 +286,7 @@ export const useLiveStore = defineStore('live', {
 				this.startReply(content); // 自动回复
 			}
 		},
+		
 		cancelSub(channel) {
 			// 取消通道的订阅
 			if(!this.wsObj) return

@@ -227,7 +227,7 @@ export default {
 							timer = setTimeout(()=>showGoodsCard.value = true, 500)
 						})
 						// 打开获取评论的长连接
-						live.openLonglink(live_url, useself, url)
+						live.openLonglink(live_url, useself, url, platform)
 					})
 				}
 			})

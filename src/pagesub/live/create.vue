@@ -77,46 +77,48 @@
 			</view>
 		</view>
 		<view class="panel shadow">
-			<view class="flex between mar20">
-				<text class="h1">欢迎语</text>
-				<view>
-					<u-switch v-model="welcome" size="40"></u-switch>
+			<template v-if="selectPlatform===1">
+				<view class="flex between mar20">
+					<text class="h1">欢迎语</text>
+					<view>
+						<u-switch v-model="welcome" size="40"></u-switch>
+					</view>
 				</view>
-			</view>
-			<view class="flex between">
-				<view class="lebel">间隔时间</view>
-				<view class="flex">
-					<u-number-box
-						v-model="welcome_interval" 
-						:min="30" 
-						:step="5" 
-						:disabled="!welcome" 
-						inputWidth="80" 
-						buttonSize="50"
-						integer
-					></u-number-box>&nbsp;秒
+				<view class="flex between">
+					<view class="lebel">间隔时间</view>
+					<view class="flex">
+						<u-number-box
+							v-model="welcome_interval" 
+							:min="30" 
+							:step="5" 
+							:disabled="!welcome" 
+							inputWidth="80" 
+							buttonSize="50"
+							integer
+						></u-number-box>&nbsp;秒
+					</view>
 				</view>
-			</view>
-			<view class="flex1 mar-20">
-				<text class="h1">自定义欢迎语</text>
-				<view class="flex mt-10">
-					<u--input
-					    placeholder="请输入前置文字"
-						v-model="name_before"
-						:maxlength="10"
-					    clearable
-					  ></u--input>
+				<view class="flex1 mar-20">
+					<text class="h1">自定义欢迎语</text>
+					<view class="flex mt-10">
+						<u--input
+							placeholder="请输入前置文字"
+							v-model="name_before"
+							:maxlength="10"
+							clearable
+						  ></u--input>
+					</view>
+					<view class="flex mt-10 blue">某某(例:张三)</view>
+					<view class="flex mt-10">
+						<u--input
+							placeholder="请输入后置文字"
+							v-model="name_after"
+							:maxlength="10"
+							clearable
+						  ></u--input>
+					</view>
 				</view>
-				<view class="flex mt-10 blue">某某(例:张三)</view>
-				<view class="flex mt-10">
-					<u--input
-					    placeholder="请输入后置文字"
-						v-model="name_after"
-						:maxlength="10"
-					    clearable
-					  ></u--input>
-				</view>
-			</view>
+			</template>
 			<view class="flex between mar-20">
 				<text class="h1">礼物感谢语</text>
 				<view>

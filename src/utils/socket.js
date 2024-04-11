@@ -3,6 +3,8 @@ import { useLiveStore } from '@/stores'
 let wsObj = null
 // ws连接地址
 let wsUrl = null
+// 平台类型
+let platform = 1 // 1抖音 2 快手
 // let userId = null;
 // 是否执行重连 true/不执行 ； false/执行
 let lockReconnect = false
@@ -20,14 +22,17 @@ let reconnect_timer = null
 /**
  * 发起websocket请求函数
  * @param {string} url ws连接地址
+ * @param {string} type 平台类型
  * @param {Object} agentData 传给后台的参数
  * @param {function} successCallback 接收到ws数据，对数据进行处理的回调函数
  * @param {function} errCallback ws连接错误的回调函数
  */
-export const connectWebsocket = (url, agentData, successCallback, errCallback) => {
+export const connectWebsocket = (type, url, agentData, successCallback, errCallback) => {
   const live = useLiveStore()
   live.setIsManualClose(false)
-  wsUrl = url
+  wsUrl = type===2? `${url}?path=${agentData.path}&type=1` : url
+  console.log('wsUrl111', wsUrl)
+  platform = type
   createWebSoket()
   messageCallback = successCallback
   errorCallback = errCallback
@@ -117,7 +122,7 @@ const onWsOpen = (event) => {
   if (wsObj.readyState === wsObj.OPEN) { // wsObj.OPEN = 1
 	if(reconnect_timer) clearInterval(reconnect_timer)
     // 发给后端的数据需要字符串化
-    wsObj.send({data: JSON.stringify(sendDatas)})
+    if(platform!==2) wsObj.send({data: JSON.stringify(sendDatas)})
 	// 7分钟定时重连
 	reconnect_timer = setInterval(reconnect, 420000)
   }
