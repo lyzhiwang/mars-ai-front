@@ -458,3 +458,21 @@ export function getLiveById(params) {
 		params
 	})
 }
+
+// 获取视频号二维码
+export function getLoginCode(params) {
+	return request({
+		url: '/v1/get/login/code',
+		method: 'get',
+		params
+	})
+}
+
+// 获取视频号二维码
+export function checkSphStatus(params) {
+	return request({
+		url: '/v1/check/sph/status',
+		method: 'get',
+		params
+	})
+}

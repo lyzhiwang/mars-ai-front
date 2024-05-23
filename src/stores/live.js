@@ -88,13 +88,27 @@ export const useLiveStore = defineStore('live', {
 				// 使用自己的抓包地址
 				console.log('ws_url', ws_url)
 				console.log('live_url', live_url)
-				if(type===2){
-					// 快手直播
-					connectWebsocket(2,ws_url||'wss://mars.lytklw.cn/socket.io', {path:live_url,type: 1}, this.globelMessage3, () => {})
-				}else{
-					// 抖音
-					connectWebsocket(1,ws_url||'wss://mars.lytklw.cn/socket.io', {live_url}, this.globelMessage, () => {})
+				switch(type){
+					case 1:
+						// 抖音
+						connectWebsocket(1,ws_url||'wss://mars.lytklw.cn/socket.io', {live_url}, this.globelMessage, () => {})
+						break;
+					case 2:
+						// 快手直播
+						connectWebsocket(2,ws_url||'wss://mars.lytklw.cn/socket.io', {path:live_url,type: 1}, this.globelMessage3, () => {})
+						break;
+					case 3:
+						// 视频号直播
+						connectWebsocket(3,ws_url||'wss://mars.lytklw.cn/socket.io', {cookie:live_url,type: 5}, this.globelMessage4, () => {})
+						break;
 				}
+				// if(type===2){
+				// 	// 快手直播
+				// 	connectWebsocket(2,ws_url||'wss://mars.lytklw.cn/socket.io', {path:live_url,type: 1}, this.globelMessage3, () => {})
+				// }else{
+				// 	// 抖音
+				// 	connectWebsocket(1,ws_url||'wss://mars.lytklw.cn/socket.io', {live_url}, this.globelMessage, () => {})
+				// }
 			}else{
 				// 使用第三方
 				connectWebsocket(1,ws_url||'ws://42.193.254.253:3000/dy', {url: live_url}, this.globelMessage2, () => {})
@@ -225,6 +239,43 @@ export const useLiveStore = defineStore('live', {
 						})
 					}
 				}
+			}
+		},
+		globelMessage4(data){
+			if(data.msgList.length>0){
+				const msg = data.msgList[0]
+				switch(msg.type){
+					case 1:
+						// 评论
+						this.addMsg(msg.content); // 添加用户评论信息到列表
+						this.startReply(msg.content); // 自动回复
+						console.log('回复:', msg.content)
+						break;
+					case 10005:
+						// 进入直播间
+						if(this.liveInfo){
+							const { is_welcome, id, name_before, name_after } = this.liveInfo
+							if(is_welcome==1 && !this.synthesizing){
+								const text = name_before + msg.nickname + name_after
+								console.log('text', text)
+								this.setSynthesiStatus(true)
+								// 先发起请求告诉服务器开始合成音频
+								aliJob({room_id: id, content: text, type:1}).then((res)=>{
+									if(res){
+										// 轮询接口查看音频合成状态
+										this.checkTaskJob(id)
+									}else{
+										this.setSynthesiStatus(false)
+									}
+								}).catch((err)=>{
+									// console.log(111, err)
+									this.setSynthesiStatus(false)
+								})
+							}
+						}
+						break;
+				}
+				
 			}
 		},
 		welcomeEnd(){

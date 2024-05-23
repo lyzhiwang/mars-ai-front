@@ -32,6 +32,8 @@ function selectHigh(){
 	flag = true
 	getLiveRoom({type: 2}).then(res=>{
 		if(res && res.data){
+			if(res.data.platform===3) return goTo('/pagesub/live/create2')
+			console.log('res.data', res.data)
 			// const { get_top, get_left, get_right, get_bottom } = res.data
 			// live.setLiveRoomStick({
 			// 	top: get_top ? [{status: 'success', message: '', url: get_top.full_path, id: get_top.id}] : [],

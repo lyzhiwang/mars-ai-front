@@ -47,7 +47,8 @@ function queryList(init){
 	liveHistory({type:1, page, size}).then(res=>{
 		if(res&&res.data){
 			const {list, total} = res.data
-			plist.value = init ? list : plist.value.concat(list);
+			const new_list = list.filter(v=>{return v.platform!==3})
+			plist.value = init ? new_list : plist.value.concat(new_list);
 			last = Math.ceil(total/size)
 			if(page >= last) listStatus.value = 'nomore';
 		}

@@ -182,11 +182,13 @@ export default {
 					full_height.value = (res.screenHeight + res.statusBarHeight) * 2
 				}
 			});
+			// const is_sph = uni.getStorageSync('is_sph') || false
 			getLiveRoom({type: 2}).then(res=>{
 				if(res&&res.data){
-					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id,is_gift,name_before,name_after, video_model, platform, ws_ks_url } = res.data
+					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id,is_gift,name_before,name_after, video_model, platform, ws_ks_url, ws_sph_url } = res.data
 					const { sort_type, get_media } = voice
-					const url = platform===2 ? ws_ks_url : ws_url
+					// if(platform===3 && !is_sph) return; // 视频号不进行重连恢复
+					const url = platform===2 ? ws_ks_url : platform===3? ws_sph_url : ws_url
 					const vRef = []
 					top_img.value = get_top ? get_top.full_path : '';
 					left_img.value = get_left ? get_left.full_path : '';
@@ -229,6 +231,7 @@ export default {
 						// 打开获取评论的长连接
 						live.openLonglink(live_url, useself, url, platform)
 					})
+					// uni.setStorageSync('is_sph', false)
 				}
 			})
 		})
