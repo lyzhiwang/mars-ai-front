@@ -101,6 +101,10 @@ export const useLiveStore = defineStore('live', {
 						// 视频号直播
 						connectWebsocket(3,ws_url||'wss://mars.lytklw.cn/socket.io', {cookie:live_url,type: 5}, this.globelMessage4, () => {})
 						break;
+					case 4:
+						// 美团直播
+						connectWebsocket(4,ws_url||'wss://mars.lytklw.cn/socket.io', {path:live_url,type: 2}, this.globelMessage5, () => {})
+						break;
 				}
 				// if(type===2){
 				// 	// 快手直播
@@ -276,6 +280,51 @@ export const useLiveStore = defineStore('live', {
 						break;
 				}
 				
+			}
+		},
+		// 美团
+		globelMessage5(data){
+			if(data.ms.length>3){
+				const msg = JSON.parse(data.ms[3].c) //.c
+				switch(msg.msgType){
+					case 2:
+						// 评论
+						if(msg.imMsgDTO){
+							this.addMsg(msg.imMsgDTO.content); // 添加用户评论信息到列表
+							this.startReply(msg.imMsgDTO.content); // 自动回复
+							console.log('回复:', msg.imMsgDTO.content)
+						}
+						break;
+					case 101:
+						// 进入直播间
+						if(this.liveInfo){
+							const { is_welcome, id, name_before, name_after } = this.liveInfo
+							if(is_welcome==1 && !this.synthesizing){
+								let text = ""
+								if(msg.imUserDTO){
+									text = name_before + msg.imUserDTO.userName + name_after
+									console.log('text', text)
+								}else{
+									return;
+								}
+								
+								this.setSynthesiStatus(true)
+								// 先发起请求告诉服务器开始合成音频
+								aliJob({room_id: id, content: text, type:1}).then((res)=>{
+									if(res){
+										// 轮询接口查看音频合成状态
+										this.checkTaskJob(id)
+									}else{
+										this.setSynthesiStatus(false)
+									}
+								}).catch((err)=>{
+									// console.log(111, err)
+									this.setSynthesiStatus(false)
+								})
+							}
+						}
+						break;
+				}
 			}
 		},
 		welcomeEnd(){

@@ -40,6 +40,9 @@ export const connectWebsocket = (type, url, agentData, successCallback, errCallb
 	  case 3:
 		wsUrl = `${url}?cookie=${agentData.cookie}&type=5`
 		break;
+	  case 4:
+		wsUrl = `${url}?path=${agentData.path}&type=2`//`ws://62.234.162.241:8123/?path=${agentData.path}&type=2`
+		break;
   }
   // wsUrl = type===2? `${url}?path=${agentData.path}&type=1` : url
   console.log('wsUrl111', wsUrl)

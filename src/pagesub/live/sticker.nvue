@@ -185,10 +185,23 @@ export default {
 			// const is_sph = uni.getStorageSync('is_sph') || false
 			getLiveRoom({type: 2}).then(res=>{
 				if(res&&res.data){
-					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id,is_gift,name_before,name_after, video_model, platform, ws_ks_url, ws_sph_url } = res.data
+					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id,is_gift,name_before,name_after, video_model, platform, ws_ks_url, ws_sph_url, ws_mt_url } = res.data
 					const { sort_type, get_media } = voice
 					// if(platform===3 && !is_sph) return; // 视频号不进行重连恢复
-					const url = platform===2 ? ws_ks_url : platform===3? ws_sph_url : ws_url
+					let url = ws_url
+					switch(platform){
+						  case 2:
+							url = ws_ks_url
+							break;
+						  case 3:
+							url = ws_sph_url
+							break;
+						  case 4:
+							url = ws_mt_url
+							break;
+						  default:
+						    url = ws_url;
+					}
 					const vRef = []
 					top_img.value = get_top ? get_top.full_path : '';
 					left_img.value = get_left ? get_left.full_path : '';

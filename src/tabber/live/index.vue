@@ -109,7 +109,7 @@ const live = useLiveStore()
 const limit = ref(2) // 控制video渲染个数
 const livePlatform = ref('直播')
 let round = 1, i = 0, voiceArr = []; // 轮数和当前播放的第几个
-const liveType = ['抖音','快手', '视频号']
+const liveType = ['抖音','快手', '视频号', '美团']
 
 const partName= computed(()=>live.liveInfo&&live.liveInfo.voice_media[live.current] ? live.liveInfo.voice_media[live.current].title : '')
 const getItem = (media)=> {
@@ -208,11 +208,24 @@ onShow(()=>{
 	getLiveRoom({type: 1}).then(res=>{
 		console.log('res1111', res)
 		if(res&&res.data){
-			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url, is_welcome, welcome_interval, id, platform, ws_ks_url, ws_sph_url, is_gift, name_before, name_after } = res.data
+			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url, is_welcome, welcome_interval, id, platform, ws_ks_url,ws_mt_url, ws_sph_url, is_gift, name_before, name_after } = res.data
 			const { sort_type, get_media } = voice
 			if(platform===3 && !is_sph) return; // 视频号不进行重连恢复
 			livePlatform.value = liveType[platform-1]+ '直播'
-			const url = platform===2 ? ws_ks_url : platform===3? ws_sph_url : ws_url
+			let url = ws_url
+			switch(platform){
+				  case 2:
+					url = ws_ks_url
+					break;
+				  case 3:
+					url = ws_sph_url
+					break;
+				  case 4:
+					url = ws_mt_url
+					break;
+				  default:
+				    url = ws_url;
+			}
 			const vRef = []
 			const voice_media = get_media.map((media, i)=>{
 				const vdom = uni.createVideoContext(`vDom${i}`)

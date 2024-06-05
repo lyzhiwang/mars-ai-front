@@ -22,7 +22,7 @@
 			</view>
 		</view>
 		<u--form
-			class="panel"
+			class="panel mt0"
 			:model="form"
 			:rules="rules"
 			ref="urlForm"
@@ -49,7 +49,7 @@
 						class="ipt"
 						prefixIcon="search"
 						prefixIconStyle="font-size: 36rpx;color: #909399"
-						placeholder="请输入快手直播间的分享链接"
+						placeholder="请输入直播间的分享链接"
 						:formatter="formatter"
 					></u--input>
 				</view>
@@ -78,7 +78,7 @@
 			</view>
 		</view>
 		<view class="panel shadow">
-			<template v-if="[1,3].includes(selectPlatform)">
+			<template v-if="[1,3,4].includes(selectPlatform)">
 				<view class="flex between mar20">
 					<text class="h1">欢迎语</text>
 					<view>
@@ -120,7 +120,7 @@
 					</view>
 				</view>
 			</template>
-			<view class="flex between mar-20" v-if="selectPlatform!==3">
+			<view class="flex between mar-20" v-if="[1,2].includes(selectPlatform)">
 				<text class="h1">礼物感谢语</text>
 				<view>
 					<u-switch v-model="is_gift" size="40"></u-switch>
@@ -191,7 +191,8 @@ const isSphShow = ref(false) // 显示视频号登录弹窗
 const platformList = [
 	{id: 1, name: '抖音', icon: '/static/images/live/dy.png'},
 	{id: 2, name: '快手', icon: '/static/images/live/ks.png'},
-	{id: 3, name: '视频号', icon: '/static/images/live/sph.png'}
+	{id: 3, name: '视频号', icon: '/static/images/live/sph.png'},
+	{id: 4, name: '美团', icon: '/static/images/live/meituan.jpeg'}
 ]
 
 const formatter = (value) => {
@@ -345,16 +346,19 @@ onBeforeUnmount(()=>{
 	padding: 0 20rpx;
 	.platformArea{
 		padding-top: 20rpx;
+		display: flex;
+		flex-wrap: wrap;
 	}
 	.platform{
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		width: 228rpx;
+		width: 49%;
 		height: 96rpx;
 		background: #ffffff;
 		border-radius: 15rpx;
 		transition: all 500ms;
+		margin-bottom: 20rpx;
 		.icon{
 			width: 42rpx;
 			height: 42rpx;
@@ -372,6 +376,9 @@ onBeforeUnmount(()=>{
 				font-weight: bold;
 			}
 		}
+	}
+	.mt0{
+		margin-top: 0 !important;
 	}
 	.panel{
 		width: 710rpx;
