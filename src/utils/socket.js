@@ -30,21 +30,21 @@ let reconnect_timer = null
 export const connectWebsocket = (type, url, agentData, successCallback, errCallback) => {
   const live = useLiveStore()
   live.setIsManualClose(false)
-  switch(type){
-	  case 1:
-		wsUrl = url
-		break;
-	  case 2:
-		wsUrl = `${url}?path=${agentData.path}&type=1`
-		break;
-	  case 3:
-		wsUrl = `${url}?cookie=${agentData.cookie}&type=5`
-		break;
-	  case 4:
-		wsUrl = `${url}?path=${agentData.path}&type=2`//`ws://62.234.162.241:8123/?path=${agentData.path}&type=2`
-		break;
-  }
-  // wsUrl = type===2? `${url}?path=${agentData.path}&type=1` : url
+  // switch(type){
+	 //  case 1:
+		// wsUrl = `${url}?path=${agentData.path}&type=0`
+		// break;
+	 //  case 2:
+		// wsUrl = `${url}?path=${agentData.path}&type=1`
+		// break;
+	 //  case 3:
+		// wsUrl = `${url}?cookie=${agentData.cookie}&type=5`
+		// break;
+	 //  case 4:
+		// wsUrl = `${url}?path=${agentData.path}&type=2`
+		// break;
+  // }
+  wsUrl = `${url}?path=${agentData.path}&type=${agentData.type}`
   console.log('wsUrl111', wsUrl)
   platform = type
   createWebSoket()
