@@ -33,7 +33,7 @@
 			<!-- 抖音/快手 直播 -->
 			<u-form-item prop="live_id">
 				<view class="iptBox">
-					<!-- <u--input 
+					<u--input 
 						v-model.trim="form.live_id" 
 						border="none" 
 						class="ipt"
@@ -41,8 +41,9 @@
 						prefixIconStyle="font-size: 36rpx;color: #909399"
 						:placeholder="`输入直播账号的${pltName}号`"
 						v-if="selectPlatform===1"
-					></u--input> -->
+					></u--input>
 					<u--input 
+						v-else
 						v-model.trim="form.live_id" 
 						border="none" 
 						class="ipt"
@@ -213,15 +214,13 @@ function changePla(id, name){
 }
 function searchLive(){
 	if(!form.live_id){
-		if(selectPlatform.value===1) return uni.$u.toast('请输入抖音直播的分享链接')
+		if(selectPlatform.value===1) return uni.$u.toast('请输入正确的抖音号')
 		else if(selectPlatform.value===2) return uni.$u.toast('请输入快手直播间的分享链接')
 	}else{
-		if(!uni.$u.test.url(form.live_id)) return uni.$u.toast('请输入正确的分享链接')
+		if(selectPlatform.value===1 && uni.$u.test.url(form.live_id)) return uni.$u.toast('请输入正确的抖音号')
 	}
-	let parame = {
-		live_id: form.live_id,
-		type:selectPlatform.value,
-	}
+	let parame = {live_id: form.live_id}
+	if(selectPlatform.value!=1) parame.type = selectPlatform.value
 	getLiveTit(parame).then(res=>{
 		if(res&&res.data){
 			title.value = res.data.title
