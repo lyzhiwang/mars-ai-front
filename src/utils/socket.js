@@ -44,7 +44,11 @@ export const connectWebsocket = (type, url, agentData, successCallback, errCallb
 		// wsUrl = `${url}?path=${agentData.path}&type=2`
 		// break;
   // }
-  wsUrl = `${url}?path=${agentData.path}&type=${agentData.type}`
+  if(live.request_type===1 && type===1){
+	wsUrl = url 
+  }else{
+	wsUrl = `${url}?path=${agentData.path}&type=${agentData.type}`
+  }
   console.log('wsUrl111', wsUrl)
   platform = type
   createWebSoket()

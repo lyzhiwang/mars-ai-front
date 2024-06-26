@@ -185,7 +185,7 @@ export default {
 			// const is_sph = uni.getStorageSync('is_sph') || false
 			getLiveRoom({type: 2}).then(res=>{
 				if(res&&res.data){
-					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id,is_gift,name_before,name_after, video_model, platform, ws_ks_url, ws_sph_url, ws_mt_url } = res.data
+					const { voice, answer_keyword, live_url, useself, ws_url, get_top, get_left, get_right, get_bottom, get_video, is_welcome, welcome_interval, id,is_gift,name_before,name_after, video_model, platform, ws_ks_url, ws_sph_url, ws_mt_url, request_type } = res.data
 					const { sort_type, get_media } = voice
 					// if(platform===3 && !is_sph) return; // 视频号不进行重连恢复
 					let url = ws_url
@@ -242,6 +242,7 @@ export default {
 							timer = setTimeout(()=>showGoodsCard.value = true, 500)
 						})
 						// 打开获取评论的长连接
+						live.setRequestType(request_type)
 						live.openLonglink(live_url, useself, url, platform)
 					})
 					// uni.setStorageSync('is_sph', false)

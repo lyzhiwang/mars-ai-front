@@ -208,7 +208,7 @@ onShow(()=>{
 	getLiveRoom({type: 1}).then(res=>{
 		console.log('res1111', res)
 		if(res&&res.data){
-			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url, is_welcome, welcome_interval, id, platform, ws_ks_url,ws_mt_url, ws_sph_url, is_gift, name_before, name_after } = res.data
+			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url, is_welcome, welcome_interval, id, platform, ws_ks_url,ws_mt_url, ws_sph_url, is_gift, name_before, name_after, request_type } = res.data
 			const { sort_type, get_media } = voice
 			if(platform===3 && !is_sph) return; // 视频号不进行重连恢复
 			livePlatform.value = liveType[platform-1]+ '直播'
@@ -261,6 +261,7 @@ onShow(()=>{
 				})
 				// 打开获取评论的长连接
 				// if(is_open===1){
+				live.setRequestType(request_type)
 				live.openLonglink(live_url, useself, url, platform)
 				// }
 			})

@@ -31,6 +31,7 @@ export const useLiveStore = defineStore('live', {
 		synthesizing: false, // 欢迎语合成状态
 		wlcPlaying: false, // 欢迎语是否再播报中
 		wlcObj: null, // 欢迎的音频对象
+		request_type: 1, //区分抖音抓取方式
 	}),
 	actions: {
 		// setPartAutoPlay(bool){
@@ -39,6 +40,9 @@ export const useLiveStore = defineStore('live', {
 		// setLiveUrl(url){
 		// 	this.live_url = url
 		// },
+		setRequestType(value){
+			this.request_type = Number(value)
+		},
 		setSynthesiStatus(bool){
 			this.synthesizing = bool
 		},
@@ -91,7 +95,7 @@ export const useLiveStore = defineStore('live', {
 				switch(type){
 					case 1:
 						// 抖音
-						connectWebsocket(1,ws_url||'wss://mars.lytklw.cn/socket.io', {path:live_url,type: 0}, this.globelMessage, () => {})
+						this.request_type === 1? connectWebsocket(1,ws_url||'wss://mars.lytklw.cn/socket.io', {live_url}, this.globelMessage, () => {}) : connectWebsocket(1,ws_url||'wss://mars.lytklw.cn/socket.io', {path:live_url,type: 0}, this.globelMessage, () => {})
 						break;
 					case 2:
 						// 快手直播
