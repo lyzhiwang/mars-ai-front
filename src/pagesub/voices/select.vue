@@ -23,7 +23,7 @@
 	const voice_live = [
 		{ name: '知猫', voice: 'zhimao', type: '普通话女声', time: '5s', path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/eomj/1677483215080.wav', icon: '/static/images/voices/ai/w1.png' },
 		{ name: '老妹', voice: 'laomei', type: '吆喝女声', time: '3s', path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/hxyk/1677483281444.wav', icon: '/static/images/voices/ai/w2.png' },
-		{ name: 'Rosa', voice: 'rosa', type: '自然女声', time: '4s', path: 'https://ice-pub-media.myalicdn.com/smart/voiceSample/rosa.mp3', icon: '/static/images/voices/ai/w6.png' },
+		{ name: '知甜(高清)', voice: 'zhitian', type: '甜美女声', time: '4s', path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/ggtx/1677483071839.wav', icon: '/static/images/voices/ai/w6.png' },
 		{ name: '小仙', voice: 'xiaoxian', type: '亲切女声', time: '8s', path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/dbss/1677483377592.wav', icon: '/static/images/voices/ai/w4.png' },
 		{ name: '柜姐', voice: 'guijie', type: '亲切女声', time: '3s', path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/zulm/1677483418518.wav', icon: '/static/images/voices/ai/w5.png' },
 		{ name: 'Stella', voice: 'stella', type: '知性女声', time: '3s', path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/ayxg/1677483462464.wav', icon: '/static/images/voices/ai/w6.png' },

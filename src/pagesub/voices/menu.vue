@@ -46,7 +46,7 @@
 	function toPath(){
 		if(is_aiaudio.value===0) return uni.showToast({title: '请联系上级开启此功能!',icon: 'none',duration: 2000});
 		if(num.value===0) return uni.showToast({title: '请联系上级增加使用次数!',icon: 'none',duration: 2000});
-		goTo(`/pagesub/voices/ai-dub?id=${voice_id}`)
+		goTo(`/pagesub/voices/ai-dub?id=${voice_id.value}`)
 	}
 </script>
 
