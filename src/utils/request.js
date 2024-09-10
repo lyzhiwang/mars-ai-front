@@ -78,6 +78,7 @@ service.interceptors.response.use(
 					uni.redirectTo({url: '/pagesub/login/index'})
 					break;
 			}
+			 return Promise.reject('error', response)
 		}
     } else {
 	  uni.showToast({ title: '请求成功，返回值错误', icon: 'none', duration: 3000});

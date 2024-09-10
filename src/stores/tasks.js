@@ -5,6 +5,10 @@ export const useTaskStore = defineStore('task', {
 		task: {},
 		selectVoice: null,
 		selectReply: null,
+		default_voice:{
+			voice: 'zhimao',
+			type: '普通话女声'
+		}
 	}),
 	actions: {
 		setTask(data){
@@ -15,6 +19,9 @@ export const useTaskStore = defineStore('task', {
 		},
 		setReply(data){
 			this.selectReply = data
+		},
+		setDefaultVoice(data){
+			this.default_voice = data
 		}
 	}
 })

@@ -12,7 +12,7 @@
 					<view class="circle flex-rcc">{{index+1}}</view>
 					<view class="titBox u-line-1">{{item.title}}</view>
 				</view>
-				<view class="des fcc-sb" @click="goTo(`/pagesub/voices/voiceStore?id=${item.id}`)">
+				<view class="des fcc-sb" @click="goTo(`/pagesub/voices/menu?id=${item.id}`)">
 					<text :style="{color: item.media.length>0? '#333333': '#FE2222'}">{{item.media.length>0? `已上传${item.media.length}条语音`: '未上传语音'}}</text>
 					<u-icon name="arrow-right" size="36" color="#999999" bold></u-icon>
 				</view>

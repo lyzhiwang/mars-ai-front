@@ -14,6 +14,7 @@
 		}]
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		
 		{
 			"path": "tabber/index/index",
 			"style": {
@@ -180,6 +181,24 @@
 					"path": "/voices/taskStore",
 					"style": {
 						"navigationBarTitleText": "话术库"
+					}
+				},
+				{
+					"path" : "/voices/ai-dub",
+					"style" :  {
+						"navigationBarTitleText": "AI配音"
+					}
+				},
+				{
+					"path" : "/voices/select",
+					"style" :  {
+						"navigationBarTitleText": "声音选择"
+					}
+				},
+				{
+					"path" : "/voices/menu",
+					"style" :  {
+						"navigationBarTitleText": "语音库"
 					}
 				},
 				{

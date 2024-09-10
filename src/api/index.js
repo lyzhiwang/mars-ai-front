@@ -193,6 +193,34 @@ export function voiceReaDestory(params) {
 	})
 }
 
+// ai生成话术语音
+export function voiceAliJob(data) {
+	return request({
+		url: '/v1/ali/new/job',
+		method: 'post',
+		data
+	})
+}
+
+// 刷新任务
+export function checkNewJob(params) {
+	return request({
+		url: 'v1/check/new/job',
+		method: 'get',
+		params
+	})
+}
+
+// 检测oem是否开始ai转语音
+export function oemInfo(params) {
+	return request({
+		url: 'v1/get/oem/info',
+		method: 'get',
+		params
+	})
+}
+
+
 // 话术库
 export function scriptIndex() {
 	return request({

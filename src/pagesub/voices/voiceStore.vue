@@ -83,7 +83,7 @@
 
 <script setup>
 	import { onLoad,onShow, onHide, onUnload } from '@dcloudio/uni-app'
-	import { voiceReaIndex, voiceReaDestory, voiceRelationSort, goodsCategoryIndex, voiceGoods } from '@/api'
+	import { voiceReaIndex, voiceReaDestory, voiceRelationSort, goodsCategoryIndex, voiceGoods, checkNewJob } from '@/api'
 	import { useConfigStore } from '@/stores'
 	
 	const list = ref([])
@@ -121,7 +121,31 @@
 	const getList =()=>{
 		voiceReaIndex({voice_id: id.value}).then(res=>{
 			list.value = res.data
+			const arr = list.value.filter(v=> v.job_id && !v.upload.full_path)
+			if(arr.length>0) checkJob(arr)
+			else clearInterval(timmer)
+			
 		})
+	}
+	
+	let timmer = null
+	
+	// 刷新任务
+	const checkJob = (list) =>{
+		clearInterval(timmer)
+		const oemid = import.meta.env.VITE_OEM_ID
+		console.log('list', list)
+		timmer = setInterval(()=>{
+			list.map(v =>{
+				checkNewJob({job_id: v.job_id, oem_id: oemid}).then(res =>{
+					console.log(1111111, res)
+					if(res.data){
+						clearInterval(timmer)
+						getList()
+					}
+				})
+			})
+		},2500)
 	}
 	const currentId = ref(null)
 	const delItem = item =>{
@@ -153,6 +177,7 @@
 	const playDataId = ref(null) 
 	
 	const handleItem = item =>{
+		if(!item.upload.full_path) return uni.showToast({title: 'AI语音正在生成中,请稍后!',icon: 'none',duration: 2000});
 		if(!innerAudioContext){
 			innerAudioContext = uni.createInnerAudioContext();
 			innerAudioContext.autoplay = true;
@@ -203,7 +228,10 @@
 		if(innerAudioContext){
 			innerAudioContext.destroy()
 			innerAudioContext = null
-		} 	
+		}
+		if(timmer){
+			clearInterval(timmer)
+		}
 	})
 	
 	// 获取商品库列表
@@ -256,6 +284,9 @@
 			innerAudioContext.destroy()
 			innerAudioContext = null
 		} 	
+		if(timmer){
+			clearInterval(timmer)
+		}
 	})
 	
 </script>
