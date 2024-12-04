@@ -235,6 +235,7 @@ export default {
 							})
 						}
 						live.setLiveInfo(info)
+						live.AutoRecover() // 三分钟自动回复
 						live.setCurrent(0)
 						// 先预加载第一段直播音频
 						nextTick(()=>{
@@ -253,6 +254,7 @@ export default {
 			if(timer) clearTimeout(timer)
 			try{
 				// 重置数据
+				live.closeAutoRecover()
 				closeWebsocket()
 				if(live.innerAudioContext) live.innerAudioContext.destroy()
 				if(live.wlcObj) live.wlcObj.destroy()

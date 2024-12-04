@@ -170,6 +170,7 @@ function exit(){
 	try{
 		// 重置数据
 		limit.value = 2
+		live.closeAutoRecover()
 		closeWebsocket()
 		if(live.innerAudioContext) live.innerAudioContext.destroy()
 		if(live.wlcObj) live.wlcObj.destroy()
@@ -254,6 +255,7 @@ onShow(()=>{
 					})
 				}
 				live.setLiveInfo(info)
+				live.AutoRecover() // 三分钟自动回复
 				live.setCurrent(0)
 				// 先预加载第一段直播音频
 				nextTick(()=>{

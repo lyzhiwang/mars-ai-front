@@ -32,6 +32,7 @@ export const useLiveStore = defineStore('live', {
 		wlcPlaying: false, // 欢迎语是否再播报中
 		wlcObj: null, // 欢迎的音频对象
 		request_type: 1, //区分抖音抓取方式
+		timer: null, //3分钟定时自动回复
 	}),
 	actions: {
 		// setPartAutoPlay(bool){
@@ -166,6 +167,51 @@ export const useLiveStore = defineStore('live', {
 				}
 			}
 		},
+		
+		// 三分钟自动随机回复
+		AutoRecover(){
+			console.log('开始进入')
+			const threeMinutes = 3 * 60 * 1000; // 三分钟的毫秒数
+			this.timer = setInterval(() => {
+				if(!this.isplay&&!this.wlcPlaying&&this.liveInfo){
+					const { reply: replyList } = this.liveInfo
+					if(!replyList.length) return;
+					const randomInt = Math.floor(Math.random() * replyList.length);
+					console.log('randomInt', randomInt)
+					// 从匹配结果的录音中随机选取一个播放
+					const msg = replyList[randomInt].keywords[0]
+					const randomItem = sample(replyList[randomInt].media)
+					if(randomItem&&!this.wlcPlaying){
+						if(!this.innerAudioContext){
+							// 初次创建音频对象
+							this.innerAudioContext = uni.createInnerAudioContext();
+							this.innerAudioContext.autoplay = true;
+							this.innerAudioContext.volume = 1;
+							this.innerAudioContext.onCanplay(()=>{
+								// 先降低直播音频声音
+								this.isplay = true
+								this.vRef[this.current].pause()
+								this.innerAudioContext.play();
+							})
+							this.innerAudioContext.onEnded(this.replyEnd);
+							if(plus.os.name!=='iOS'){
+								this.innerAudioContext.onError(this.replyEnd);
+							}
+						}
+						this.innerAudioContext.src = randomItem.full_path;
+						// 显示当前正在回复的内容
+						this.setCurrentReply(randomItem.title, msg)
+					}
+				}	
+			  console.log('执行任务！', new Date().toLocaleTimeString());
+			}, threeMinutes);
+		},
+		// 关闭定时任务
+		closeAutoRecover(){
+			console.log('关闭定时任务')
+			clearInterval(this.timer)
+		},
+		
 		globelMessage(data) {
 			console.log('data', data)
 			// 评论
