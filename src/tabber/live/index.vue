@@ -209,7 +209,27 @@ onShow(()=>{
 	getLiveRoom({type: 1}).then(res=>{
 		console.log('res1111', res)
 		if(res&&res.data){
-			const { voice, answer_keyword, is_kill, is_open, live_url, answer_id, useself, ws_url, is_welcome, welcome_interval, id, platform, ws_ks_url,ws_mt_url, ws_sph_url, is_gift, name_before, name_after, request_type } = res.data
+			const { voice,
+					answer_keyword, 
+					is_kill, 
+					is_open, 
+					live_url, 
+					answer_id, 
+					useself, 
+					ws_url, 
+					is_welcome, 
+					welcome_interval, 
+					id, 
+					platform, 
+					ws_ks_url,
+					ws_mt_url, 
+					ws_sph_url, 
+					is_gift,
+					is_auto_answer, 
+					name_before, 
+					name_after, 
+					request_type 
+					} = res.data
 			const { sort_type, get_media } = voice
 			if(platform===3 && !is_sph) return; // 视频号不进行重连恢复
 			livePlatform.value = liveType[platform-1]+ '直播'
@@ -255,7 +275,7 @@ onShow(()=>{
 					})
 				}
 				live.setLiveInfo(info)
-				live.AutoRecover() // 三分钟自动回复
+				if(is_auto_answer) live.AutoRecover() // 三分钟自动回复
 				live.setCurrent(0)
 				// 先预加载第一段直播音频
 				nextTick(()=>{

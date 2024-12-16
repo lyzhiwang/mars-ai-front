@@ -209,7 +209,8 @@ export const useLiveStore = defineStore('live', {
 		// 关闭定时任务
 		closeAutoRecover(){
 			console.log('关闭定时任务')
-			clearInterval(this.timer)
+			if(this.timer) clearInterval(this.timer)
+			
 		},
 		
 		globelMessage(data) {

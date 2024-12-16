@@ -120,6 +120,12 @@
 					</view>
 				</view>
 			</template>
+			<view class="flex between mar-20">
+				<text class="h1">自动回复</text>
+				<view>
+					<u-switch v-model="is_auto_answer" size="40"></u-switch>
+				</view>
+			</view>
 			<view class="flex between mar-20" v-if="[1,2].includes(selectPlatform)">
 				<text class="h1">礼物感谢语</text>
 				<view>
@@ -162,6 +168,7 @@ const title = ref('')
 const welcome = ref(false) // 是否开启欢迎语
 const welcome_interval = ref(30) // 欢迎的间隔时间
 const is_gift = ref(false) // 是否开启礼物欢迎语
+const is_auto_answer = ref(false) // 是否开启三分钟自动关键词回复
 const name_before = ref('欢迎') // 自定义欢迎语前置
 const name_after = ref('进入直播间') // 自定义欢迎语后置
 const selectPlatform = ref(1) // 当前选择的直播平台
@@ -245,6 +252,7 @@ function startLive(){
 		type: 1, 
 		platform: selectPlatform.value,
 		is_gift: is_gift.value,
+		is_auto_answer: is_auto_answer.value,
 		name_before: name_before.value ? name_before.value: '欢迎',
 		name_after: name_after.value ? name_after.value :'进入直播间'
 		}
