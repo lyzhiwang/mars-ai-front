@@ -248,13 +248,37 @@ export const useLiveStore = defineStore('live', {
 			}
 			
 			// 礼物
-			if(data.giftId && data.user.nickname){
+			if(data.giftId && data.giftId!=='like' && data.user.nickname){
 				if(this.liveInfo){
 					const { is_gift, id } = this.liveInfo
 					if(is_gift==1 && !this.synthesizing){
 						this.setSynthesiStatus(true)
 						// 先发起请求告诉服务器开始合成音频
 						const text = '感谢' + data.user.nickname.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '') + '送来的礼物'
+						console.log('text', text)
+						aliJob({room_id: id, content: text,type:1}).then((res)=>{
+							if(res){
+								// 轮询接口查看音频合成状态
+								this.checkTaskJob(id)
+							}else{
+								this.setSynthesiStatus(false)
+							}
+						}).catch((err)=>{
+							// console.log(111, err)
+							this.setSynthesiStatus(false)
+						})
+					}
+				}
+			}
+			
+			// 点赞
+			if(data.giftId === 'like' && data.user.nickname){
+				if(this.liveInfo){
+					const { is_like, id } = this.liveInfo
+					if(is_like==1 && !this.synthesizing){
+						this.setSynthesiStatus(true)
+						// 先发起请求告诉服务器开始合成音频
+						const text = '感谢' + data.user.nickname.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '') + '的点赞'
 						console.log('text', text)
 						aliJob({room_id: id, content: text,type:1}).then((res)=>{
 							if(res){
