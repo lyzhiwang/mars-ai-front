@@ -200,6 +200,7 @@ export default {
 							id,
 							is_gift,
 							is_like,
+							is_social,
 							is_auto_answer, 
 							name_before,
 							name_after, 
@@ -250,6 +251,7 @@ export default {
 							welcome_interval,
 							is_gift,
 							is_like,
+							is_social,
 							name_before,
 							name_after,
 							reply: answer_keyword.map((item)=>{

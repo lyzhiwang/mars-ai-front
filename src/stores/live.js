@@ -294,6 +294,30 @@ export const useLiveStore = defineStore('live', {
 					}
 				}
 			}
+			
+			// 关注 
+			if(data.giftId === 'social' && data.user.nickname){
+				if(this.liveInfo){
+					const { is_social, id } = this.liveInfo
+					if(is_social==1 && !this.synthesizing){
+						this.setSynthesiStatus(true)
+						// 先发起请求告诉服务器开始合成音频
+						const text = '感谢' + data.user.nickname.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '') + '的关注'
+						console.log('text', text)
+						aliJob({room_id: id, content: text,type:1}).then((res)=>{
+							if(res){
+								// 轮询接口查看音频合成状态
+								this.checkTaskJob(id)
+							}else{
+								this.setSynthesiStatus(false)
+							}
+						}).catch((err)=>{
+							// console.log(111, err)
+							this.setSynthesiStatus(false)
+						})
+					}
+				}
+			}
 			// switch (type) {
 			// 	case 'live': // 评论
 			// 		if(this.liveInfo){

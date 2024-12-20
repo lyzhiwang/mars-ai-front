@@ -135,6 +135,13 @@
 			</view>
 			
 			<view class="flex between mar-20" v-if="[1,2].includes(selectPlatform)">
+				<text class="h1">关注感谢语</text>
+				<view>
+					<u-switch v-model="is_social" size="40"></u-switch>
+				</view>
+			</view>
+			
+			<view class="flex between mar-20" v-if="[1,2].includes(selectPlatform)">
 				<text class="h1">礼物感谢语</text>
 				<view>
 					<u-switch v-model="is_gift" size="40"></u-switch>
@@ -178,6 +185,7 @@ const welcome_interval = ref(30) // 欢迎的间隔时间
 const is_gift = ref(false) // 是否开启礼物欢迎语
 const is_auto_answer = ref(false) // 是否开启三分钟自动关键词回复
 const is_like = ref(false) // 是否开启点赞欢迎语
+const is_social = ref(false) // 是否开启关注欢迎语
 const name_before = ref('欢迎') // 自定义欢迎语前置
 const name_after = ref('进入直播间') // 自定义欢迎语后置
 const selectPlatform = ref(1) // 当前选择的直播平台
@@ -262,6 +270,7 @@ function startLive(){
 		platform: selectPlatform.value,
 		is_gift: is_gift.value,
 		is_like: is_like.value,
+		is_social: is_social.value,
 		is_auto_answer: is_auto_answer.value,
 		name_before: name_before.value ? name_before.value: '欢迎',
 		name_after: name_after.value ? name_after.value :'进入直播间'
@@ -270,7 +279,6 @@ function startLive(){
 		parame.welcome_interval = welcome_interval.value
 	}
 	if(selectPlatform.value!==3){
-		console.log('parame', parame)
 		createLiveRoom(parame).then(res=>{
 			if(res){
 				// 开始直播
@@ -321,6 +329,7 @@ function begin_sph(){
 		platform: selectPlatform.value,
 		is_gift: is_gift.value,
 		is_like: is_like.value,
+		is_social: is_social.value,
 		name_before: name_before.value ? name_before.value: '欢迎',
 		name_after: name_after.value ? name_after.value :'进入直播间',
 		sph_cookie: sph_cookie.value

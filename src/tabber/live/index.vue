@@ -226,6 +226,7 @@ onShow(()=>{
 					ws_sph_url, 
 					is_gift,
 					is_like,
+					is_social,
 					is_auto_answer, 
 					name_before, 
 					name_after, 
@@ -267,6 +268,7 @@ onShow(()=>{
 					welcome_interval,
 					is_gift,
 					is_like,
+					is_social,
 					name_before,
 					name_after,
 					reply: answer_keyword.map((item)=>{
