@@ -243,6 +243,18 @@
 					"style": {
 						"navigationBarTitleText": "添加新商品"
 					}
+				},
+				{
+					"path": "knowledge/index",
+					"style": {
+						"navigationBarTitleText": "知识库"
+					}
+				},
+				{
+					"path": "knowledge/add",
+					"style": {
+						"navigationBarTitleText": "添加知识库内容"
+					}
 				}
             ]
 		}

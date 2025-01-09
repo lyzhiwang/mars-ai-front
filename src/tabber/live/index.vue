@@ -100,7 +100,7 @@
 <script setup>
 import { onLoad, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import { useUserStore, useLiveStore } from '@/stores'
-import { getLiveRoom, addKeyword, errorStatistics } from '@/api'
+import { getLiveRoom, addKeyword, errorStatistics, getBot } from '@/api'
 import { goTo, randomArr, downLoadAudio } from '@/utils/helper'
 import { closeWebsocket } from '@/utils/socket'
 
@@ -201,11 +201,14 @@ function clearLiveRoom(){
 		exit()
 	}
 }
-onLoad(()=>{
-})
+
+
 onShow(()=>{
 	if(live.wsObj) return
 	const is_sph = uni.getStorageSync('is_sph') || false
+	getBot().then(res =>{
+		live.setBotInfo(res.data)
+	})
 	getLiveRoom({type: 1}).then(res=>{
 		console.log('res1111', res)
 		if(res&&res.data){
@@ -227,6 +230,7 @@ onShow(()=>{
 					is_gift,
 					is_like,
 					is_social,
+					is_coze,
 					is_auto_answer, 
 					name_before, 
 					name_after, 
@@ -269,6 +273,7 @@ onShow(()=>{
 					is_gift,
 					is_like,
 					is_social,
+					is_coze,
 					name_before,
 					name_after,
 					reply: answer_keyword.map((item)=>{

@@ -48,6 +48,13 @@
 				<view class="btn">立即体验</view>
 				<image src="/static/images/template/sticker6.png" class="sticker" mode="widthFix"></image>
 			</view>
+			
+			<view class="menu m6" @click="goTo('/pagesub/knowledge/index')">
+				<view class="h3">知识库</view>
+				<view class="desc">专业知识库</view>
+				<view class="btn">立即体验</view>
+				<image src="/static/images/template/sticker7.png" class="sticker" mode="widthFix"></image>
+			</view>
 		</view>
 	</view>
 </view>

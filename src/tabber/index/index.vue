@@ -51,6 +51,7 @@ function renderTem(){
 			return Template1
 	}
 }
+
 onLoad(()=>{
 	const oem_id = import.meta.env.VITE_OEM_ID
 	// 加载对应模板

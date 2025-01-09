@@ -504,3 +504,65 @@ export function checkSphStatus(params) {
 		params
 	})
 }
+
+// 智能体相关信息
+export function getBot(params) {
+	return request({
+		url: '/v1/get/kz/bot',
+		method: 'get',
+		params
+	})
+}
+
+// 创建智能体-知识库
+export function createBot(data) {
+	return request({
+		url: '/v1/create/kz/bot',
+		method: 'post',
+		data
+	})
+}
+
+// 创建(上传)知识库文件
+export function createBotFile(data) {
+	return request({
+		url: '/v1/create/kz/file',
+		method: 'post',
+		data
+	})
+}
+
+// 更新文件上传进度 
+export function fileProgress(data) {
+	return request({
+		url: '/v1/kz/file/progress',
+		method: 'post',
+		data
+	})
+}
+
+// 知识库文件列表
+export function fileList(params) {
+	return request({
+		url: '/v1/kz/file/list',
+		method: 'get',
+		params
+	})
+}
+
+// 删除知识库文件
+export function fileDelete(data) {
+	return request({
+		url: '/v1/kz/file/delete',
+		method: 'delete',
+		data
+	})
+}
+
+// 更新发布智能体
+export function updateBot() {
+	return request({
+		url: '/v1/update/kz/bot',
+		method: 'put'
+	})
+}

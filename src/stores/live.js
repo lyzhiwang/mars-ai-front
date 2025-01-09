@@ -3,6 +3,8 @@ import { dropRight, sample } from 'lodash-es'
 import { connectWebsocket, sendDateByChannel } from '../utils/socket'
 import { useUserStore } from '@/stores'
 import { aliJob, checkJob } from '@/api/index'
+import axios from 'axios'
+import { uniAdapter } from 'fant-axios-adapter'
 
 export const useLiveStore = defineStore('live', {
 	persist: {
@@ -33,6 +35,48 @@ export const useLiveStore = defineStore('live', {
 		wlcObj: null, // 欢迎的音频对象
 		request_type: 1, //区分抖音抓取方式
 		timer: null, //3分钟定时自动回复
+		bot_info: {is_publish:0, token: ''}, // 智能体相关信息
+		pollTimer: null,
+		thankYouForWelcome: [
+			'能不能给主播点个关注啊，支持下主播，谢谢宝子们',
+			'能不能给主播点点赞，支持下扣1有福利',
+			'你想了解咱们家的优惠活动吗？私信主播，或者直播间扣1哦',
+			'想了解我们家的福利吗？给主播扣个1，主播详细解释哦',
+			'你还在吗？在的话，点个关注支持下吧',
+			'你还在吗？扣个1，主播给您详细解说下咱们的活动',
+			'扣个1互动下吧，咱们做做数据，感谢支持',
+			'进直播间咱们动动发财小手，点赞支持下吧，扣1有惊喜哦',
+			'新号开播，点赞支持下吧，扣1，有福利哦，试试吧',
+			'感谢家人的支持，扣个1 专属活动给你哦',
+			'扣1有惊喜福利，宝子赶快试试'
+		],
+		thankYouForLike: [
+		  "谢谢宝子们的点赞支持，扣个1，福利给你，试试吧！",
+		  "开心一整天，您的支持就是主播的动力",
+		  "感谢支持，感谢点赞，扣个1，主播给你专属福利！",
+		  "这个点赞的真是帅，真是美，人美心善，谢谢宝子们的支持！",
+		  "感谢我家人们的支持，有你们太好了，给主播扣1，我给你们发福利！",
+		  "咱们福利多多，扣1，立享专属福利，赶快试试！",
+		  "真是亲人啊，新号开播，人少活动好，扣1立享福利！",
+		  "在现场主播都想抱一个，给你准备了专属福利，扣1领取！",
+		  "一看就是敞亮人，想了解咱们的福利吗？扣个1吧！",
+		  "主播给咱们准备了超多福利哦，扣1了解一下吧！"
+		],
+		thankYouForFollow: [
+		  "咱们关注走一走，爱你到永久，扣1有福利等着你！",
+		  "给主播点个赞，扣1，专享福利留给你哦！",
+		  "您的支持，是我们最大的鼓励，扣1，专属福利留给你！",
+		  "宝子真是人美心善啊，大家都要模仿，咱们扣1放福利！",
+		  "您的关注是我们最好的礼物，咱们不小气，扣1领福利！"
+		],
+		thankYouForGift:[
+		  "这个送礼的真是人美心善，咱们扣个1，专属福利送给你！",
+		  "咱们直播间的福利已经准备好啦，赶紧来看！",
+		  "宝子你想要什么，想了解什么，扣个1，咱们VIP讲解！",
+		  "宝子真是爱你哦，咱们是福利直播间，要不直播给你跳一个吧！",
+		  "宝子真是太热情了，你扣个1，我给你个专属福利！",
+		  "礼物暖人心啊，再次感谢，右下角的活动可以支持下！"
+		]
 	}),
 	actions: {
 		// setPartAutoPlay(bool){
@@ -41,6 +85,10 @@ export const useLiveStore = defineStore('live', {
 		// setLiveUrl(url){
 		// 	this.live_url = url
 		// },
+		getRandomItem(arr) {
+		  const randomIndex = Math.floor(Math.random() * arr.length); // 生成随机索引
+		  return arr[randomIndex]; // 返回对应索引的元素
+		},
 		setRequestType(value){
 			this.request_type = Number(value)
 		},
@@ -69,6 +117,9 @@ export const useLiveStore = defineStore('live', {
 		},
 		setLiveInfo(info){
 			this.liveInfo = info
+		},
+		setBotInfo(data){
+			this.bot_info = data
 		},
 		addMsg(data){
 			const len = this.msgList.length
@@ -213,13 +264,156 @@ export const useLiveStore = defineStore('live', {
 			
 		},
 		
+		// chat自动回复
+		async botMsg(content){
+			const service = axios.create({
+				baseURL: 'https://api.coze.cn',
+				headers: {
+					Authorization: `Bearer ${this.bot_info.token}`, // 替换为你的个人令牌
+					'Content-Type': 'application/json'
+				},
+				adapter: uniAdapter // 配置适配器
+			})
+			// 配置请求数据
+			const requestData = {
+			  bot_id: this.bot_info.bot_id,
+			  user_id: '123',
+			  // 填充具体的请求参数
+			  additional_messages: [
+			    { role: 'user', content_type: 'text', content: content }
+			  ],
+			  stream: false // 是否启用流式响应
+			};	
+			
+			try{
+				// 发起初始请求
+				const initialResponse = await service.post('/v3/chat', requestData);
+			
+				if (initialResponse.data.code !== 0) {
+				  console.error('Initial request failed:', initialResponse.data.message);
+				  return;
+				}
+				
+				const { conversation_id, id } = initialResponse.data.data;
+				console.log('conversation_id', conversation_id);
+				
+				// 轮询获取聊天状态
+				const pollChatStatus = async () => {
+				  try {
+					const statusResponse = await service.get('/v3/chat/retrieve', {
+					  params: { conversation_id, chat_id: id },
+					});
+			
+					if (statusResponse.data.data.status === 'completed') {
+					  clearInterval(this.pollTimer); // 停止轮询
+					  return true;
+					}
+					return false;
+				  } catch (error) {
+					console.error('Polling error:', error.response?.data || error.message);
+					return false;
+				  }
+				};
+				
+				this.pollTimer = setInterval(async () => {
+				  const isCompleted = await pollChatStatus();
+				  if (isCompleted) {
+					// 获取完整消息列表
+					const listResponse = await service.get('/v3/chat/message/list', {
+					  params: { conversation_id, chat_id: id },
+					});
+			
+					const { data } = listResponse.data;
+					const answerContent = data.find(item => item.type === 'answer')?.content || '';
+					const sanitizedText = answerContent.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '');
+					console.log('Sanitized text:', sanitizedText);
+			
+					this.setSynthesiStatus(true);
+			
+					try {
+					  // 合成音频
+					  const aliJobResult = await aliJob({ room_id: this.liveInfo.id, content: sanitizedText, type: 1 });
+					  if (aliJobResult) {
+						this.checkTaskJob(this.liveInfo.id);
+					  } else {
+						this.setSynthesiStatus(false);
+					  }
+					} catch (audioError) {
+					  console.error('Audio synthesis error:', audioError);
+					  this.setSynthesiStatus(false);
+					}
+				  }
+				}, 1000);
+				
+			} catch (error){
+				console.error('Error:', error.response?.data || error.message); // 错误处理
+			}
+			
+			// let timrr = null
+			
+			// service({
+			// 	url: '/v3/chat',
+			// 	method: 'post',
+			// 	data: requestData}).then(response =>{
+			// 		if(response.data.code ===0){
+			// 			const {conversation_id, id} = response.data.data
+			// 			console.log('conversation_id', conversation_id)
+			// 			timrr =  setInterval(() => {
+			// 				service({
+			// 					url: '/v3/chat/retrieve',
+			// 					method: 'get',
+			// 					params: {conversation_id, chat_id: id}}).then(res =>{
+			// 						if(res.data.data.status === "completed") {
+			// 							clearInterval(timrr)
+			// 							service({
+			// 								url: '/v3/chat/message/list',
+			// 								method: 'get',
+			// 								params: {conversation_id, chat_id: id}}).then(res =>{
+			// 									const {data} = res.data
+			// 									let answerContent = data.find(item => item.type === "answer")?.content;
+			// 									const text = answerContent.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '')
+			// 									console.log('text', text)
+			// 									this.setSynthesiStatus(true)
+			// 									// 先发起请求告诉服务器开始合成音频
+			// 									aliJob({room_id: this.liveInfo.id, content: text, type:1}).then((res)=>{
+			// 										if(res){
+			// 											// 轮询接口查看音频合成状态
+			// 											this.checkTaskJob(this.liveInfo.id)
+			// 										}else{
+			// 											this.setSynthesiStatus(false)
+			// 										}
+			// 									}).catch((err)=>{
+			// 										// console.log(111, err)
+			// 										this.setSynthesiStatus(false)
+			// 									})
+			// 								})
+										
+			// 						}
+			// 					})
+			// 			},1000)
+						
+			// 		}
+				
+			// 	}).catch(error => {
+			//     console.error('Error:', error.response ? error.response.data : error.message); // 错误处理
+			//   });
+		},
+		
 		globelMessage(data) {
-			console.log('data', data)
+			
 			// 评论
 			if(data.content){
 				if(this.liveInfo){
-					this.addMsg(data.content); // 添加用户评论信息到列表
-					this.startReply(data.content); // 自动回复
+					if(this.liveInfo.is_coze && !this.synthesizing){
+						// ai自动回复
+						this.addMsg(data.content); // 添加用户评论信息到列表
+						console.log('data', data)
+						this.botMsg(data.content)
+						
+					}else{
+						this.addMsg(data.content); // 添加用户评论信息到列表
+						this.startReply(data.content); // 自动回复
+					}
 				}
 			}
 			
@@ -228,7 +422,7 @@ export const useLiveStore = defineStore('live', {
 				if(this.liveInfo){
 					const { is_welcome, id, name_before, name_after } = this.liveInfo
 					if(is_welcome==1 && !this.synthesizing){
-						const text = name_before + data.user.nickname.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '') + name_after
+						const text = name_before + data.user.nickname.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '') + name_after + ',' + this.getRandomItem(this.thankYouForWelcome)
 						console.log('text', text)
 						this.setSynthesiStatus(true)
 						// 先发起请求告诉服务器开始合成音频
@@ -248,13 +442,13 @@ export const useLiveStore = defineStore('live', {
 			}
 			
 			// 礼物
-			if(data.giftId && data.giftId!=='like' && data.user.nickname){
+			if(data.giftId && !['like', 'social'].includes(data.giftId) && data.user.nickname){
 				if(this.liveInfo){
 					const { is_gift, id } = this.liveInfo
 					if(is_gift==1 && !this.synthesizing){
 						this.setSynthesiStatus(true)
 						// 先发起请求告诉服务器开始合成音频
-						const text = '感谢' + data.user.nickname.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '') + '送来的礼物'
+						const text = '感谢' + data.user.nickname.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '') + '送来的礼物,' + this.getRandomItem(this.thankYouForGift)
 						console.log('text', text)
 						aliJob({room_id: id, content: text,type:1}).then((res)=>{
 							if(res){
@@ -272,13 +466,13 @@ export const useLiveStore = defineStore('live', {
 			}
 			
 			// 点赞
-			if(data.giftId === 'like' && data.user.nickname){
+			if(data.giftId &&data.giftId === 'like' && data.user.nickname){
 				if(this.liveInfo){
 					const { is_like, id } = this.liveInfo
 					if(is_like==1 && !this.synthesizing){
 						this.setSynthesiStatus(true)
 						// 先发起请求告诉服务器开始合成音频
-						const text = '感谢' + data.user.nickname.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '') + '的点赞'
+						const text = '感谢' + data.user.nickname.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '') + '的点赞,' + this.getRandomItem(this.thankYouForLike)
 						console.log('text', text)
 						aliJob({room_id: id, content: text,type:1}).then((res)=>{
 							if(res){
@@ -296,13 +490,13 @@ export const useLiveStore = defineStore('live', {
 			}
 			
 			// 关注 
-			if(data.giftId === 'social' && data.user.nickname){
+			if(data.giftId &&data.giftId === 'social' && data.user.nickname){
 				if(this.liveInfo){
 					const { is_social, id } = this.liveInfo
 					if(is_social==1 && !this.synthesizing){
 						this.setSynthesiStatus(true)
 						// 先发起请求告诉服务器开始合成音频
-						const text = '感谢' + data.user.nickname.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '') + '的关注'
+						const text = '感谢' + data.user.nickname.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '') + '的关注,'  + this.getRandomItem(this.thankYouForFollow)
 						console.log('text', text)
 						aliJob({room_id: id, content: text,type:1}).then((res)=>{
 							if(res){
@@ -318,57 +512,6 @@ export const useLiveStore = defineStore('live', {
 					}
 				}
 			}
-			// switch (type) {
-			// 	case 'live': // 评论
-			// 		if(this.liveInfo){
-			// 			this.addMsg(info); // 添加用户评论信息到列表
-			// 			this.startReply(info); // 自动回复
-			// 		}
-			// 		break;
-			// 	case 'enter': // 进入直播间
-			// 		if(this.liveInfo){
-			// 			const { is_welcome, id, name_before, name_after } = this.liveInfo
-			// 			if(is_welcome==1 && !this.synthesizing){
-			// 				const text = name_before + info + name_after
-			// 				console.log('text', text)
-			// 				this.setSynthesiStatus(true)
-			// 				// 先发起请求告诉服务器开始合成音频
-			// 				aliJob({room_id: id, content: text, type:1}).then((res)=>{
-			// 					if(res){
-			// 						// 轮询接口查看音频合成状态
-			// 						this.checkTaskJob(id)
-			// 					}else{
-			// 						this.setSynthesiStatus(false)
-			// 					}
-			// 				}).catch((err)=>{
-			// 					// console.log(111, err)
-			// 					this.setSynthesiStatus(false)
-			// 				})
-			// 			}
-			// 		}
-			// 		break;
-			// 	case 'gift': // 收到礼物
-			// 		if(this.liveInfo){
-			// 			const { is_gift, id } = this.liveInfo
-			// 			if(is_gift==1 && !this.synthesizing){
-			// 				this.setSynthesiStatus(true)
-			// 				// 先发起请求告诉服务器开始合成音频
-			// 				const text = info.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '')
-			// 				aliJob({room_id: id, content: text,type:1}).then((res)=>{
-			// 					if(res){
-			// 						// 轮询接口查看音频合成状态
-			// 						this.checkTaskJob(id)
-			// 					}else{
-			// 						this.setSynthesiStatus(false)
-			// 					}
-			// 				}).catch((err)=>{
-			// 					// console.log(111, err)
-			// 					this.setSynthesiStatus(false)
-			// 				})
-			// 			}
-			// 		}
-			// 		break;
-			// }
 		},
 		globelMessage3(data){
 			// console.log('data', data)

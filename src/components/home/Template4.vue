@@ -71,6 +71,14 @@
 						</view>
 						<image src="/static/images/template/sticker4_6.png" class="sticker" mode="widthFix"></image>
 					</view>
+					<view class="menu1 fcc-sb" @click="goTo('/pagesub/knowledge/index')">
+						<view class="subInfo">
+							<view class="title">知识库</view>
+							<view class="sub">专业知识库</view>
+							<view class="btn flex-rcc">立即体验</view>
+						</view>
+						<image src="/static/images/template/sticker7.png" class="sticker" mode="widthFix"></image>
+					</view>
 				</view>
 				
 			</view>

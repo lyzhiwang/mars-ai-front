@@ -6,6 +6,7 @@
 		<view class="username">
 			<view class="account">{{user.info.name}}</view>
 			<view class="id">ID:{{user.info.userId}}</view>
+			<view class="time">有效期:{{dayjs(user.info.start_time).format('YYYY-MM-DD')}}~{{dayjs(user.info.end_time).format('YYYY-MM-DD')}}</view>
 		</view>
 		<u-button plain type="primary" shape="circle" class="exit" @click="user.logOut">退出登录</u-button>
 	</view>
@@ -77,6 +78,7 @@ import { onShow } from '@dcloudio/uni-app'
 import { useUserStore, useLiveStore, useConfigStore } from '@/stores/index'
 import { closeWebsocket } from '@/utils/socket'
 import { changePwd } from '@/api'
+import dayjs from 'dayjs';
 
 const user = useUserStore()
 const config = useConfigStore()
@@ -162,6 +164,10 @@ onShow(()=>{
 		.id{
 			margin-top: 8rpx;
 			font-size: 32rpx;
+		}
+		.time{
+			margin-top: 8rpx;
+			font-size: 26rpx;
 		}
 	}
 	.function{

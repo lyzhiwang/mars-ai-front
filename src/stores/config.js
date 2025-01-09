@@ -40,12 +40,14 @@ export const useConfigStore = defineStore('config', {
 		async getQnToken(type){
 			try{
 				const file_type = type ? type : 'audio'
+				console.log('file_type', file_type)
 				const res = await qiniuToken({file_type})
 				if(res&&res.data){
 					this.qnToken = res.data.qiniuToken
 				}
 			}catch(e){
-				throw error
+				console.log('e', e)
+				throw e
 			}
 		}
 	}

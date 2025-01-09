@@ -61,6 +61,14 @@
 					<view class="btn">立即体验</view>
 				</view>
 			</view>
+			<view class="menu m4 flex" @click="goTo('/pagesub/knowledge/index')">
+				<image src="/static/images/template/sticker7.png" class="sticker"></image>
+				<view>
+					<view class="h3">知识库</view>
+					<view class="desc">专业知识库</view>
+					<view class="btn">立即体验</view>
+				</view>
+			</view>
 		</view>
 	</view>
 </view>

@@ -33,6 +33,7 @@ service.interceptors.request.use(
     if (userStore.token) {
       config.headers['Authorization'] = 'Bearer ' + userStore.token // 让每个请求携带自定义token 请根据实际情况自行修改
     }
+	// console.log('config111', config)
     return config
   },
   error => {
@@ -49,11 +50,12 @@ service.interceptors.response.use(
 		uni.hideLoading()
 	}
     const res = response.data
+	// console.log('res111', res)
     if (res) {
 		if (res.code === 0) { // code 为0请求正常
 		    return res
 		} else if(errorWhiteList.indexOf(response.config.url)==-1) {
-			// console.log(999, res)
+			console.log('侧是是是少时诵诗书', res)
 			// 先提示错误信息
 			if (res.message){
 				uni.showToast({ title: res.message, icon: 'none', duration: 3000});

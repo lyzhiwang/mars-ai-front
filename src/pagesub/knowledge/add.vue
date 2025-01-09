@@ -1,30 +1,35 @@
 <template>
 	<view class="container content">
-		<web-view :src="`/hybrid/html/index.html?token=${encodeURIComponent(userStore.qnToken)}`" @onPostMessage="postMessage" @message="postMessage"></web-view>
+		<web-view :src="`/hybrid/html/upload.html?token=${encodeURIComponent(userStore.qnToken)}`" @onPostMessage="postMessage" @message="postMessage"></web-view>
 	</view>
 </template>
 
 <script setup>
 	import { onLoad } from '@dcloudio/uni-app'
 	import { useConfigStore } from '@/stores';
-	import { addVoiceAtReply, voiceReaCreate } from '@/api'
+	import { createBotFile } from '@/api'
 	
 	const userStore = useConfigStore()
 	let id = null, type = null;
 	onLoad((option)=>{
 		type = option.type
 		id = option.id
-		userStore.getQnToken()
+		userStore.getQnToken('text/plain')
 		console.log('encodeURIComponent(userStore.qnToken)', encodeURIComponent(userStore.qnToken))
 	})
 	
-	const postMessage = async(data)=>{
-		const { upload_id, title } = data.detail.data[0]
-		const res = (type == 2) ? await addVoiceAtReply(id, {upload_id, title}) : await voiceReaCreate({voice_id: id, upload_id, title});
-		if(res){
+	const postMessage = (data)=>{
+		uni.showLoading({title: '加载中...', mask: true})
+		const { web_url, name } = data.detail.data[0]
+		createBotFile({web_url, name}).then(res =>{
+			uni.hideLoading()
 			uni.showToast({title: '添加成功', icon: 'success', duration: 1500});
 			setTimeout(uni.navigateBack, 1500)
-		}
+		}).catch(e=>{
+			uni.hideLoading()
+			console.log('err',e)
+		})
+		
 	}
 	
 </script>

@@ -69,6 +69,7 @@
 						border="none" 
 						class="ipt"
 						prefixIcon="search"
+						:readonly="user.info.dy_id? true: false"
 						prefixIconStyle="font-size: 36rpx;color: #909399"
 						:placeholder="`输入直播账号的${pltName}号`"
 						v-if="selectPlatform===1"
@@ -88,6 +89,12 @@
 			</u-form-item>
 			<view class="liveName">直播间：<text>{{title}}</text></view>
 		</u--form>
+		<view class="panel" v-if="selectPlatform===1">
+			<view class="flex between">
+				<view class="lebel">AI智能回复</view>
+				<u-switch v-model="is_coze" size="40" @change="chnageCoze"></u-switch>
+			</view>
+		</view>
 		<view class="panel shadow">
 			<view class="flex between">
 				<view class="lebel">选择语音库</view>
@@ -98,7 +105,7 @@
 				<text>{{task.selectVoice.title}}</text>
 			</view>
 		</view>
-		<view class="panel shadow">
+		<view class="panel shadow" v-if="!is_coze">
 			<view class="flex between">
 				<view class="lebel">选择智能回复</view>
 				<u-button plain type="primary" text="添加" icon="plus" shape="circle" class="add" @click="goTo('/pagesub/voices/taskStore?type=3')"></u-button>
@@ -151,7 +158,7 @@
 				</view>
 			</view>
 			</template>
-			<view class="flex between mar-20">
+			<view class="flex between mar-20" v-if="!is_coze">
 				<text class="h1">自动回复</text>
 				<view>
 					<u-switch v-model="is_auto_answer" size="40"></u-switch>
@@ -195,14 +202,15 @@
 </template>
 
 <script setup>
-import { onUnload } from '@dcloudio/uni-app'
-import { useConfigStore, useTaskStore, useLiveStore } from '@/stores'
-import { getLiveTit, createLiveRoom, getLiveRoom, getLoginCode, checkSphStatus } from '@/api'
+import { onLoad, onUnload } from '@dcloudio/uni-app'
+import { useConfigStore, useTaskStore, useLiveStore, useUserStore } from '@/stores'
+import { getLiveTit, createLiveRoom, getLiveRoom, getLoginCode, checkSphStatus, getBot } from '@/api'
 import { goTo } from '@/utils/helper'
 
 const config = useConfigStore()
 const task = useTaskStore()
 const live = useLiveStore()
+const user = useUserStore()
 const urlForm = ref()
 const form = reactive({
 	live_id: null,
@@ -215,6 +223,7 @@ const is_gift = ref(false) // 是否开启礼物欢迎语
 const is_auto_answer = ref(false) // 是否开启三分钟自动关键词回复
 const is_like = ref(false) // 是否开启点赞欢迎语
 const is_social = ref(false) // 是否开启关注欢迎语
+const is_coze = ref(false) // 是否开启chat自动回复
 const name_before = ref('欢迎') // 自定义欢迎语前置
 const name_after = ref('进入直播间') // 自定义欢迎语后置
 const selectPlatform = ref(1) // 当前选择的直播平台
@@ -229,6 +238,17 @@ const rules = reactive({
 	]
 })
 
+onLoad(()=>{
+	getBot().then(res =>{
+		live.setBotInfo(res.data)
+	})
+	console.log('user', user.info.dy_id)
+	if(user.info.dy_id) {
+		form.live_id = user.info.dy_id
+		form.live_url = ''
+	}
+})
+
 onUnload(()=>{
 	if(timmer.value) clearInterval(timmer.value)
 })
@@ -240,6 +260,14 @@ const platformList = [
 	{id: 3, name: '视频号', icon: '/static/images/live/sph.png'},
 	{id: 4, name: '美团', icon: '/static/images/live/meituan.jpeg'}
 ]
+
+// 知识库开启
+const chnageCoze = e =>{
+	if(!live.bot_info.is_publish) {
+		is_coze.value = false
+		uni.$u.toast('请先配置发布知识库后开启!')
+	}
+}
 
 const formatter = (value) => {
 	// 过滤输入的汉字
@@ -281,7 +309,7 @@ function startLive(){
 		if(!form.live_id || !form.live_url) return uni.$u.toast('请先根据提示填写直播间配置并搜索')
 	}
 	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
-	if(!task.selectReply) return uni.$u.toast('请选择回复')
+	if(!task.selectReply && !is_coze.value) return uni.$u.toast('请选择回复')
 	let form2 = {}
 	if(live.liveRoomStick){
 		const arr = Object.keys(live.liveRoomStick)
@@ -292,13 +320,14 @@ function startLive(){
 	const parame = {
 		...form2, 
 		voice_id: task.selectVoice.id, 
-		answer_id: task.selectReply.id, 
+		//answer_id: task.selectReply.id, 
 		is_welcome: welcome.value, 
 		live_url: form.live_url, 
 		type: 2, 
 		platform: selectPlatform.value,
 		is_gift: is_gift.value,
 		is_like: is_like.value,
+		is_coze: is_coze.value,
 		is_social: is_social.value,
 		is_auto_answer: is_auto_answer.value,
 		name_before: name_before.value ? name_before.value: '欢迎',
@@ -306,6 +335,11 @@ function startLive(){
 		}
 	if(welcome.value){
 		parame.welcome_interval = welcome_interval.value
+	}
+	if(!is_coze.value) {
+		parame.answer_id = task.selectReply.id
+	}else{
+		parame.answer_id = 0
 	}
 	if(live.liveRoomVideo){
 		parame.video = live.liveRoomVideo.id

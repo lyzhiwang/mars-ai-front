@@ -57,6 +57,13 @@
 				<image src="/static/images/template3/sticker6.png" class="sticker" mode="widthFix"></image>
 				<view class="circle"></view>
 			</view>
+			<view class="menu m4" @click="goTo('/pagesub/knowledge/index')">
+				<view class="h3">知识库</view>
+				<view class="desc">专业知识库</view>
+				<view class="btn">立即体验</view>
+				<image src="/static/images/template/sticker7.png" class="sticker" mode="widthFix"></image>
+				<view class="circle"></view>
+			</view>
 		</view>
 	</view>
 </view>
