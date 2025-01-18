@@ -482,7 +482,7 @@ export const useLiveStore = defineStore('live', {
 		            processAudioMessage(data.user.nickname, followText, id);
 		        }
 		    }
-		}
+		},
 
 		
 		
