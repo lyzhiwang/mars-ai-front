@@ -38,6 +38,7 @@
 						<view  class="btn btn1 u-flex u-flex-xy-center" @click="delFile(item)">删除</view>
 					</view>
 				</view>
+				<view class="tips">上传后请先更新,更新成功后发布即可生效!</view>
 			</view>
 		</template>
 		<u-modal :show="show" title="提示" :content='content' showCancelButton @confirm="ok" @cancel="show=false"></u-modal>
@@ -214,6 +215,13 @@
 	
 	.list-box{
 		width: 100%;
+		.tips{
+			margin-top: 15rpx;
+			font-size: 26rpx;
+			text-align: center;
+			color: red;
+			font-weight: bold;
+		}
 		.item{
 			width: 100%;
 			min-height: 120rpx;
@@ -258,6 +266,7 @@
 				margin-top: 5rpx;
 				background-color: #F56C6C;
 			}
+			
 		}
 	}
 </style>

@@ -50,7 +50,7 @@ service.interceptors.response.use(
 		uni.hideLoading()
 	}
     const res = response.data
-	// console.log('res111', res)
+	console.log('res111', res)
     if (res) {
 		if (res.code === 0) { // code 为0请求正常
 		    return res

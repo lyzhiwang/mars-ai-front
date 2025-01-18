@@ -59,6 +59,7 @@ export const closeWebsocket = () => {
 	lockReconnect = true
 	const live = useLiveStore()
 	live.setIsManualClose(true)
+	live.setIsManualClose(true)
 	if(wsCreateHandler) clearTimeout(wsCreateHandler)
 	if(reconnect_timer){
 		reconnect_timer = clearInterval(reconnect_timer)
@@ -150,6 +151,8 @@ const onWsMessage = (event) => {
 const onWsClose = (event) => {
   // e.code === 1000  表示正常关闭。 无论为何目的而创建, 该链接都已成功完成任务。
   // e.code !== 1000  表示非正常关闭。
+  const live = useLiveStore()
+  live.setMediaPollingStatus(false)
   console.log('DISCONNECT: ', event)
   if (event && event.code !== 1000) {
     writeToScreen('非正常关闭')
@@ -175,6 +178,7 @@ const reconnect = () => {
   }
   writeToScreen('1秒后重连')
   lockReconnect = true
+  live.setMediaPollingStatus(false)
   // 没连接上会一直重连，设置延迟避免请求过多
   wsCreateHandler && clearTimeout(wsCreateHandler)
   wsCreateHandler = setTimeout(() => {

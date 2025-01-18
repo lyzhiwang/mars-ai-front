@@ -46,7 +46,15 @@
 			<view class="r-box" @click="goTo('/pagesub/goods/index')">
 				<image src="/static/images/voices/shop.png"></image>
 			</view>
+			<view class="r-box" @click="goTo('/pagesub/knowledge/index')">
+				<image src="/static/images/voices/reply.png"></image>
+				<view class="name name1">
+					<view>知识库</view>
+					<view class="line yellow"></view>
+				</view>
+			</view>
 		</view>
+		
 		
 	</view>
 </template>
