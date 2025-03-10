@@ -140,6 +140,12 @@
 					}
 				},
 				{
+				    "path" : "reply/ai-dub",
+				    "style" :  {
+						"navigationBarTitleText": "AI合成"
+					}
+				},
+				{
 					"path": "login/index",
 					"style": {
 						"navigationBarTitleText": "",
@@ -255,13 +261,50 @@
 					"style": {
 						"navigationBarTitleText": "添加知识库内容"
 					}
+				},
+				{
+					"path": "mine/index",
+					"style": {
+						"navigationBarTitleText": "声音管理"
+					}
+				},
+				{
+					"path": "mine/clone",
+					"style": {
+						"navigationBarTitleText": "声音克隆"
+					}
+				},
+				{
+					"path": "mine/begin",
+					"style": {
+						"navigationBarTitleText": "声音克隆"
+					}
+				},
+				{
+					"path": "mine/transcribe",
+					"style": {
+						"navigationBarTitleText": "语音录制"
+					}
+				},
+				{
+					"path": "mine/add",
+					"style": {
+						"navigationBarTitleText": "声音上传"
+					}
+				},
+				{
+					"path": "mine/logs",
+					"style": {
+						"transparentTitle": "always" ,//状态栏透明
+						"navigationBarTitleText": ""
+					}
 				}
             ]
 		}
 	],
 	"tabBar": {
 		"color": "#323333",
-		"selectedColor": "#323333",
+		"selectedColor": "#2281FE",
 		"borderStyle": "black",
 		"backgroundColor": "#ffffff",
 		"list": [{

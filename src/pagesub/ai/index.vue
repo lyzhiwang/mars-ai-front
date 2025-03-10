@@ -20,15 +20,22 @@
 			</view>
 		</view>
 	</scroll-view>
-	<view class="fixedBot safeArea between">
-		<u--input
-		    placeholder="输入您想说的话~"
-		    border="surround"
-		    v-model="question"
-			class="inputBox"
-			@confirm="submit"
-		></u--input>
-		<image src="/static/images/ai/send.png" class="send" @click="submit"></image>
+	<view class="footer safeArea ">
+		<view class="ai_list">
+			<view class="block" v-for="(item,index) in chatList" :key="index" :class="{blockA: item.type === chat_type}" @click="chat_type=item.type">{{item.name}}</view>
+			<!-- <view class="block">DeepSeek</view> -->
+		</view>
+		<view class="fixedBot between">
+			<u--input
+			    placeholder="输入您想说的话~"
+			    border="surround"
+			    v-model="question"
+				class="inputBox"
+				@confirm="submit"
+			></u--input>
+			<image src="/static/images/ai/send.png" class="send" @click="submit"></image>
+		</view>
+		
 	</view>
 </view>
 </template>
@@ -41,7 +48,10 @@ const msgList = ref([])
 const question = ref('')
 const textWriter = ref('')
 const loading = ref(false)
+const chat_type = ref(2)
 let query = null, typingStr= ''
+
+const chatList = ref([{type: 2, name: 'DeepSeek'}, {type: 1, name: '豆包'}])
 
 function copyText(data){
 	if(!data) return
@@ -84,7 +94,12 @@ function submit(){
 	loading.value = true
 	nextTick(scrollBottom)
 	// 再请求chatGPT
-	chatGPT({data: question.value}).then(res=>{
+	let obj = {
+		data: question.value,
+		type: chat_type.value
+	}
+	if(chat_type.value===1) delete obj.type
+	chatGPT(obj).then(res=>{
 		if(res){
 			const msg = res.data[0]
 			typing(msg)
@@ -107,7 +122,7 @@ onBeforeUnmount(()=>{
 	overflow: hidden;
     .scrollView{
 		flex: 1;
-		height: calc(100vh - 120rpx);
+		height: calc(100vh - 240rpx);
 		overflow-anchor: auto;
     }
     .con{
@@ -153,6 +168,37 @@ onBeforeUnmount(()=>{
 			color: #fff!important;
 		}
 	}
+	.footer{
+		 width: 750rpx;
+		 min-height: 120rpx;
+		 background: #ffffff;
+		 overflow: hidden;
+		 .ai_list{
+			 width: 100%;
+			 display: flex;
+			 align-items: center;
+			 padding-top: 24rpx;
+			 padding-left: 40rpx;
+			 .block{
+				 width: 160rpx;
+				 height: 50rpx;
+				 display: flex;
+				 align-items: center;
+				 justify-content: center;
+				 border-radius: 34rpx;
+				 padding: 6rpx 10rpx;
+				 box-sizing: border-box;
+				 background-color: #F5F5F5;
+				 color: #0a0a0a;
+				 font-size: 26rpx;
+				 margin-right: 30rpx;
+			 }
+			 .blockA{
+				background-color: #EBF2FE;
+				color: #3b82f6; 
+			 }
+		 }
+	}
     .fixedBot{
         width: 750rpx;
 		height: 120rpx;
@@ -163,7 +209,7 @@ onBeforeUnmount(()=>{
 		padding-bottom: 24rpx;
         padding-left: 40rpx;
         padding-right: 40rpx;
-		overflow: hidden;
+		// overflow: hidden;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;

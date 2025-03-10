@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
-		<view class="des">当前AI配音可使用次数: <text class="num">{{num}}</text></view>
-		<view class="u-flex menu">
+		<!-- <view class="des">当前AI配音可使用次数: <text class="num">{{num}}</text></view> -->
+		<view class="u-flex menu" style="padding-top: 30rpx;">
 			<view class="item u-flex" @click="toPath">
 				<view class="des">
 					<view class="tit">AI配音</view>
@@ -25,27 +25,27 @@
 <script setup>
 	import { onLoad, onShow } from '@dcloudio/uni-app'
 	import { goTo } from '@/utils/helper.js'
-	import { oemInfo } from '@/api'
+	// import { oemInfo } from '@/api'
 	
 	onLoad((option)=>{
 		voice_id.value = option.id
 	})
 	
-	onShow(()=>{
-		getOemInfo()
-	})
+	// onShow(()=>{
+	// 	getOemInfo()
+	// })
 	const voice_id = ref(null)
 	const is_aiaudio = ref(0)
 	const num = ref(0)
-	function getOemInfo(){
-		oemInfo({oem_id: import.meta.env.VITE_OEM_ID}).then(res =>{
-			is_aiaudio.value = res.data.is_aiaudio
-			num.value = res.data.num
-		})
-	}
+	// function getOemInfo(){
+	// 	oemInfo({oem_id: import.meta.env.VITE_OEM_ID}).then(res =>{
+	// 		is_aiaudio.value = res.data.is_aiaudio
+	// 		num.value = res.data.num
+	// 	})
+	// }
 	function toPath(){
-		if(is_aiaudio.value===0) return uni.showToast({title: '请联系上级开启此功能!',icon: 'none',duration: 2000});
-		if(num.value===0) return uni.showToast({title: '请联系上级增加使用次数!',icon: 'none',duration: 2000});
+		// if(is_aiaudio.value===0) return uni.showToast({title: '请联系上级开启此功能!',icon: 'none',duration: 2000});
+		// if(num.value===0) return uni.showToast({title: '请联系上级增加使用次数!',icon: 'none',duration: 2000});
 		goTo(`/pagesub/voices/ai-dub?id=${voice_id.value}`)
 	}
 </script>

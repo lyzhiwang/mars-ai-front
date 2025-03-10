@@ -177,7 +177,7 @@
 	const playDataId = ref(null) 
 	
 	const handleItem = item =>{
-		if(!item.upload.full_path) return uni.showToast({title: 'AI语音正在生成中,请稍后!',icon: 'none',duration: 2000});
+		if(!item.upload?.full_path) return uni.showToast({title: 'AI语音正在生成中,请稍后!',icon: 'none',duration: 2000});
 		if(!innerAudioContext){
 			innerAudioContext = uni.createInnerAudioContext();
 			innerAudioContext.autoplay = true;

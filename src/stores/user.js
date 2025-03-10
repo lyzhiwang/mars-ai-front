@@ -35,7 +35,7 @@ export const useUserStore = defineStore('user', {
             try {
                 const res = await getUserInfo()
                 this.setUserInfo(res.data)
-				// console.log(res.data);
+				console.log(res.data);
                 return res.data
             } catch (error) {
                 throw error

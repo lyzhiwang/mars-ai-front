@@ -15,6 +15,7 @@
 </template>
 
 <script setup>
+import Template0 from '@/components/home/Template0'
 import Template1 from '@/components/home/Template1'
 import Template2 from '@/components/home/Template2'
 import Template3 from '@/components/home/Template3'
@@ -34,7 +35,9 @@ function comingsoon(){
 	uni.showToast({title: '暂未开放', icon: 'none'})
 }
 function renderTem(){
-	switch (config.template){
+	switch (0){
+		case 0:
+			return Template0
 		case 1:
 			return Template1
 		case 2:

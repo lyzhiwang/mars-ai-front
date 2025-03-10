@@ -14,8 +14,10 @@ var input = document.getElementById("myFileInput");
 
 
 var params = {
+	id: null,
 	web_url: null,
-	name: null
+	name: null,
+	created_at: null
 	// upload_id: null,
 	// title: null
 }
@@ -37,6 +39,8 @@ function uploadFile(file) {
 	if(data.code===0){
 		params.web_url = data.data.path
 		params.name = data.data.name;
+		params.id = data.data.id;
+		params.created_at = data.data.created_at;
 		shade.style.display = "none";
 		fileNameDom.innerText  = `已上传文件: ${data.data.name}`;
 		fileNameDom.style.display = "block";
@@ -66,5 +70,5 @@ btn.addEventListener("click", function() {
 	    data: params
 	});
 	shade.style.display = "none";
-	uni.navigateBack()
+	// uni.navigateBack({delta: 2})
 });

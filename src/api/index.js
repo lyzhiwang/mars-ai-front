@@ -566,3 +566,49 @@ export function updateBot() {
 		method: 'put'
 	})
 }
+
+// 声音克隆
+export function beginCloneIndex(data) {
+	return request({
+		url: '/v1/clone/voice',
+		method: 'post',
+		data
+	})
+}
+
+// 克隆声音文字转语音
+export function cloneTextVoice(data) {
+	return request({
+		url: '/v1/text/to/voice',
+		method: 'post',
+		data
+	})
+}
+
+// 克隆后的声音列表
+export function voiceCloneIndex(params) {
+	return request({
+		url: '/v1/voice/clone',
+		method: 'get',
+		params
+	})
+}
+
+// 删除克隆素材
+export function delVoiceClone(params) {
+	return request({
+		url: '/v1/voice/clone/' + params.id,
+		method: 'delete',
+	})
+}
+
+// 字符使用列表
+export function userCharLog(params) {
+	return request({
+		url: '/v1/user/char/log',
+		method: 'get',
+		params
+	})
+}
+
+

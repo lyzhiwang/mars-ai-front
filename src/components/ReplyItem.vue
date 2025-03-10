@@ -16,6 +16,7 @@
 		<u-icon name="trash-fill" size="50rpx" color="#1E64FE" @click="delReplyVoice(item.id)"></u-icon>
 	</view>
 	<view class="btnGroup" v-if="!showMore">
+		<button class="btn" @click="goTo(`/pagesub/reply/ai-dub?type=2&id=${data.id}&answer_id=${answer_id}`)">AI合成</button>
 		<button class="btn" @click="goTo('/pagesub/voices/upload?type=2&id='+data.id)">上传</button>
 		<button class="btn" @click="goTo('/pagesub/voices/transcribe?type=2&id='+data.id)">录制</button>
 		<button class="btn" @click="editKeyword">添加关键词</button>
@@ -94,6 +95,7 @@ function editKeyword(){
 	goTo(`/pagesub/reply/add?id=${props.answer_id}&rid=${props.data.id}`)
 }
 function togglePlay(item){
+	if(!item.upload?.full_path) return uni.showToast({title: 'AI语音正在生成中,请稍后!',icon: 'none',duration: 2000});
 	// if(playId.value===item.id) return
 	if(!innerAudioContext){
 		innerAudioContext = uni.createInnerAudioContext();
@@ -191,6 +193,7 @@ onBeforeUnmount(()=>{
 		height: 80rpx;
 	}
 	.btnGroup{
+		width: 100%;
 		display: flex;
 		justify-content: center;
 		margin-top: 26rpx;
@@ -202,9 +205,9 @@ onBeforeUnmount(()=>{
 			font-size: 26rpx;
 			color: #333;
 			display: flex;
-			justify-content: center;
+			justify-content: space-between;
 			align-items: center;
-			margin: 0 20rpx;
+			// margin: 0 20rpx;
 			&:after{
 				border: 0;
 			}
