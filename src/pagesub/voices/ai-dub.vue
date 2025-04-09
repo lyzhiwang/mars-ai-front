@@ -115,22 +115,20 @@
 	}
 	
 	function save(){
-		if(type === 1){
+		if(!form.value.content) return uni.showToast({title: '请输入要转换语音的内容!',icon: 'none',duration: 2000});
+		if(!form.value.title) return uni.showToast({title: '语音名称不能为空!',icon: 'none',duration: 2000});
+		if(type.value === 1){
 			// 阿里文字转语音
 			if(is_aiaudio.value===0) return uni.showToast({title: '请联系上级开启此功能!',icon: 'none',duration: 2000});
 			if(num.value===0) return uni.showToast({title: '请联系上级增加使用次数!',icon: 'none',duration: 2000});
 			form.value.voice = task.default_voice.voice
 			console.log('form', form.value)
-			if(!form.value.content) return uni.showToast({title: '请输入要转换语音的内容!',icon: 'none',duration: 2000});
-			if(!form.value.title) return uni.showToast({title: '语音名称不能为空!',icon: 'none',duration: 2000});
 			voiceAliJob(form.value).then(res =>{
 				uni.showToast({title: '提交成功!',icon: 'success',duration: 1500})
 				goTo(`/pagesub/voices/voiceStore?id=${form.value.voice_id}`)
 			})
 		}else{
 			// 克隆文字转语音
-			if(!form.value.content) return uni.showToast({title: '请输入要转换语音的内容!',icon: 'none',duration: 2000});
-			if(!form.value.title) return uni.showToast({title: '语音名称不能为空!',icon: 'none',duration: 2000});
 			if(!current.value) return uni.showToast({title: '请点击选择音色!',icon: 'none',duration: 2000});
 			const obj = {
 				type: 1,
@@ -166,13 +164,13 @@
 		})
 	}
 	
-	const toggle = data =>{
+	const toggle = ({value}) =>{
 		playDataId.value = null
 		if(innerAudioContext){
 			innerAudioContext.destroy()
 			innerAudioContext = null
 		} 	
-		type.value = data.value
+		type.value = value
 	}
 	
 	// 播放中数据
