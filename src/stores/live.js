@@ -5,6 +5,7 @@ import { useUserStore } from '@/stores'
 import { aliJob, checkJob } from '@/api/index'
 import axios from 'axios'
 import { uniAdapter } from 'fant-axios-adapter'
+import dayjs from 'dayjs';
 
 export const useLiveStore = defineStore('live', {
 	persist: {
@@ -35,6 +36,7 @@ export const useLiveStore = defineStore('live', {
 		wlcObj: null, // 欢迎的音频对象
 		request_type: 1, //区分抖音抓取方式
 		timer: null, //3分钟定时自动回复
+		timeKeeping: null, // 自动报时定时器
 		chatStatus: false, // chat回复状态
 		mediaPollingStatus: false, // 是否轮询查语音合成状态
 		bot_info: {is_publish:0, token: ''}, // 智能体相关信息
@@ -227,9 +229,57 @@ export const useLiveStore = defineStore('live', {
 			}
 		},
 		
+		// 自动报时
+		AutoTimeKeeping(){
+			if(this.liveInfo){
+				const { id, open_time} = this.liveInfo
+				const seconds = open_time * 1000 || 180000
+				console.log('进入自动报时', seconds)
+				const arr = [
+					'家人们呐，现在北京时间##咯！谢谢大伙一直守着直播间，就跟在家唠嗑似的。你们每一分钟陪伴，都是给我撑腰，接下来优惠管够',
+					'嘿哟喂！北京时间##闪亮登场！直播间家人们都是“钉子户”呀，谢谢捧场。每一分钟都像给我打鸡血，优惠这就来“轰炸”啦',
+					'此刻，北京时间停在##。直播间家人们如诗如画般陪伴，每一分钟都是美好馈赠。我会带着这份暖意，送更多优惠给你们',
+					'家人们！北京时间##，冲锋号吹响！感谢你们每一分钟的坚守，这是对我最大的信任。接下来，优惠狂潮即将席卷直播间',
+					'哇咔咔！北京时间##到啦！直播间家人们像小天使一样陪着我，每一分钟都超甜。我要把优惠变成糖果，分给大家吃',
+					'各位，此刻北京时间为##。感谢直播间家人们始终如一的坚守，每一分钟的支持都是我前行的基石。后续，优惠必不负所望',
+					'家人们，瞅瞅现在北京时间##咯！感谢你们没被我“无厘头”的直播风格吓跑，每一分钟陪伴都是对我“高抬贵手”，优惠这就安排',
+					'北京时间##，这个时刻因为你们而温暖。直播间家人们的每一分钟陪伴，都像冬日暖阳，我会带着这份温暖，送上更多优惠',
+					'哎呦喂！北京时间##啦！直播间家人们活力满满地守着，每一分钟都是能量注入。接下来，优惠风暴即将开启，一起嗨购',
+					'诸位看官，此刻京时已至##。蒙诸君不离不弃，每一分钟相伴皆为厚爱。吾必当倾尽全力，奉上诸多优惠，以报诸君'
+				]
+				this.timeKeeping = setInterval(() => {
+					console.log(this.isplay,this.wlcPlaying,this.mediaPollingStatus, this.synthesizing ,this.chatStatus )
+					if(!this.isplay&&!this.wlcPlaying&&!this.mediaPollingStatus&& !this.synthesizing && !this.chatStatus){
+						this.setSynthesiStatus(true);
+						const now_time = dayjs().format('HH点mm分ss秒')
+						const randomInt = Math.floor(Math.random() * arr.length);
+						const text = arr[randomInt].replace(/##/g, now_time);
+						console.log(now_time, randomInt, text)
+						aliJob({ room_id: id, content: text, type: 1 })
+						    .then(res => {
+						        if (res && !this.mediaPollingStatus) {
+						            this.checkTaskJob(id);
+						        } else {
+						            this.setSynthesiStatus(false);
+						        }
+						    })
+						    .catch(() => {
+						        this.setSynthesiStatus(false);
+						    });
+					}
+				},seconds)
+			}
+		},
+		
+		// 关闭自动报时任务
+		closeTimeKeeping(){
+			console.log('关闭自动报时任务')
+			if(this.timeKeeping) clearInterval(this.timeKeeping)
+			
+		},
+		
 		// 三分钟自动随机回复
 		AutoRecover(){
-			console.log('开始进入')
 			const threeMinutes = 3 * 60 * 1000; // 三分钟的毫秒数
 			this.timer = setInterval(() => {
 				if(!this.isplay&&!this.wlcPlaying&&this.liveInfo){
@@ -360,62 +410,13 @@ export const useLiveStore = defineStore('live', {
 			} catch (error){
 				console.error('Error:', error.response?.data || error.message); // 错误处理
 			}
-			
-			// let timrr = null
-			
-			// service({
-			// 	url: '/v3/chat',
-			// 	method: 'post',
-			// 	data: requestData}).then(response =>{
-			// 		if(response.data.code ===0){
-			// 			const {conversation_id, id} = response.data.data
-			// 			console.log('conversation_id', conversation_id)
-			// 			timrr =  setInterval(() => {
-			// 				service({
-			// 					url: '/v3/chat/retrieve',
-			// 					method: 'get',
-			// 					params: {conversation_id, chat_id: id}}).then(res =>{
-			// 						if(res.data.data.status === "completed") {
-			// 							clearInterval(timrr)
-			// 							service({
-			// 								url: '/v3/chat/message/list',
-			// 								method: 'get',
-			// 								params: {conversation_id, chat_id: id}}).then(res =>{
-			// 									const {data} = res.data
-			// 									let answerContent = data.find(item => item.type === "answer")?.content;
-			// 									const text = answerContent.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '')
-			// 									console.log('text', text)
-			// 									this.setSynthesiStatus(true)
-			// 									// 先发起请求告诉服务器开始合成音频
-			// 									aliJob({room_id: this.liveInfo.id, content: text, type:1}).then((res)=>{
-			// 										if(res){
-			// 											// 轮询接口查看音频合成状态
-			// 											this.checkTaskJob(this.liveInfo.id)
-			// 										}else{
-			// 											this.setSynthesiStatus(false)
-			// 										}
-			// 									}).catch((err)=>{
-			// 										// console.log(111, err)
-			// 										this.setSynthesiStatus(false)
-			// 									})
-			// 								})
-										
-			// 						}
-			// 					})
-			// 			},1000)
-						
-			// 		}
-				
-			// 	}).catch(error => {
-			//     console.error('Error:', error.response ? error.response.data : error.message); // 错误处理
-			//   });
 		},
 		
 		globelMessage(data) {
 		    // 公共处理语音合成的函数
 		    const processAudioMessage = (userName, message, roomId) => {
-		        const sanitizedUserName = userName.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '');
-		        const text = `${message} ${sanitizedUserName}`;
+		        const text = message.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '');
+		        // const text = `${message} ${sanitizedUserName}`;
 		        console.log('生成语音文本:', text);
 		        this.setSynthesiStatus(true);
 		

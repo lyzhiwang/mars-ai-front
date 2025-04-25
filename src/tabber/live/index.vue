@@ -171,6 +171,7 @@ function exit(){
 		// 重置数据
 		limit.value = 2
 		live.closeAutoRecover()
+		live.closeTimeKeeping()
 		closeWebsocket()
 		if(live.innerAudioContext) live.innerAudioContext.destroy()
 		if(live.wlcObj) live.wlcObj.destroy()
@@ -233,7 +234,9 @@ onShow(()=>{
 					is_coze,
 					is_auto_answer, 
 					name_before, 
-					name_after, 
+					name_after,
+					is_time,
+					open_time,
 					request_type 
 					} = res.data
 			const { sort_type, get_media } = voice
@@ -276,6 +279,8 @@ onShow(()=>{
 					is_coze,
 					name_before,
 					name_after,
+					is_time,
+					open_time,
 					reply: answer_keyword.map((item)=>{
 						return {
 							keywords: item.keywords,
@@ -285,6 +290,7 @@ onShow(()=>{
 				}
 				live.setLiveInfo(info)
 				if(is_auto_answer) live.AutoRecover() // 三分钟自动回复
+				if(is_time) live.AutoTimeKeeping() // 自动报时
 				live.setCurrent(0)
 				// 先预加载第一段直播音频
 				nextTick(()=>{

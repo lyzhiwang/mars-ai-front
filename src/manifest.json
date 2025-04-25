@@ -2,8 +2,8 @@
     "name" : "火星智播",
     "appid" : "__UNI__78B6275",
     "description" : "",
-    "versionName" : "1.4.0",
-    "versionCode" : 140,
+    "versionName" : "1.4.1",
+    "versionCode" : 141,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {

@@ -118,6 +118,26 @@
 		<view class="panel shadow">
 			<template v-if="[1,3,4].includes(selectPlatform)">
 			<view class="flex between mar20">
+				<text class="h1">自动报时</text>
+				<view>
+					<u-switch v-model="is_time" size="40"></u-switch>
+				</view>
+			</view>
+			<view class="flex between">
+				<view class="lebel">间隔时间</view>
+				<view class="flex">
+					<u-number-box
+						v-model="open_time" 
+						:min="30" 
+						:step="5" 
+						:disabled="!is_time" 
+						inputWidth="80" 
+						buttonSize="50"
+						integer
+					></u-number-box>&nbsp;秒
+				</view>
+			</view>
+			<view class="flex between mar20">
 				<text class="h1">欢迎语</text>
 				<view>
 					<u-switch v-model="welcome" size="40"></u-switch>
@@ -226,6 +246,8 @@ const is_social = ref(false) // 是否开启关注欢迎语
 const is_coze = ref(false) // 是否开启chat自动回复
 const name_before = ref('欢迎') // 自定义欢迎语前置
 const name_after = ref('进入直播间') // 自定义欢迎语后置
+const is_time = ref(false) // 是否开启自动报时
+const open_time = ref(180) // 自动报时的间隔时间
 const selectPlatform = ref(1) // 当前选择的直播平台
 const pltName = ref('抖音')
 const rules = reactive({
@@ -331,7 +353,9 @@ function startLive(){
 		is_social: is_social.value,
 		is_auto_answer: is_auto_answer.value,
 		name_before: name_before.value ? name_before.value: '欢迎',
-		name_after: name_after.value ? name_after.value :'进入直播间'
+		name_after: name_after.value ? name_after.value :'进入直播间',
+		is_time: is_time.value,
+		open_time: open_time.value
 		}
 	if(welcome.value){
 		parame.welcome_interval = welcome_interval.value
