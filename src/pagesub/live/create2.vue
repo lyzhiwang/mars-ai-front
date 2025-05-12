@@ -214,7 +214,7 @@
 	<u-popup :show="isSphShow" :round="10" mode="center" closeable :closeOnClickOverlay="false" @close="sphClose">
 		<view class="qrBox">
 			<view>请使用微信扫码授权</view>
-			<uqrcode ref="uqrcode" canvas-id="qrcode" :value="sph_data.url" :options="{ margin: 10 }"  v-if="isSphShow"></uqrcode>
+			<image :src="sph_data.qrcode_base64" v-if="isSphShow" style="width: 400rpx;height: 400rpx;"></image>
 			<u-button type="primary" text="我已授权" :loading="isCheck" loadingText="正在验证中" shape="circle" :disabled="isCheck" class="submit" @click="checkStatus" style="margin-top: 20rpx;"></u-button>
 		</view>
 	</u-popup>
@@ -259,6 +259,7 @@ const rules = reactive({
 		}
 	]
 })
+const sphURL = 'http://123.56.68.226:4206'
 
 onLoad(()=>{
 	getBot().then(res =>{
@@ -379,32 +380,56 @@ function startLive(){
 			}
 		})
 	}else{
-		// 视频号获取登录二维码
-		getLoginCode().then(res =>{
-			console.log('res', res.data)
-			sph_data.value = res.data
-			isSphShow.value = true
-		})
+		// 获取视频号Session二维码
+		getSphCode()
 	}
-	
+}
+
+// 视频号获取二维码
+async function getSphCode(){
+	// 获取视频号Session
+	const res = await uni.request({url: sphURL+'/session/create',method: 'POST'})
+	console.log('res', res.data.session_id)
+	sph_session.value = res.data.session_id
+	const value = await uni.request({url:  `${sphURL}/session/${sph_session.value}/login/qrcode`})
+	sph_data.value = value.data.data
+	sph_data.value.qrcode_base64 = `data:image/png;base64,${sph_data.value.qrcode_base64}` 
+	console.log('sph_data.value', sph_data.value)
+	isSphShow.value = true
 }
 
 // 轮询视频号二维码授权
 const timmer = ref(null)
 const sph_cookie = ref(null)
+const sph_session = ref(null)
 const isCheck = ref(false)
 function checkStatus(){
 	isCheck.value = true
 	timmer.value = setInterval(()=>{
-		checkSphStatus({token: sph_data.value.token}).then(res =>{
-			console.log('res', res)
-			if(res.data.info.status===1){
+	uni.request({
+		url: `${sphURL}/session/${sph_session.value}/login/status`,
+		success: (res)=>{
+			console.log('res.data', res.data)
+			if(res.data.status === "danmu_active"){
 				clearInterval(timmer.value)
-				title.value = res.data.info.userInfo.nickname
-				sph_cookie.value = res.data.cookie
+				isCheck.value = false
+				title.value = '视频号正在直播'
 				begin_sph()
 			}
-		})
+			if(res.data.status === "error"){
+				clearInterval(timmer.value)
+				isCheck.value = false
+				isSphShow.value = false
+				uni.showModal({
+					title: '提示',
+					content: '二维码已失效,请重新获取扫码!',
+					success: (res)=>{
+						if(res.confirm) getSphCode()
+					}
+				})
+			}
+		}
+	})
 	},1000)
 }
 
@@ -423,14 +448,18 @@ function begin_sph(){
 		voice_id: task.selectVoice.id, 
 		answer_id: task.selectReply.id, 
 		is_welcome: welcome.value, 
-		live_url: sph_cookie.value, 
+		live_url: sph_session.value, 
 		type: 2, 
 		platform: selectPlatform.value,
 		is_gift: is_gift.value,
 		is_like: is_like.value,
 		is_social: is_social.value,
+		is_auto_answer: is_auto_answer.value,
 		name_before: name_before.value ? name_before.value: '欢迎',
-		name_after: name_after.value ? name_after.value :'进入直播间'
+		name_after: name_after.value ? name_after.value :'进入直播间',
+		is_time: is_time.value,
+		open_time: open_time.value,
+		sph_session: sph_session.value
 		}
 	if(welcome.value){
 		parame.welcome_interval = welcome_interval.value
@@ -443,7 +472,6 @@ function begin_sph(){
 		console.log('parame', parame)
 		if(res){
 			// 开始直播
-			// live.setTitle(title.value)
 			uni.redirectTo({url: '/pagesub/live/sticker'})
 		}
 	})

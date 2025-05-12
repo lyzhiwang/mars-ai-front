@@ -165,7 +165,7 @@ export const useLiveStore = defineStore('live', {
 						break;
 					case 3:
 						// 视频号直播
-						connectWebsocket(3,ws_url||'wss://mars.lytklw.cn/socket.io', {cookie:live_url,type: 5}, this.globelMessage4, () => {})
+						connectWebsocket(3,ws_url||'wss://mars.lytklw.cn/socket.io', {session:live_url,type: 5}, this.globelMessage4, () => {})
 						break;
 					case 4:
 						// 美团直播
@@ -413,26 +413,25 @@ export const useLiveStore = defineStore('live', {
 		},
 		
 		globelMessage(data) {
-		    // 公共处理语音合成的函数
-		    const processAudioMessage = (userName, message, roomId) => {
-		        const text = message.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '');
-		        // const text = `${message} ${sanitizedUserName}`;
-		        console.log('生成语音文本:', text);
-		        this.setSynthesiStatus(true);
+			// 公共处理语音合成的函数
+			const processAudioMessage = (userName, message, roomId) => {
+				const text = message.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '');
+				// const text = `${message} ${sanitizedUserName}`;
+				console.log('生成语音文本:', text);
+				this.setSynthesiStatus(true);
 		
-		        aliJob({ room_id: roomId, content: text, type: 1 })
-		            .then(res => {
-		                if (res && !this.mediaPollingStatus) {
-		                    this.checkTaskJob(this.liveInfo.id);
-		                } else {
-		                    this.setSynthesiStatus(false);
-		                }
-		            })
-		            .catch(() => {
-		                this.setSynthesiStatus(false);
-		            });
-		    };
-		
+				aliJob({ room_id: roomId, content: text, type: 1 })
+					.then(res => {
+						if (res && !this.mediaPollingStatus) {
+							this.checkTaskJob(this.liveInfo.id);
+						} else {
+							this.setSynthesiStatus(false);
+						}
+					})
+					.catch(() => {
+						this.setSynthesiStatus(false);
+					});
+			};
 		    // 处理评论
 		    if (data.content) {
 		        if (this.liveInfo) {
@@ -518,40 +517,59 @@ export const useLiveStore = defineStore('live', {
 			}
 		},
 		globelMessage4(data){
-			if(data.msgList.length>0){
-				const msg = data.msgList[0]
-				switch(msg.type){
-					case 1:
-						// 评论
-						this.addMsg(msg.content); // 添加用户评论信息到列表
-						this.startReply(msg.content); // 自动回复
-						console.log('回复:', msg.content)
-						break;
-					case 10005:
-						// 进入直播间
-						if(this.liveInfo){
-							const { is_welcome, id, name_before, name_after } = this.liveInfo
-							if(is_welcome==1 && !this.synthesizing){
-								const text = name_before + msg.nickname + name_after
-								console.log('text', text)
-								this.setSynthesiStatus(true)
-								// 先发起请求告诉服务器开始合成音频
-								aliJob({room_id: id, content: text, type:1}).then((res)=>{
-									if(res){
-										// 轮询接口查看音频合成状态
-										this.checkTaskJob(id)
-									}else{
-										this.setSynthesiStatus(false)
-									}
-								}).catch((err)=>{
-									// console.log(111, err)
-									this.setSynthesiStatus(false)
-								})
-							}
+			console.log('视频号',data)
+			// 公共处理语音合成的函数
+			const processAudioMessage = (userName, message, roomId) => {
+				const text = message.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '');
+				// const text = `${message} ${sanitizedUserName}`;
+				console.log('生成语音文本:', text);
+				this.setSynthesiStatus(true);
+					
+				aliJob({ room_id: roomId, content: text, type: 1 })
+					.then(res => {
+						if (res && !this.mediaPollingStatus) {
+							this.checkTaskJob(this.liveInfo.id);
+						} else {
+							this.setSynthesiStatus(false);
 						}
-						break;
-				}
-				
+					})
+					.catch(() => {
+						this.setSynthesiStatus(false);
+					});
+			};
+			// 处理评论
+			if (data.msgType===1) {
+			    if (this.liveInfo) {
+			        console.log('处理评论:', this.liveInfo.is_coze, data.content, this.synthesizing, this.chatStatus);
+			        if (this.liveInfo.is_coze && !this.chatStatus && !this.synthesizing) {
+			            this.addMsg(data.content); // 添加用户评论
+			            this.botMsg(data.content); // 自动回复
+			            this.setChatStatus(true);
+			        } else {
+			            this.addMsg(data.content); // 添加用户评论
+			            this.startReply(data.content); // 自动回复
+			        }
+			    }
+			}
+			
+			// 处理用户进入直播间
+			if (data.msgType === 10005) {
+				console.log('进入直播间')
+			    if (this.liveInfo && this.liveInfo.is_welcome == 1 && !this.synthesizing && !this.chatStatus) {
+			        const { id, name_before, name_after } = this.liveInfo;
+			        const welcomeText = `${name_before}${data.nickname}${name_after},${this.getRandomItem(this.thankYouForWelcome)}`;
+					console.log('欢迎语', welcomeText)
+			        processAudioMessage(data.nickname, welcomeText, id);
+			    }
+			}
+			
+			// 处理礼物
+			if (data.msgType === "gift") {
+			    if (this.liveInfo && this.liveInfo.is_gift == 1 && !this.synthesizing && !this.chatStatus) {
+			        const { id } = this.liveInfo;
+			        const giftText = `感谢${data.nickname}送来的礼物,${this.getRandomItem(this.thankYouForGift)}`;
+			        processAudioMessage(data.nickname, giftText, id);
+			    }
 			}
 		},
 		// 美团

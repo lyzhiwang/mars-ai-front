@@ -240,7 +240,7 @@ onShow(()=>{
 					request_type 
 					} = res.data
 			const { sort_type, get_media } = voice
-			if(platform===3 && !is_sph) return; // 视频号不进行重连恢复
+			// if(platform===3 && !is_sph) return; // 视频号不进行重连恢复
 			livePlatform.value = liveType[platform-1]+ '直播'
 			let url = ws_url
 			switch(platform){

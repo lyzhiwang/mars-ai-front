@@ -35,7 +35,8 @@ export const connectWebsocket = (type, url, agentData, successCallback, errCallb
 		wsUrl = live.request_type===1 ? url : `${url}?path=${agentData.path}&type=${agentData.type}`
 		break;
 	  case 3:
-		wsUrl = `${url}?cookie=${agentData.cookie}&type=5`
+		// 视频号
+		wsUrl = `ws://123.56.68.226:4206/ws/danmu/${agentData.session}`
 		break;
 	  default:
 		wsUrl = `${url}?path=${agentData.path}&type=${agentData.type}`
