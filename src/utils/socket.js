@@ -34,6 +34,10 @@ export const connectWebsocket = (type, url, agentData, successCallback, errCallb
 	  case 1:
 		wsUrl = live.request_type===1 ? url : `${url}?path=${agentData.path}&type=${agentData.type}`
 		break;
+	  case 2:
+		// 快手
+		wsUrl = url
+		break;
 	  case 3:
 		// 视频号
 		wsUrl = `ws://123.56.68.226:4206/ws/danmu/${agentData.session}`
@@ -126,6 +130,7 @@ const initWsEventHandle = () => {
 }
 
 const onWsOpen = (event) => {
+	console.log('onWsOpen', event)
   writeToScreen('CONNECT')
   // // 客户端与服务器端通信
   // wsObj.send('我发送消息给服务端');
@@ -134,6 +139,18 @@ const onWsOpen = (event) => {
 	if(reconnect_timer) clearInterval(reconnect_timer)
     // 发给后端的数据需要字符串化
     if(platform!==2) wsObj.send({data: JSON.stringify(sendDatas)})
+	// 快手
+	if(platform===2){
+		console.log('进入快手发送')
+		const payload = {
+		  Action: 'AddWebcast',
+		  Data: JSON.stringify({
+			ShareCode: sendDatas.ShareCode
+		  })
+		};
+		console.log('payload', payload)
+		wsObj.send({data: JSON.stringify(payload)})
+	} 
 	// 7分钟定时重连
 	reconnect_timer = setInterval(reconnect, 420000)
   }

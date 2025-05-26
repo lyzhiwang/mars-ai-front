@@ -121,6 +121,7 @@ export default {
 		const full_height = ref('1672')
 		let round = 1, i = 0, voiceArr = [], timer = null; // 轮数和当前播放的第几个
 		const goods= computed(()=>live.liveInfo&&live.liveInfo.voice_media[live.current] ? live.liveInfo.voice_media[live.current].goods : null)
+		const timmer = ref(null)
 		function getItem(media){
 			const { title, upload, get_goods } = media
 			if(get_goods){
@@ -263,6 +264,7 @@ export default {
 							name_after,
 							is_time,
 							open_time,
+							close_time,
 							reply: answer_keyword.map((item)=>{
 								return {
 									keywords: item.keywords,
@@ -282,6 +284,14 @@ export default {
 						// 打开获取评论的长连接
 						live.setRequestType(request_type)
 						live.openLonglink(live_url, useself, url, platform)
+						if(close_time){
+							// 定时关播
+							const time = Number(close_time)*1000*60
+							console.log('time', time)
+							timmer.value = setTimeout(()=>{
+								uni.navigateBack()
+							},time)
+						}
 					})
 					// uni.setStorageSync('is_sph', false)
 				}
@@ -296,6 +306,7 @@ export default {
 				closeWebsocket()
 				if(live.innerAudioContext) live.innerAudioContext.destroy()
 				if(live.wlcObj) live.wlcObj.destroy()
+				if(timmer.value) clearTimeout(timmer.value)
 				live.$patch({
 					current: 0,
 					vRef: [], 

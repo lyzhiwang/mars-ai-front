@@ -2,8 +2,8 @@
     "name" : "火星智播",
     "appid" : "__UNI__78B6275",
     "description" : "",
-    "versionName" : "1.4.2",
-    "versionCode" : 142,
+    "versionName" : "1.4.3",
+    "versionCode" : 143,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -58,7 +58,9 @@
                 "idfa" : false,
                 "dSYMs" : false,
                 "privacyDescription" : {
-                    "NSMicrophoneUsageDescription" : "该应用程序录制音频以在触发关键字时播放该音频。"
+                    "NSMicrophoneUsageDescription" : "该应用程序录制音频以在触发关键字时播放该音频。",
+                    "NSPhotoLibraryUsageDescription" : "获取用户手机相册用于提供相册图片素材。",
+                    "NSCameraUsageDescription" : "获取用户手机摄像头用于快捷识别当前场景,显示当前画面。"
                 }
             },
             /* SDK配置 */

@@ -30,7 +30,7 @@
 			v-if="selectPlatform!==3"
 		>
 			<image src="/static/images/live/title.png" class="title"></image>
-			<!-- 抖音/快手 直播 -->
+			<!-- 抖音直播 -->
 			<u-form-item prop="live_id">
 				<view class="iptBox">
 					<u--input 
@@ -89,26 +89,7 @@
 		</view>
 		<view class="panel shadow">
 			<template v-if="[1,3,4].includes(selectPlatform)">
-				<view class="flex between mar20">
-					<text class="h1">自动报时</text>
-					<view>
-						<u-switch v-model="is_time" size="40"></u-switch>
-					</view>
-				</view>
-				<view class="flex between">
-					<view class="lebel">间隔时间</view>
-					<view class="flex">
-						<u-number-box
-							v-model="open_time" 
-							:min="30" 
-							:step="5" 
-							:disabled="!is_time" 
-							inputWidth="80" 
-							buttonSize="50"
-							integer
-						></u-number-box>&nbsp;秒
-					</view>
-				</view>
+				
 				<view class="flex between mar20">
 					<text class="h1">欢迎语</text>
 					<view>
@@ -150,6 +131,26 @@
 					</view>
 				</view>
 			</template>
+			<view class="flex between mar20">
+				<text class="h1">自动报时</text>
+				<view>
+					<u-switch v-model="is_time" size="40"></u-switch>
+				</view>
+			</view>
+			<view class="flex between">
+				<view class="lebel">间隔时间</view>
+				<view class="flex">
+					<u-number-box
+						v-model="open_time" 
+						:min="30" 
+						:step="5" 
+						:disabled="!is_time" 
+						inputWidth="80" 
+						buttonSize="50"
+						integer
+					></u-number-box>&nbsp;秒
+				</view>
+			</view>
 			<view class="flex between mar-20" v-if="!is_coze">
 				<text class="h1">自动回复</text>
 				<view>
@@ -175,6 +176,20 @@
 				<text class="h1">礼物感谢语</text>
 				<view>
 					<u-switch v-model="is_gift" size="40"></u-switch>
+				</view>
+			</view>
+			
+			<view class="flex between mar-20">
+				<text class="h1">自动关播</text>
+				<view class="flex">
+					<u-number-box
+						v-model="close_time" 
+						:min="0" 
+						:step="5" 
+						inputWidth="80" 
+						buttonSize="50"
+						integer
+					></u-number-box>&nbsp;分
 				</view>
 			</view>
 		</view>
@@ -223,6 +238,7 @@ const name_before = ref('欢迎') // 自定义欢迎语前置
 const name_after = ref('进入直播间') // 自定义欢迎语后置
 const is_time = ref(false) // 是否开启自动报时
 const open_time = ref(180) // 自动报时的间隔时间
+const close_time = ref(0) // 自动关播时间
 const selectPlatform = ref(1) // 当前选择的直播平台
 const pltName = ref('抖音')
 const rules = reactive({
@@ -332,7 +348,8 @@ function startLive(){
 		name_before: name_before.value ? name_before.value: '欢迎',
 		name_after: name_after.value ? name_after.value :'进入直播间',
 		is_time: is_time.value,
-		open_time: open_time.value
+		open_time: open_time.value,
+		close_time: close_time.value,
 		}
 	if(!is_coze.value) {
 		parame.answer_id = task.selectReply.id
@@ -342,7 +359,14 @@ function startLive(){
 	if(welcome.value){
 		parame.welcome_interval = welcome_interval.value
 	}
+	if(selectPlatform.value===2){
+		// 快手处理链接
+		const arr = parame.live_url.split('.com/')
+		parame.live_url = arr[1]
+	}
 	if(selectPlatform.value!==3){
+		
+		console.log('parame', parame)
 		createLiveRoom(parame).then(res=>{
 			if(res){
 				// 开始直播
@@ -424,6 +448,7 @@ function begin_sph(){
 		name_after: name_after.value ? name_after.value :'进入直播间',
 		is_time: is_time.value,
 		open_time: open_time.value,
+		close_time: close_time.value,
 		sph_session: sph_session.value
 	}
 	if(welcome.value){

@@ -110,6 +110,7 @@ const limit = ref(2) // 控制video渲染个数
 const livePlatform = ref('直播')
 let round = 1, i = 0, voiceArr = []; // 轮数和当前播放的第几个
 const liveType = ['抖音','快手', '视频号', '美团']
+const timmer = ref(null)
 
 const partName= computed(()=>live.liveInfo&&live.liveInfo.voice_media[live.current] ? live.liveInfo.voice_media[live.current].title : '')
 const getItem = (media)=> {
@@ -175,6 +176,7 @@ function exit(){
 		closeWebsocket()
 		if(live.innerAudioContext) live.innerAudioContext.destroy()
 		if(live.wlcObj) live.wlcObj.destroy()
+		if(timmer.value) clearTimeout(timmer.value)
 		live.$patch({
 			current: 0,
 			vRef: [], 
@@ -237,6 +239,7 @@ onShow(()=>{
 					name_after,
 					is_time,
 					open_time,
+					close_time,
 					request_type 
 					} = res.data
 			const { sort_type, get_media } = voice
@@ -302,12 +305,22 @@ onShow(()=>{
 				live.openLonglink(live_url, useself, url, platform)
 				// }
 			})
+			if(close_time){
+				// 定时关播
+				const time = Number(close_time)*1000*60
+				console.log('time', time)
+				timmer.value = setTimeout(()=>{
+					uni.navigateBack()
+				},time)
+			}
 			uni.setStorageSync('is_sph', false)
 		}
 	})
 })
 onHide(exit)
 onUnload(exit)
+
+
 </script>
 
 <style lang="scss" scoped>

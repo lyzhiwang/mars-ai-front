@@ -152,7 +152,7 @@ export const useLiveStore = defineStore('live', {
 			if (!user.isLogin) return
 			if(useself){
 				// 使用自己的抓包地址
-				console.log('ws_url', ws_url)
+				// console.log('ws_url', ws_url)
 				console.log('live_url', live_url)
 				switch(type){
 					case 1:
@@ -161,7 +161,7 @@ export const useLiveStore = defineStore('live', {
 						break;
 					case 2:
 						// 快手直播
-						connectWebsocket(2,ws_url||'wss://mars.lytklw.cn/socket.io', {path:live_url,type: 1}, this.globelMessage3, () => {})
+						connectWebsocket(2,'ws://39.103.62.231:8866', {ShareCode:live_url}, this.globelMessage3, () => {})
 						break;
 					case 3:
 						// 视频号直播
@@ -487,34 +487,69 @@ export const useLiveStore = defineStore('live', {
 		
 		
 		globelMessage3(data){
-			// console.log('data', data)
-			if(this.liveInfo){
-				if(data.commentFeeds){
-					// 评论
-					this.addMsg(data.commentFeeds[0].content); // 添加用户评论信息到列表
-					this.startReply(data.commentFeeds[0].content); // 自动回复
-				}else if(data.giftFeeds){
-					const username = data.giftFeeds[0].user.userName
-					// 礼物
-					const { is_gift, id } = this.liveInfo
-					if(is_gift==1 && !this.synthesizing){
-						this.setSynthesiStatus(true)
-						// 先发起请求告诉服务器开始合成音频
-						const text = username.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '')
-						aliJob({room_id: id, content: `感谢${text}送来的礼物`,type:1}).then((res)=>{
-							if(res){
-								// 轮询接口查看音频合成状态
-								this.checkTaskJob(id)
-							}else{
-								this.setSynthesiStatus(false)
-							}
-						}).catch((err)=>{
-							// console.log(111, err)
-							this.setSynthesiStatus(false)
-						})
-					}
-				}
+			console.log('快手data', data)
+			// 公共处理语音合成的函数
+			const processAudioMessage = (userName, message, roomId) => {
+				const text = message.replace(/[^\u4E00-\u9FA5\w\s\d]/g, '').replace(/\s/g, '');
+				// const text = `${message} ${sanitizedUserName}`;
+				console.log('生成语音文本:', text);
+				this.setSynthesiStatus(true);
+					
+				aliJob({ room_id: roomId, content: text, type: 1 })
+					.then(res => {
+						if (res && !this.mediaPollingStatus) {
+							this.checkTaskJob(this.liveInfo.id);
+						} else {
+							this.setSynthesiStatus(false);
+						}
+					})
+					.catch(() => {
+						this.setSynthesiStatus(false);
+					});
+			};
+			
+			// 处理评论
+			if (data.MessageType==="互动") {
+			    if (this.liveInfo) {
+			        console.log('处理评论:', this.liveInfo.is_coze, data.Content, this.synthesizing, this.chatStatus);
+			        if (this.liveInfo.is_coze && !this.chatStatus && !this.synthesizing) {
+			            this.addMsg(data.Content); // 添加用户评论
+			            this.botMsg(data.Content); // 自动回复
+			            this.setChatStatus(true);
+			        } else {
+			            this.addMsg(data.Content); // 添加用户评论
+			            this.startReply(data.Content); // 自动回复
+			        }
+			    }
 			}
+			
+			// 处理礼物
+			if (data.MessageType==="礼物" && data.NickName) {
+			    if (this.liveInfo && this.liveInfo.is_gift == 1 && !this.synthesizing && !this.chatStatus) {
+			        const { id } = this.liveInfo;
+			        const giftText = `感谢${data.NickName}送来的礼物,${this.getRandomItem(this.thankYouForGift)}`;
+			        processAudioMessage(data.NickName, giftText, id);
+			    }
+			}
+					
+			// 处理点赞
+			if (data.MessageType==="点赞" && data.NickName) {
+			    if (this.liveInfo && this.liveInfo.is_like == 1 && !this.synthesizing && !this.chatStatus) {
+			        const { id } = this.liveInfo;
+			        const likeText = `感谢${data.NickName}的点赞,${this.getRandomItem(this.thankYouForLike)}`;
+			        processAudioMessage(data.NickName, likeText, id);
+			    }
+			}
+			
+			// 处理关注
+			if (data.MessageType==="关注" && data.NickName) {
+			    if (this.liveInfo && this.liveInfo.is_social == 1 && !this.synthesizing && !this.chatStatus) {
+			        const { id } = this.liveInfo;
+			        const followText = `感谢${data.NickName}的关注,${this.getRandomItem(this.thankYouForFollow)}`;
+			        processAudioMessage(data.NickName, followText, id);
+			    }
+			}
+			
 		},
 		globelMessage4(data){
 			console.log('视频号',data)
