@@ -6,6 +6,7 @@ import { aliJob, checkJob } from '@/api/index'
 import axios from 'axios'
 import { uniAdapter } from 'fant-axios-adapter'
 import dayjs from 'dayjs';
+import WebSocketService from '@/utils/xhs_ws.js'
 
 export const useLiveStore = defineStore('live', {
 	persist: {
@@ -170,6 +171,10 @@ export const useLiveStore = defineStore('live', {
 					case 4:
 						// 美团直播
 						connectWebsocket(4,ws_url||'wss://mars.lytklw.cn/socket.io', {path:live_url,type: 2}, this.globelMessage5, () => {})
+						break;
+					case 5:
+						// 小红书
+						this.globelMessage6
 						break;
 				}
 				// if(type===2){
@@ -651,6 +656,27 @@ export const useLiveStore = defineStore('live', {
 						break;
 				}
 			}
+		},
+		// 小红书
+		globelMessage6(callback){
+			WebSocketService.initSocket((res) => {
+			    console.log('接收到服务器消息：', res)
+				// ✅ 调用页面传入的回调
+				callback && callback(res)
+				if(res.MessageType==="二维码" && res.Content){
+					// sph_data.value.url = res.Content
+					// isSphShow.value = true
+				}
+				if(res.MessageType === "二维码登录成功"){
+					live.setTitle(title.value)
+					uni.navigateBack()
+				}
+			  })
+			// 发送消息
+			  WebSocketService.sendMessage({
+				Action: 'AddWebcast',
+				Data: JSON.stringify({ IsNew: true }) // 注意是字符串
+			  })
 		},
 		welcomeEnd(){
 			this.wlcPlaying = false

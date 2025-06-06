@@ -20,6 +20,9 @@
 				<image class="icon" :src="item.icon"></image>
 				<text class="name">{{item.name}}</text>
 			</view>
+			<!-- <view class="platform">
+				<text class="name">更多敬请期待></text>
+			</view> -->
 		</view>
 		<u--form
 			class="panel mt0"
@@ -27,7 +30,7 @@
 			:rules="rules"
 			ref="urlForm"
 			errorType="toast"
-			v-if="selectPlatform!==3"
+			v-if="![3,5].includes(selectPlatform)"
 		>
 			<image src="/static/images/live/title.png" class="title"></image>
 			<!-- 抖音直播 -->
@@ -202,9 +205,10 @@
 	<!-- 视频号登录弹窗 -->
 	<u-popup :show="isSphShow" :round="10" mode="center" closeable :closeOnClickOverlay="false" @close="sphClose">
 		<view class="qrBox">
-			<view>请使用微信扫码授权</view>
-			<image :src="sph_data.qrcode_base64" v-if="isSphShow" style="width: 400rpx;height: 400rpx;"></image>
-			<u-button type="primary" text="我已授权" :loading="isCheck" loadingText="正在验证中" shape="circle" :disabled="isCheck" class="submit" @click="checkStatus" style="margin-top: 20rpx;"></u-button>
+			<view>请使用{{selectPlatform===3? '微信': '小红书'}}扫码授权</view>
+			<image :src="sph_data.qrcode_base64" v-if="isSphShow && selectPlatform===3" style="width: 400rpx;height: 400rpx;"></image>
+			<uqrcode ref="uqrcode" canvas-id="qrcode" :value="sph_data.url" :options="{margin: 10}" v-else></uqrcode>
+			<u-button type="primary" text="我已授权" :loading="isCheck" loadingText="正在验证中" shape="circle" :disabled="isCheck" class="submit" @click="checkStatus" style="margin-top: 20rpx;" v-if="selectPlatform===3"></u-button>
 		</view>
 	</u-popup>
 </view>
@@ -280,7 +284,8 @@ const platformList = [
 	{id: 1, name: '抖音', icon: '/static/images/live/dy.png'},
 	{id: 2, name: '快手', icon: '/static/images/live/ks.png'},
 	{id: 3, name: '视频号', icon: '/static/images/live/sph.png'},
-	{id: 4, name: '美团', icon: '/static/images/live/meituan.jpeg'}
+	{id: 4, name: '美团', icon: '/static/images/live/meituan.jpeg'},
+	// {id: 5, name: '小红书', icon: '/static/images/live/xhs.png'}
 ]
 
 // 知识库开启
@@ -328,7 +333,7 @@ function searchLive(){
 const sph_data = ref({})
 // const uqrcode = ref(null)
 function startLive(){
-	if(selectPlatform.value!==3){
+	if(![3,5].includes(selectPlatform.value)){
 		if(!form.live_id || !form.live_url) return uni.$u.toast('请先根据提示填写直播间配置并搜索')
 	}
 	if(!task.selectVoice) return uni.$u.toast('请选择语音库')
@@ -350,7 +355,7 @@ function startLive(){
 		is_time: is_time.value,
 		open_time: open_time.value,
 		close_time: close_time.value,
-		}
+	}
 	if(!is_coze.value) {
 		parame.answer_id = task.selectReply.id
 	}else{
@@ -364,8 +369,7 @@ function startLive(){
 		const arr = parame.live_url.split('.com/')
 		parame.live_url = arr[1]
 	}
-	if(selectPlatform.value!==3){
-		
+	if(![3,5].includes(selectPlatform.value)){
 		console.log('parame', parame)
 		createLiveRoom(parame).then(res=>{
 			if(res){
@@ -376,10 +380,23 @@ function startLive(){
 			}
 		})
 	}else{
-		// 获取视频号Session二维码
-		getSphCode()
+		if(selectPlatform.value === 5){
+			// 链接小红书
+			uni.showLoading({title: '加载中...'})
+			live.globelMessage6((res)=>{
+				if(res.MessageType==="二维码" && res.Content){
+					uni.hideLoading()
+					sph_data.value.url = res.Content
+					isSphShow.value = true
+				}else{
+					uni.hideLoading()
+				}
+			})
+		}else{
+			// 获取视频号Session二维码
+			getSphCode()
+		}
 	}
-	
 }
 
 // 视频号获取二维码
@@ -413,7 +430,7 @@ function checkStatus(){
 					title.value = '视频号正在直播'
 					begin_sph()
 				}
-				if(res.data.status === "error"){
+				if(res.data.status === "error" || res.data.status === "error_api_join_live"){
 					clearInterval(timmer.value)
 					isCheck.value = false
 					isSphShow.value = false

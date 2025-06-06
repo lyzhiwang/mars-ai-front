@@ -217,6 +217,7 @@ export default {
 							request_type ,
 							is_time,
 							open_time,
+							close_time,
 							} = res.data
 					const { sort_type, get_media } = voice
 					// if(platform===3 && !is_sph) return; // 视频号不进行重连恢复
@@ -264,7 +265,6 @@ export default {
 							name_after,
 							is_time,
 							open_time,
-							close_time,
 							reply: answer_keyword.map((item)=>{
 								return {
 									keywords: item.keywords,
