@@ -298,6 +298,20 @@
 						"transparentTitle": "always" ,//状态栏透明
 						"navigationBarTitleText": ""
 					}
+				},
+				{
+					"path": "living/menu",
+					"style": {
+						"transparentTitle": "always" ,//状态栏透明
+						"navigationBarTitleText": ""
+					}
+				},
+				{
+					"path": "living/create",
+					"style": {
+						"transparentTitle": "always" ,//状态栏透明
+						"navigationBarTitleText": ""
+					}
 				}
             ]
 		}

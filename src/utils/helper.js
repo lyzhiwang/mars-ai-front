@@ -48,6 +48,7 @@ export function downLoadAudio(mediaArr, callBack){
 	      success(res) {
 	        // 下载成功
 			const { apFilePath, tempFilePath, statusCode } = res
+			console.log('res', res)
 	        resolve({...item, tempFilePath});
 	      },
 	      fail(err) {
