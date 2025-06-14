@@ -5,8 +5,8 @@ import { uniAdapter } from 'fant-axios-adapter'
 // 设置全局的请求次数，请求的间隙
 axios.defaults.retry = 2
 axios.defaults.retryDelay = 1000
-// const baseURL = (process.env.NODE_ENV === "development") ? "http://mars-live.zwstk.cn/api" : "https://mars.lytklw.cn/api";
-const baseURL = (process.env.NODE_ENV === "development") ? "https://mars.lytklw.cn/api" : "https://mars.lytklw.cn/api";
+const baseURL = (process.env.NODE_ENV === "development") ? "http://mars-live.zwstk.cn/api" : "https://mars.lytklw.cn/api";
+// const baseURL = (process.env.NODE_ENV === "development") ? "https://mars.lytklw.cn/api" : "https://mars.lytklw.cn/api";
 // 创建axios实例
 const oemid = Number(import.meta.env.VITE_OEM_ID)
 // 错误白名单

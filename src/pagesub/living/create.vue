@@ -188,7 +188,7 @@
             <view
               class="edit"
               :class="{ aEdit: form.is_edit }"
-              @click="form.is_edit = !form.is_edit"
+              @click="form.is_edit = !form.is_edit "
             >
               <view class="select-v">
                 <view class="select-v-icon"></view>
@@ -208,7 +208,7 @@
 
       <view class="btn">下一步</view>
 
-      <view class="countdown">
+      <view class="countdown" @click="ProhibitedWords">
         <image src="/static/images/living/b-2.png" class="icon1"></image>
         <view class="time">违禁词</view>
       </view>
@@ -241,6 +241,13 @@ const form = ref({
 
 const selectIndustry = (item) => {
   form.value.type = item
+}
+
+// 
+function ProhibitedWords(){
+	uni.navigateTo({
+    url: '/pagesub/living/words'
+  })
 }
 </script>
 

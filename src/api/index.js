@@ -611,4 +611,49 @@ export function userCharLog(params) {
 	})
 }
 
+// --------------------------------------------------
+// 添加违禁词
+export function sjKeywordStore(data) {
+	return request({
+		url: '/v1/sj/keyword',
+		method: 'post',
+		data
+	})
+}
 
+// 编辑违禁词
+export function sjKeywordUpdate(data) {
+	return request({
+		url: '/v1/sj/keyword/'+ data.id,
+		method: 'put',
+		data
+	})
+}
+
+// 详情违禁词
+export function sjKeywordShow(params) {
+	return request({
+		url: '/v1/sj/keyword/'+ params.id,
+		method: 'get'
+	})
+}
+
+// 删除违禁词
+export function sjKeywordDestroy(params) {
+	return request({
+		url: '/v1/sj/keyword/' + params.id,
+		method: 'delete'
+	})
+}
+
+// 违禁词列表列表
+export function sjKeywordIndex(params) {
+	return request({
+		loading: true,
+		url: '/v1/sj/keyword',
+		method: 'get',
+		params
+	})
+}
+
+// -----------------------------------------------------------------------------

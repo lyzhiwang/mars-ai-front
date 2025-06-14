@@ -312,6 +312,13 @@
 						"transparentTitle": "always" ,//状态栏透明
 						"navigationBarTitleText": ""
 					}
+				},
+				{
+					"path": "living/words",
+					"style": {
+						"transparentTitle": "always" ,//状态栏透明
+						"navigationBarTitleText": "违禁词"
+					}
 				}
             ]
 		}
