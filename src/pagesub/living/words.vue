@@ -94,7 +94,7 @@
         type="primary"
         color="#2281FE"
         shape="circle"
-        @click="isShowCustomer = true"
+        @click="addItem"
       >
         添加违禁词
       </u-button>
@@ -108,7 +108,14 @@
       @close="closeService"
     >
       <view class="customer_service_box">
-        <view class="box_title"> 添加违禁词/关键词以及替代词 </view>
+        <view class="box_title"> 
+          <view v-if="isUpdate === false" class="">
+            添加违禁词/关键词以及替代词 
+          </view>
+          <view v-else class="">
+            编辑违禁词/关键词以及替代词 
+          </view>
+        </view>
         <view class="input_item">
           <u--input
             placeholder="请输入违禁词/关键词"
@@ -158,7 +165,11 @@
 </template>
 
 <script setup>
-import { onShow, onReachBottom, onPullDownRefresh } from '@dcloudio/uni-app';
+import { 
+  onShow, 
+  onReachBottom, 
+  onPullDownRefresh 
+} from '@dcloudio/uni-app';
 import { 
   sjKeywordStore,
   sjKeywordUpdate,
@@ -167,7 +178,10 @@ import {
   sjKeywordIndex 
 } from '@/api';
 import { value } from 'lodash-es';
-const tab_list = ref([{ name: '违禁词自动修改' }, { name: '违禁词固定回复' }]);
+const tab_list = ref([
+  { name: '违禁词自动修改' },
+  { name: '违禁词固定回复' }
+]);
 const current = ref(0); // 切换索引
 
 const words_list = ref([
@@ -197,6 +211,7 @@ const form = ref({
   replace_keyword: '', // 替代词
   type:'' // 1自动修改 2固定回复
 });
+
 const pagination = ref({
   page: 1,
   size: 10,
@@ -227,7 +242,11 @@ function initPagination() {
   pagination.value.page = 1;
   pagination.value.size = 10;
   words_list.value = []
-  form.value = { original_keyword: '', replace_keyword: '', type:'' };
+  form.value = { 
+    original_keyword: '',
+    replace_keyword: '',
+    type:'' 
+  };
 }
 
 // 确认
@@ -334,6 +353,14 @@ function deleteItem(item, index) {
   });
 }
 
+// 添加
+function addItem() {
+  form.value.original_keyword = ''
+  form.value.replace_keyword = ''
+  isUpdate.value = false
+  UpdateId.value = -1
+  isShowCustomer.value = true
+}
 // 编辑
 function changeItem(item, index) {
   form.value.original_keyword = item.original_keyword
