@@ -1,12 +1,225 @@
 import { defineStore } from 'pinia'
 
-export const useRealTimeStore = defineStore('clone', {
-	state: () => ({
-		type: null,
-	}),
-	actions: {
-		setType(value){
-			this.type = value
-		}
-	}
+export const useRealTimeStore = defineStore('realTime', {
+  persist: {
+    enabled: true,
+    detached: true, // 设置订阅与组件分离
+  },
+  state: () => ({
+    type: null,
+    liveInfo: {
+      live_room_id: '',
+      detail: [
+        {
+          conversation_id: '',
+          content: '',
+        },
+      ],
+    },
+    menuList: [
+      {
+        type: 1,
+        key: 'ks',
+        name: '快手',
+        iconWidth: 93,
+        iconHeight: 100,
+        color: '#8F5B31',
+        desColor: '#DEC2AA',
+      },
+      {
+        type: 2,
+        key: 'sph',
+        name: '视频号',
+        iconWidth: 97,
+        iconHeight: 75,
+        color: '#315D8F',
+        desColor: '#AEC3E0',
+      },
+      {
+        type: 3,
+        key: 'xhs',
+        name: '小红书',
+        iconWidth: 95,
+        iconHeight: 95,
+        color: '#8F3131',
+        desColor: '#E39C9C',
+      },
+      {
+        type: 4,
+        key: 'dy',
+        name: '抖音',
+        iconWidth: 97,
+        iconHeight: 95,
+        color: '#315D8F',
+        desColor: '#AEC3E0',
+      },
+      {
+        type: 5,
+        key: 'pdd',
+        name: '拼多多',
+        iconWidth: 87,
+        iconHeight: 76,
+        color: '#8F3131',
+        desColor: '#E39C9C',
+      },
+      {
+        type: 6,
+        key: 'zfb',
+        name: '支付宝',
+        iconWidth: 93,
+        iconHeight: 93,
+        color: '#315D8F',
+        desColor: '#AEC3E0',
+      },
+      {
+        type: 7,
+        key: 'mt',
+        name: '美团',
+        iconWidth: 92,
+        iconHeight: 92,
+        color: '#8F5B31',
+        desColor: '#DEC2AA',
+      },
+      {
+        type: 8,
+        key: 'jd',
+        name: '京东',
+        iconWidth: 93,
+        iconHeight: 92,
+        color: '#8F3131',
+        desColor: '#E39C9C',
+      },
+      {
+        type: 9,
+        key: 'tb',
+        name: '淘宝',
+        iconWidth: 93,
+        iconHeight: 90,
+        color: '#8F3131',
+        desColor: '#E39C9C',
+      },
+    ],
+    voice_live: [
+      {
+        name: 'Bella2.0',
+        voice: 'loongbella_v2',
+        type: 'Bella2.0',
+        time: '5s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250406/bhcbrm/Bella.mp3',
+        icon: '/static/images/voices/ai/w1.png',
+      },
+      {
+        name: '龙华2.0',
+        voice: 'longhua_v2',
+        type: '龙华2.0',
+        time: '3s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250406/lfksrh/longhua_v2.mp3',
+        icon: '/static/images/voices/ai/w2.png',
+      },
+      {
+        name: '龙婉2.0',
+        voice: 'longwan_v2',
+        type: '龙婉2.0',
+        time: '4s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250406/ngumkj/longwan_v2.mp3',
+        icon: '/static/images/voices/ai/w6.png',
+      },
+      {
+        name: '龙小淳2.0',
+        voice: 'longxiaochun_v2',
+        type: '龙小淳2.0',
+        time: '8s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250406/ojiqfu/longxiaochun_v2.mp3',
+        icon: '/static/images/voices/ai/w4.png',
+      },
+      {
+        name: '龙小夏2.0',
+        voice: 'longxiaoxia_v2',
+        type: '龙小夏2.0',
+        time: '3s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250406/nzfycm/longxiaoxia_v2.mp3',
+        icon: '/static/images/voices/ai/w5.png',
+      },
+      {
+        name: '知猫',
+        voice: 'zhimao',
+        type: '知猫',
+        time: '3s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/eomj/1677483215080.wav',
+        icon: '/static/images/voices/ai/w6.png',
+      },
+      {
+        name: '吆喝女声',
+        voice: 'laomei',
+        type: '吆喝女声',
+        time: '4s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/hxyk/1677483281444.wav',
+        icon: '/static/images/voices/ai/w1.png',
+      },
+      {
+        name: '小仙',
+        voice: 'xiaoxian',
+        type: '亲切女声',
+        time: '6s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/dbss/1677483377592.wav',
+        icon: '/static/images/voices/ai/w3.png',
+      },
+      {
+        name: '龙橙2.0',
+        voice: 'longcheng_v2',
+        type: '龙橙2.0',
+        time: '2s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250406/cpchsg/longcheng_v2.mp3',
+        icon: '/static/images/voices/ai/n1.png',
+      },
+      {
+        name: '龙书2.0',
+        voice: 'longshu_v2',
+        type: '龙书2.0',
+        time: '4s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250406/bhidpi/longshu_v2.mp3',
+        icon: '/static/images/voices/ai/n2.png',
+      },
+      {
+        name: '亚群',
+        voice: 'yaqun',
+        type: '卖场广播',
+        time: '3s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/pvcf/1677483757340.wav',
+        icon: '/static/images/voices/ai/n6.png',
+      },
+      {
+        name: 'Stanley',
+        voice: 'stanley',
+        type: '沉稳男声',
+        time: '6s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/ymew/1677483831124.wav',
+        icon: '/static/images/voices/ai/n4.png',
+      },
+      {
+        name: 'Kenny',
+        voice: 'kenny',
+        type: '温暖男声',
+        time: '6s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/izoc/1677483866042.wav',
+        icon: '/static/images/voices/ai/n5.png',
+      },
+      {
+        name: '老铁',
+        voice: 'laotie',
+        type: '东北老铁',
+        time: '3s',
+        path: 'https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20230227/ssui/1677483332755.wav',
+        icon: '/static/images/voices/ai/n3.png',
+      },
+    ],
+  }),
+  actions: {
+    setType(value) {
+      this.type = value
+    },
+    setliveInfo(key, value) {
+      this.liveInfo[key] = value
+    },
+  },
 })

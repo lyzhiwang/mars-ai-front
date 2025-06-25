@@ -46,6 +46,7 @@ export const connectWebsocket = (type, url, agentData, successCallback, errCallb
 		wsUrl = `${url}?path=${agentData.path}&type=${agentData.type}`
    }
   console.log('wsUrl111', wsUrl)
+  console.log('agentData', agentData)
   platform = type
   createWebSoket()
   messageCallback = successCallback
@@ -138,7 +139,10 @@ const onWsOpen = (event) => {
   if (wsObj.readyState === wsObj.OPEN) { // wsObj.OPEN = 1
 	if(reconnect_timer) clearInterval(reconnect_timer)
     // 发给后端的数据需要字符串化
-    if(platform!==2) wsObj.send({data: JSON.stringify(sendDatas)})
+    if(platform!==2) {
+		console.log('777777', JSON.stringify(sendDatas))
+		wsObj.send({data: JSON.stringify(sendDatas)})
+	}
 	// 快手
 	if(platform===2){
 		console.log('进入快手发送')

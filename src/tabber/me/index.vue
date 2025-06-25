@@ -26,23 +26,49 @@
 			</view>
 		</view>
 		
-		<view class="user_data">
-			<view class="d_box">
-				<view class="value">{{user.info.f_byte_used || 0}}</view>
-				<view>已用字符</view>
+		
+	</view>
+	
+	<view class="byteBox">
+		<view class="bbox">
+			<view class="b-tit">克隆直播</view>
+			<view class="user_data">
+				<view class="d_box">
+					<view class="value">{{user.info.f_byte_used || 0}}</view>
+					<view>已用字符</view>
+				</view>
+				<view class="d_box">
+					<view class="value">{{user.info.f_byte || 0}}</view>
+					<view>总字符</view>
+				</view>
+				<view class="d_box">
+					<view class="value">{{user.info.voiceNum || 0}}</view>
+					<view>我的音色</view>
+				</view>
 			</view>
-			<view class="d_box">
-				<view class="value">{{user.info.f_byte || 0}}</view>
-				<view>总字符</view>
-			</view>
-			<view class="d_box">
-				<view class="value">{{user.info.voiceNum || 0}}</view>
-				<view>我的音色</view>
+		</view>
+		
+		<view class="bbox">
+			<view class="b-tit">实时直播</view>
+			<view class="user_data">
+				<view class="d_box">
+					<view class="value">{{user.info.ali_byte_used || 0}}</view>
+					<view>已用字符</view>
+				</view>
+				<view class="d_box">
+					<view class="value">{{user.info.ali_byte || 0}}</view>
+					<view>总字符</view>
+				</view>
+				<view class="d_box">
+					<view class="value">{{user.info.voiceNum || 0}}</view>
+					<view>我的音色</view>
+				</view>
 			</view>
 		</view>
 	</view>
 	
 	<view class="menus_box">
+		
 		<view class="s_box">
 			<view class="tit">
 				<view class="block"></view>我的设置
@@ -240,27 +266,49 @@ function toVersion(){
 		}
 	}
 	
-	.user_data{
+	.byteBox{
 		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-around;
-		margin-bottom: 48rpx;
-		.d_box{
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			font-size: 26rpx;
-			font-weight: 400;
-			color: #999999;
-			.value{
-				font-size: 32rpx;
+		padding: 0 29rpx;
+		box-sizing: border-box;
+		margin-top: -160rpx;
+		.bbox{
+			width: 100%;
+			min-height: 174rpx;
+			background: #ffffff;
+			border-radius: 20rpx;
+			margin-bottom: 20rpx;
+			padding: 25rpx 0 30rpx 0;
+			.b-tit{
+				font-size: 28rpx;
 				font-weight: 700;
 				color: #282828;
-				margin-bottom: 23rpx;
+				padding-left: 25rpx;
+				padding-bottom: 30rpx;
+			}
+		}
+		.user_data{
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+			.d_box{
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				font-size: 26rpx;
+				font-weight: 400;
+				color: #999999;
+				.value{
+					font-size: 32rpx;
+					font-weight: 700;
+					color: #282828;
+					margin-bottom: 23rpx;
+				}
 			}
 		}
 	}
+	
+	
 	
 	.menus_box{
 		width: 100%;
