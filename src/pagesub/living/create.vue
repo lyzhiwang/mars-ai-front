@@ -94,22 +94,22 @@
         </view>
       </view>
       <view class="content">
-		<template v-if="[1, 4].includes(realTime.type)">
-			<view class="cell" v-if="realTime.type===1">
-			  <view class="cell-left">直播间账号</view>
-			  <view class="cell-right" style="width: 70%">
-				<u--input placeholder="快手直接复制链接粘贴即可" border="none" inputAlign="right" color="#4F77FC" v-model="form.live_url"
-				  clearable :formatter="formatter"></u--input>
-			  </view>
-			</view>
-			<view class="cell" v-else>
-			  <view class="cell-left">直播间账号</view>
-			  <view class="cell-right" style="width: 70%">
-				<u--input placeholder="请输入正确的直播用户抖音ID" border="none" inputAlign="right" color="#4F77FC" v-model="form.live_url"
-				  clearable ></u--input>
-			  </view>
-			</view>
-		</template>
+        <template v-if="[1, 4].includes(realTime.type)">
+          <view class="cell" v-if="realTime.type === 1">
+            <view class="cell-left">直播间账号</view>
+            <view class="cell-right" style="width: 70%">
+              <u--input placeholder="快手直接复制链接粘贴即可" border="none" inputAlign="right" color="#4F77FC"
+                v-model="form.live_url" clearable :formatter="formatter"></u--input>
+            </view>
+          </view>
+          <view class="cell" v-else>
+            <view class="cell-left">直播间账号</view>
+            <view class="cell-right" style="width: 70%">
+              <u--input placeholder="请输入正确的直播用户抖音ID" border="none" inputAlign="right" color="#4F77FC"
+                v-model="form.live_url" clearable></u--input>
+            </view>
+          </view>
+        </template>
         <view class="cell">
           <view class="cell-left">直播间名称</view>
           <view class="cell-right">
@@ -139,33 +139,34 @@
         <template v-if="form.shop_type === 1">
           <view class="cell-column">
             <view class="cell-title">1.您店铺的经营时间</view>
-            <u--textarea v-model="form.shop_time" maxlength="-1" autoHeight placeholder="请填写店铺的经营时间"></u--textarea>
+            <u--textarea v-model="form.shop_time" maxlength="-1" height="200" placeholder="请填写店铺的经营时间"></u--textarea>
           </view>
           <view class="cell-column">
             <view class="cell-title">2.您店铺的地址</view>
-            <u--textarea v-model="form.shop_address" autoHeight maxlength="-1" placeholder="请填写店铺的地址"></u--textarea>
+            <u--textarea v-model="form.shop_address" height="200" maxlength="-1" placeholder="请填写店铺的地址"></u--textarea>
           </view>
           <view class="cell-column">
             <view class="cell-title">3.您店铺的历史</view>
-            <u--textarea v-model="form.shop_history" autoHeight maxlength="-1" placeholder="请填写店铺的历史"></u--textarea>
+            <u--textarea v-model="form.shop_history" height="400" maxlength="-1" placeholder="请填写店铺的历史"></u--textarea>
           </view>
         </template>
         <template v-else>
           <view class="cell-column">
             <view class="cell-title">1.您的货源厂家名与厂家地址</view>
-            <u--textarea v-model="form.factory_name" autoHeight maxlength="-1" placeholder="请填写店铺的历史"></u--textarea>
+            <u--textarea v-model="form.factory_name" height="200" maxlength="-1"
+              placeholder="请填写您的货源厂家名与厂家地址"></u--textarea>
           </view>
           <view class="cell-column">
             <view class="cell-title">2.您的货源厂家的一些优势</view>
-            <u--textarea v-model="form.factory_advantage" autoHeight maxlength="-1"
-              placeholder="请填写店铺的历史"></u--textarea>
+            <u--textarea v-model="form.factory_advantage" height="400" maxlength="-1"
+              placeholder="请填写您的货源厂家的一些优势"></u--textarea>
           </view>
         </template>
       </view>
       <view class="title-box">填写直播信息</view>
       <view class="content">
         <view class="text-content">
-          <u--textarea v-model="form.live_info" height="400" count maxlength="1000" placeholder="请填写直播信息"></u--textarea>
+          <u--textarea v-model="form.live_info" height="400" count maxlength="2000" placeholder="请填写直播信息"></u--textarea>
         </view>
       </view>
       <view class="tips-box">
@@ -177,7 +178,7 @@
         <view class="cell">
           <view class="cell-left">直播方式</view>
           <view class="cell-right">
-            <view class="edit" :class="{ aEdit: form.is_edit }" @click="form.is_edit = !form.is_edit">
+            <view class="edit" :class="{ aEdit: form.is_edit }">
               <view class="select-v">
                 <view class="select-v-icon"></view>
               </view>
@@ -249,7 +250,7 @@ const form = ref({
   shop_type: 1, // 1实体店铺 2 直播带货
   shop_time: '',
   shop_address: '',
-  shop_history:'',
+  shop_history: '',
   voice_controller: [
     {
       name: '关注',
@@ -267,19 +268,19 @@ const form = ref({
       interval_time: 5,
     },
     {
-      name: '促单',
-      detail: '咱们所有的套餐，数量有限，先到先得',
+      name: '欢迎',
+      detail: '欢迎，来的都是客，进来就是对我们的支持，感谢',
       interval_time: 5,
     },
     {
-      name: '欢迎',
-      detail: '欢迎，来的都是客，进来就是对我们的支持，感谢',
+      name: '促单',
+      detail: '咱们所有的套餐，数量有限，先到先得',
       interval_time: 5,
     },
   ],
   factory_name: '',
   factory_advantage: '',
-  live_info:'',
+  live_info: '',
   close_time: 80,
   is_edit: true,
 })

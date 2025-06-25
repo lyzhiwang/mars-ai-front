@@ -3,7 +3,7 @@ import { last, shuffle, nth } from 'lodash-es'
 
 export const goTo = (url, cb) => {
   const user = useUserStore()
-  const complete = cb ? cb : () => {}
+  const complete = cb ? cb : () => { }
   if (user.isLogin) {
     uni.navigateTo({ url, complete })
   } else {
@@ -21,7 +21,7 @@ export const goTo = (url, cb) => {
 }
 
 // 随机播放函数
-export function randomArr(data) {
+export function randomArr (data) {
   // 先获取最后一个元素
   const lastOne = last(data)
   // 创建新的随机数组
@@ -37,7 +37,7 @@ export function randomArr(data) {
 }
 
 // 同时下载多文件
-export function downLoadAudio(mediaArr, callBack) {
+export function downLoadAudio (mediaArr, callBack) {
   uni.showLoading({ title: '预下载音频资源', mask: true })
   let progress = 0
   // 下载文件
@@ -45,18 +45,18 @@ export function downLoadAudio(mediaArr, callBack) {
     return new Promise((resolve, reject) => {
       uni.downloadFile({
         url: item.full_path,
-        success(res) {
+        success (res) {
           // 下载成功
           const { apFilePath, tempFilePath, statusCode } = res
           console.log('res', res)
           resolve({ ...item, tempFilePath })
         },
-        fail(err) {
+        fail (err) {
           // 下载失败
           // reject(err);
           resolve(item)
         },
-        complete() {
+        complete () {
           // 每个文件下载完成后更新进度
           progress++
         },
@@ -78,18 +78,18 @@ export function downLoadAudio(mediaArr, callBack) {
 }
 
 // 检测小程序权限
-export function checkPermissions(permiss, callback) {
+export function checkPermissions (permiss, callback) {
   uni.getSetting({
     success: (res) => {
       if (!res.authSetting[`scope.${permiss}`]) {
         // 无权限先获取授权
         uni.authorize({
           scope: `scope.${permiss}`,
-          success() {
+          success () {
             console.log('授权成功')
             callback()
           },
-          fail() {
+          fail () {
             uni.showToast({ title: '授权失败', icon: 'error' })
           },
         })
@@ -102,7 +102,7 @@ export function checkPermissions(permiss, callback) {
 }
 
 // 检测APP权限
-export function checkAppPermissions(permiss, callback) {
+export function checkAppPermissions (permiss, callback) {
   const appAuthSetting = uni.getAppAuthorizeSetting()
   if (appAuthSetting[permiss] === 'authorized') {
     if (callback) callback()
@@ -114,7 +114,7 @@ export function checkAppPermissions(permiss, callback) {
       success: function (res) {
         if (res.confirm) {
           uni.openAppAuthorizeSetting({
-            success(res) {
+            success (res) {
               console.log(res)
             },
           })
@@ -127,7 +127,7 @@ export function checkAppPermissions(permiss, callback) {
 }
 
 // 生成32为id
-export function generateUUID() {
+export function generateUUID () {
   const timestamp = Date.now().toString(16) // 当前时间戳（精度：毫秒）
   const randomPart = 'xxxxxxxxxxxxxxxxxxxxxxxx'.replace(/[x]/g, () =>
     Math.floor(Math.random() * 16).toString(16)
@@ -137,15 +137,12 @@ export function generateUUID() {
 
 // 计算字符数
 
-export function calculateCharacterCount(text) {
-  // 去除 HTML 标签
-  const plainText = text.replace(/<\/?[^>]+(>|$)/g, '')
+export function calculateCharacterCount (text) {
+  // 用正则将多个空白字符替换为一个空格
+  const content = text.replace(/\s+/gu, ' ').trim();
 
-  // 按宽度统计字符数：全角算2，半角算1
-  let width = 0
-  for (let char of plainText) {
-    width += char.charCodeAt(0) > 255 ? 2 : 1
-  }
+  // 统计所有字符数量（包括中文、英文、标点），空格会被保留一个
+  const count = [...content].length;
 
-  return width
+  return count;
 }

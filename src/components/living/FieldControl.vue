@@ -1,24 +1,12 @@
 <template>
-  <u-popup
-    :show="show"
-    mode="bottom"
-    safeAreaInsetBottom
-    closeOnClickOverlay
-    round="10"
-    @close="close"
-  >
+  <u-popup :show="show" mode="bottom" safeAreaInsetBottom closeOnClickOverlay round="10" @close="close">
     <view class="p-box">
       <scroll-view class="scroll-box" scroll-y>
         <view class="list">
           <view class="item" v-for="(item, index) in list" :key="index">
             <view class="item-title">
               <view>{{ item.name }}</view>
-              <image
-                src="@/static/images/living/del.png"
-                class="del"
-                v-if="index > 2"
-                @click="delItem(index)"
-              ></image>
+              <image src="@/static/images/living/del.png" class="del" v-if="index > 3" @click="delItem(index)"></image>
             </view>
             <view class="item-content">
               {{ item.detail }}
@@ -33,35 +21,13 @@
     </view>
   </u-popup>
 
-  <u-popup
-    :show="is_show"
-    @close="is_show = false"
-    round="10"
-    zIndex="10076"
-    mode="center"
-  >
+  <u-popup :show="is_show" @close="is_show = false" round="10" zIndex="10076" mode="center">
     <view class="popup-content">
-      <u--input
-        placeholder="请输入场控标题"
-        border="none"
-        maxlength="15"
-        clearable
-        placeholderStyle="placeholderStyle"
-        v-model="form.name"
-      ></u--input>
-      <u--textarea
-        v-model="form.detail"
-        height="210"
-        placeholder="请输入场控话术"
-        count
-      ></u--textarea>
-      <u--input
-        placeholder="请输入催单频率（时间/秒）"
-        border="none"
-        clearable
-        placeholderStyle="placeholderStyle"
-        v-model="form.interval_time"
-      ></u--input>
+      <u--input placeholder="请输入场控标题" border="none" maxlength="15" clearable placeholderStyle="placeholderStyle"
+        v-model="form.name"></u--input>
+      <u--textarea v-model="form.detail" height="210" placeholder="请输入场控话术" count></u--textarea>
+      <u--input placeholder="请输入催单频率（时间/秒）" border="none" clearable placeholderStyle="placeholderStyle"
+        v-model="form.interval_time"></u--input>
       <view class="btns">
         <view class="btn" @click="closeAdd">取消</view>
         <view class="btn btn1" @click="pushItem">确认</view>
@@ -134,19 +100,23 @@ const save = () => {
   width: 100%;
   height: 1020rpx;
   padding-top: 20rpx;
+
   .scroll-box {
     width: 100%;
     height: 860rpx;
+
     .list {
       width: 100%;
       padding: 0 30rpx;
       box-sizing: border-box;
+
       .item {
         width: 100%;
         min-height: 182rpx;
         background: #f6f8fd;
         border-radius: 20rpx;
         margin-bottom: 20rpx;
+
         .item-title {
           width: 100%;
           height: 90rpx;
@@ -159,11 +129,13 @@ const save = () => {
           color: #2281fe;
           border-radius: 20rpx 20rpx 0rpx 0rpx;
           justify-content: space-between;
+
           .del {
             width: 50rpx;
             height: 50rpx;
           }
         }
+
         .item-content {
           width: 100%;
           padding: 27rpx;
@@ -175,6 +147,7 @@ const save = () => {
       }
     }
   }
+
   .footer-btn {
     width: 100%;
     height: 150rpx;
@@ -183,6 +156,7 @@ const save = () => {
     justify-content: space-between;
     padding: 0 35rpx;
     box-sizing: border-box;
+
     .btn {
       width: 310rpx;
       height: 100rpx;
@@ -196,6 +170,7 @@ const save = () => {
       font-weight: 700;
       color: #2281fe;
     }
+
     .btn1 {
       background: #2281fe;
       border: 2rpx solid #2281fe;
@@ -211,6 +186,7 @@ const save = () => {
   border-radius: 20rpx;
   padding: 20rpx 30rpx;
   box-sizing: border-box;
+
   :deep(.u-input) {
     width: 100%;
     height: 76rpx;
@@ -218,6 +194,7 @@ const save = () => {
     border-radius: 10rpx;
     padding: 0 26rpx !important;
   }
+
   :deep(.u-textarea) {
     width: 100%;
     background: #f7f7f7;
@@ -225,12 +202,14 @@ const save = () => {
     border-color: #f7f7f7 !important;
     margin: 20rpx 0;
   }
+
   .btns {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 40rpx;
+
     .btn {
       width: 158rpx;
       height: 63rpx;
@@ -243,6 +222,7 @@ const save = () => {
       font-weight: 400;
       color: #4f77fc;
     }
+
     .btn1 {
       background: #2281fe;
       color: #ffffff;

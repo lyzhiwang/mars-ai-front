@@ -235,7 +235,7 @@ const playBackgroundSound = () => {
   }
 }
 
-const MAX_CONCURRENT_REQUESTS = 20; // 最大并发请求数
+const MAX_CONCURRENT_REQUESTS = 10; // 最大并发请求数
 let currentRequests = 0; // 当前正在处理的请求数
 // 监听处理消息
 const handleMessage = (msg) => {
@@ -327,7 +327,7 @@ const handleXhs = (msg, params) => {
     addLog(`用户: ${msg.NickName}`, '礼物');
   }
   else if (msg.MessageType === '进入') {
-    params.text = `${msg.NickName}${voice_controller[1].detail}`;
+    params.text = `${msg.NickName}${voice_controller[3].detail}`;
     addLog(`用户: ${msg.NickName}`, '进入');
   } else {
     return
@@ -348,7 +348,7 @@ const handleSph = (msg, params) => {
     addLog(`内容:${msg.content}`, '互动');
   }
   else if (msg.msgType === 10005) {
-    params.text = `${msg.nickname}${voice_controller[1].detail}`;
+    params.text = `${msg.nickname}${voice_controller[3].detail}`;
     addLog(`用户: ${msg.nickname}`, '进入');
     lastUser.value = msg.nickname;
   }
@@ -369,7 +369,7 @@ const handleDouyin = (msg, params) => {
     addLog(`内容:${msg.content}`, '互动');
   }
   else if (msg.common?.method === 'WebcastMemberMessage') {
-    params.text = `${msg.user.nickname}${voice_controller[1].detail}`;
+    params.text = `${msg.user.nickname}${voice_controller[3].detail}`;
     addLog(`用户: ${msg.user.nickname}`, '进入');
     lastUser.value = msg.user.nickname;
   }
