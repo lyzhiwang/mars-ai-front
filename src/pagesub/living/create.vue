@@ -225,6 +225,7 @@ import { ref } from 'vue'
 
 onLoad(() => {
   innerAudioContext.value = uni.createInnerAudioContext()
+  shouldContinuePolling.value = true
   getList()
 })
 
@@ -284,6 +285,8 @@ const form = ref({
   close_time: 80,
   is_edit: true,
 })
+
+const shouldContinuePolling = ref(true)
 
 const selectIndustry = (item) => {
   form.value.shop_type = item.key
@@ -411,6 +414,7 @@ const next = () => {
 
 // 轮询直播文件状态，直到 status = true
 const pollLiveFileStatus = (liveRoomId, retry = 0, maxRetry = 500) => {
+  if (!shouldContinuePolling.value) return;
   if (retry >= maxRetry) {
     uni.hideLoading()
     return uni.showToast({ title: '状态超时，请重试', icon: 'none' })
@@ -448,6 +452,7 @@ const pollLiveFileStatus = (liveRoomId, retry = 0, maxRetry = 500) => {
 
 // 轮询获取生成结果，直到 detail 存在
 const pollLiveResult = (conversation_id, retry = 0, maxRetry = 500) => {
+  if (!shouldContinuePolling.value) return;
   if (retry >= maxRetry) {
     uni.hideLoading()
     return uni.showToast({ title: '生成超时，请重试', icon: 'none' })
@@ -488,6 +493,7 @@ const toClone = () => {
   uni.navigateTo({ url: '/pagesub/living/clone' })
 }
 onHide(() => {
+  shouldContinuePolling.value = false
   if (innerAudioContext.value) {
     innerAudioContext.value.destroy()
     innerAudioContext.value = null
@@ -495,6 +501,7 @@ onHide(() => {
 })
 
 onUnload(() => {
+  shouldContinuePolling.value = false
   if (innerAudioContext.value) {
     innerAudioContext.value.destroy()
     innerAudioContext.value = null

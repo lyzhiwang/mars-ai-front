@@ -146,3 +146,23 @@ export function calculateCharacterCount (text) {
 
   return count;
 }
+
+
+// 用于记录每个用户的上次触发时间（单位：时间戳）
+const userTriggerMap = new Map();
+/**
+ * 每个用户每分钟只能触发一次
+ * @param {string} username - 当前用户的唯一标识
+ * @returns {boolean} 是否允许触发
+ */
+export function canTrigger (username) {
+  const now = Date.now(); // 当前时间戳，单位：毫秒
+  const lastTriggerTime = userTriggerMap.get(username);
+
+  if (!lastTriggerTime || (now - lastTriggerTime) > 60 * 1000) {
+    userTriggerMap.set(username, now); // 更新触发时间
+    return true; // 允许触发
+  }
+
+  return false; // 一分钟内重复触发，拒绝
+}

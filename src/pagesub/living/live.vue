@@ -105,6 +105,7 @@ import {
 } from './composables/audioPlayerQueue.js'
 import { useAudioPlayer } from './composables/useAudioPlayer'
 import { useCountdown } from './composables/useCountdown.js'
+import { canTrigger } from '@/utils/helper.js'
 
 
 const { timeText, startCountdown } = useCountdown()
@@ -189,7 +190,7 @@ const getLiveInfo = (roomId) => {
       startCountdown(res.data.live_room.close_time)
       liveInfo.value = res.data
       const { live_room, live_room_relation } = res.data
-      platform.value = live_room.platform
+      // platform.value = live_room.platform
       live_title.value = live_room_relation.live_title
       platform_info.value = realTime.menuList[platform.value - 1]
       if (platform.value === 2) return getSphCode() //视频号
@@ -202,7 +203,7 @@ const getLiveInfo = (roomId) => {
         return wsStore.connect(options)
       }
       let ws_url = ''
-      if (live_room.platform === 1) {
+      if (platform.value === 1) {
         // 快手
         ws_url = res.data.ws_ks_url
       } else {
@@ -212,7 +213,7 @@ const getLiveInfo = (roomId) => {
       const options = {
         ws_url,
         platform: platform.value, //live_room.platform,
-        live_url: live_room.live_url, //live_room.live_url,
+        live_url: '85339954737' //live_room.live_url,
       }
       playBackgroundSound()
       wsStore.connect(options)
@@ -267,7 +268,13 @@ const handleMessage = (msg) => {
   }
   // 抖音平台处理
   else if (platform.value === 4) {
-    handleDouyin(msg, params);
+    // 点赞每个用户每分钟只触发一次
+    if (msg.giftId === 'like') {
+      if (canTrigger(msg.user.nickname)) return handleDouyin(msg, params);
+    } else {
+      handleDouyin(msg, params);
+    }
+
   }
 
   // 发送语音请求
@@ -397,6 +404,7 @@ const addLog = (text, type) => {
 
 // 轮询获取生成语音结果，直到 detail 存在
 const pollInteractiveAudioFetch = (retry = 0, maxRetry = 100) => {
+  if (!isGetVoice.value) return; // 手动停止轮询
   if (retry >= maxRetry) {
     isGetVoice.value = false
     return uni.showToast({ title: '生成超时，请重试', icon: 'none' })
@@ -408,7 +416,7 @@ const pollInteractiveAudioFetch = (retry = 0, maxRetry = 100) => {
         isGetVoice.value = false
         addToAudioQueue(res.data.path)
       } else {
-        setTimeout(() => pollInteractiveAudioFetch(retry + 1, maxRetry), 2000)
+        setTimeout(() => pollInteractiveAudioFetch(retry + 1, maxRetry), 4000)
       }
     })
     .catch((err) => {
@@ -501,6 +509,7 @@ function getXhsCode (content) {
 
 
 onUnload(() => {
+  isGetVoice.value = false
   stop() // 关闭主播播放
   stopAll() // 关闭副播播放
   wsStore.close()
