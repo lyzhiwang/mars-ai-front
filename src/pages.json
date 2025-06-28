@@ -350,6 +350,12 @@
           }
         },
         {
+          "path": "living/history",
+          "style": {
+            "navigationBarTitleText": "直播历史记录"
+          }
+        },
+        {
           "path": "living/live",
           "style": {
             "transparentTitle": "always", //状态栏透明

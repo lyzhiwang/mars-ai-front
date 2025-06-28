@@ -210,7 +210,7 @@
 </template>
 
 <script setup>
-import { onLoad, onHide, onUnload } from '@dcloudio/uni-app'
+import { onLoad, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import FieldControl from '@/components/living/FieldControl'
 import CountDown from '@/components/living/CountDown'
 import { useRealTimeStore } from '@/stores'
@@ -227,6 +227,10 @@ onLoad(() => {
   innerAudioContext.value = uni.createInnerAudioContext()
   shouldContinuePolling.value = true
   getList()
+})
+
+onShow(() => {
+  shouldContinuePolling.value = true
 })
 
 const innerAudioContext = ref(null)
@@ -414,7 +418,7 @@ const next = () => {
 
 // 轮询直播文件状态，直到 status = true
 const pollLiveFileStatus = (liveRoomId, retry = 0, maxRetry = 500) => {
-  if (!shouldContinuePolling.value) return;
+  if (!shouldContinuePolling.value) return uni.hideLoading();
   if (retry >= maxRetry) {
     uni.hideLoading()
     return uni.showToast({ title: '状态超时，请重试', icon: 'none' })
@@ -452,7 +456,7 @@ const pollLiveFileStatus = (liveRoomId, retry = 0, maxRetry = 500) => {
 
 // 轮询获取生成结果，直到 detail 存在
 const pollLiveResult = (conversation_id, retry = 0, maxRetry = 500) => {
-  if (!shouldContinuePolling.value) return;
+  if (!shouldContinuePolling.value) return uni.hideLoading();
   if (retry >= maxRetry) {
     uni.hideLoading()
     return uni.showToast({ title: '生成超时，请重试', icon: 'none' })

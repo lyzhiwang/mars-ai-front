@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { onBackPress, onLoad } from '@dcloudio/uni-app'
+import { onBackPress, onLoad, onShow } from '@dcloudio/uni-app'
 import { useConfigStore, useRealTimeStore } from '@/stores'
 import { calculateCharacterCount } from '@/utils/helper'
 import {
@@ -49,6 +49,10 @@ import {
 
 onLoad(() => {
   list.value = realTime.liveInfo.detail
+  shouldContinuePolling.value = true
+})
+
+onShow(() => {
   shouldContinuePolling.value = true
 })
 
@@ -88,7 +92,7 @@ const generate = () => {
 
 // 轮询获取生成结果，直到 detail 存在
 const pollLiveResult = (conversation_id, retry = 0, maxRetry = 100) => {
-  if (!shouldContinuePolling.value) return;
+  if (!shouldContinuePolling.value) return uni.hideLoading();
   if (retry >= maxRetry) {
     isLoading.value = false
     return uni.showToast({ title: '生成超时，请重试', icon: 'none' })
@@ -167,7 +171,7 @@ const star = () => {
 
 // 获取合成语音状态
 const pollliveVoiceStatus = (retry = 0, maxRetry = 1000) => {
-  if (!shouldContinuePolling.value) return;
+  if (!shouldContinuePolling.value) return uni.hideLoading();
   if (retry >= maxRetry) {
     uni.hideLoading()
     return uni.showToast({ title: '生成超时，请重试', icon: 'none' })

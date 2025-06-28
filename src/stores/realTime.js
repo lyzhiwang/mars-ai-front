@@ -215,10 +215,10 @@ export const useRealTimeStore = defineStore('realTime', {
     ],
   }),
   actions: {
-    setType(value) {
+    setType (value) {
       this.type = value
     },
-    setliveInfo(key, value) {
+    setliveInfo (key, value) {
       this.liveInfo[key] = value
     },
   },

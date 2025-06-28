@@ -213,7 +213,7 @@ const getLiveInfo = (roomId) => {
       const options = {
         ws_url,
         platform: platform.value, //live_room.platform,
-        live_url: '85339954737' //live_room.live_url,
+        live_url: live_room.live_url,
       }
       playBackgroundSound()
       wsStore.connect(options)

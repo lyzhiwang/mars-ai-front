@@ -1,61 +1,61 @@
-page{
-	font-family: 'Microsoft YaHei, Microsoft YaHei-Regular';
-	color: #333333;
+page {
+  font-family: 'Microsoft YaHei, Microsoft YaHei-Regular';
+  color: #333333;
 }
 * {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
-.mc{
-	color: #1e64fe;
+.mc {
+  color: #1e64fe;
 }
-.r{
-	color: #FE2222;
+.r {
+  color: #fe2222;
 }
-.vcenter{
-	display: flex;
-	align-items: center;
+.vcenter {
+  display: flex;
+  align-items: center;
 }
 /* 背景 */
-.container{
-	width: 100%;
-	height: 100vh !important;
-	background: #f9f9f9;
+.container {
+  width: 100%;
+  height: 100vh !important;
+  background: #f9f9f9;
 }
 
 /* flex布局 */
-.flex{
+.flex {
   display: flex;
 }
 
 /* 竖向排列 */
-.flex-col{
+.flex-col {
   display: flex;
   flex-direction: column;
 }
-.flex-cc{
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+.flex-cc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.flex-rcc{
-	display: flex;
-	justify-content: center;
-	align-items: center;
+.flex-rcc {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.fcc-sb{
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+.fcc-sb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* 换行 */
-.flex-warp{
+.flex-warp {
   flex-wrap: wrap;
 }
 
 /* 避免子元素被挤压变形 */
-.flex-shrink{
+.flex-shrink {
   flex-shrink: 0;
 }
 
@@ -63,7 +63,7 @@ page{
 
 /* 列式布局垂直居中 */
 .flex-item-col-center {
-	display: flex;
+  display: flex;
   align-items: center;
 }
 
@@ -139,4 +139,10 @@ page{
 
 .flex-item-9 {
   flex: 9;
+}
+
+.ellipsis {
+  white-space: nowrap; /* 防止文本换行 */
+  overflow: hidden; /* 隐藏溢出的内容 */
+  text-overflow: ellipsis; /* 显示省略符号来代表被修剪的文本 */
 }

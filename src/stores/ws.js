@@ -93,6 +93,11 @@ export const useWsStore = defineStore('ws', () => {
 
   const close = () => {
     isManuallyClosed.value = true
+    // 清除重连定时器（如果有）
+    if (reconnectTimer.value) {
+      clearTimeout(reconnectTimer.value)
+      reconnectTimer.value = null
+    }
     if (socket.value) {
       socket.value.close()
       socket.value = null

@@ -152,13 +152,13 @@ onReachBottom(()=>{
 		  height: 53rpx;
 		  background: #2281fe;
 		  border-radius: 0px 20rpx 0px 20rpx;
+		  position: absolute;
+		  top: 0;
+		  right: 0;
 		  image{
 			  width: 27rpx;
 			  height: 29rpx;
 		  }
-		  position: absolute;
-		  top: 0;
-		  right: 0;
 	  }
 	  .title{
 		  font-size: 30rpx;

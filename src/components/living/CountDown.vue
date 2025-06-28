@@ -4,13 +4,7 @@
       <image src="@/static/images/living/down.png" class="down"></image>
       <view class="title">您计划多少分钟后结束直播？</view>
       <view class="content">
-        <u--input
-          placeholder="输入分钟数"
-          border="none"
-          clearable
-          type="number"
-          v-model="localCloseTime"
-        ></u--input>
+        <u--input placeholder="输入分钟数" border="none" clearable type="number" v-model="localCloseTime"></u--input>
       </view>
 
       <view class="btns">
@@ -49,7 +43,7 @@ const emit = defineEmits(['close', 'save'])
 const save = () => {
   if (!localCloseTime.value)
     return uni.showToast({ title: '请输入倒计时时间', icon: 'none' })
-  emit('save', localCloseTime)
+  emit('save', localCloseTime.value)
 }
 const close = () => {
   emit('close')
@@ -63,6 +57,7 @@ const close = () => {
   border-radius: 20rpx;
   position: relative;
   padding-top: 110rpx;
+
   .down {
     width: 205rpx;
     height: 272rpx;
@@ -70,6 +65,7 @@ const close = () => {
     top: -162rpx;
     left: 164rpx;
   }
+
   .title {
     width: 100%;
     font-size: 28rpx;
@@ -79,9 +75,11 @@ const close = () => {
     align-items: center;
     justify-content: center;
   }
+
   .content {
     width: 50%;
     margin: 20rpx auto;
+
     :deep(.u-input) {
       width: 100%;
       height: 76rpx;
@@ -90,6 +88,7 @@ const close = () => {
       padding: 0 26rpx !important;
     }
   }
+
   .btns {
     width: 100%;
     padding: 0 90rpx;
@@ -97,6 +96,7 @@ const close = () => {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     .btn {
       width: 158rpx;
       height: 63rpx;
@@ -109,6 +109,7 @@ const close = () => {
       font-weight: 400;
       color: #4f77fc;
     }
+
     .btn1 {
       background: #2281fe;
       color: #ffffff;

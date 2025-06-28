@@ -66,6 +66,8 @@ function uploadFile(file) {
 const btn = document.getElementById("add");
 btn.addEventListener("click", function() {
 	if(!params.web_url) return alert('请上传文件!')
+	shade.textContent = '正在提交中...'
+	shade.style.display = "flex";
 	uni.postMessage({
 	    data: params
 	});

@@ -154,19 +154,6 @@
 		  padding: 20rpx;
 		  margin-bottom: 20rpx;
 		  position: relative;
-		  .delBox{
-		  		  width: 53rpx;
-		  		  height: 53rpx;
-		  		  background: #2281fe;
-		  		  border-radius: 0px 20rpx 0px 20rpx;
-		  		  image{
-		  			  width: 27rpx;
-		  			  height: 29rpx;
-		  		  }
-		  		  position: absolute;
-		  		  top: 0;
-		  		  right: 0;
-		  }
 		  .goodsImg{
 			  width: 160rpx;
 			  height: 160rpx;

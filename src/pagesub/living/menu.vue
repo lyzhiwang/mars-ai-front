@@ -33,101 +33,53 @@
           </view>
         </view>
       </view>
+
+      <view class="history-box" v-if="list.length">
+        <view class="title">
+          <view class="tit">直播历史记录</view>
+          <view class="more" @click="toHistory">查看全部></view>
+        </view>
+
+        <view class="item" v-for="(item, index) in list" :key="index">
+          <view class="left-box">
+            <image :src="`/static/images/living/${icon[item.platform - 1]}-icon.png`" class="icon"></image>
+            <view>
+              <view class="title u-line-1">{{ item.live_title }}</view>
+              <view>{{ item.created_at }}</view>
+            </view>
+          </view>
+
+          <view class="btn-box">
+            <!-- <view class="btn">编辑</view> -->
+            <view class="btn btn1" @click="toLive(item)">重新开播</view>
+          </view>
+        </view>
+      </view>
     </view>
   </view>
 </template>
 
 <script setup>
 import { useConfigStore, useRealTimeStore } from '@/stores'
+import { sjLiveList } from '@/api/index'
+import { onShow } from '@dcloudio/uni-app'
 
+
+
+const list = ref([])
 const config = useConfigStore()
 const realTime = useRealTimeStore()
-const menuList = ref([
-  {
-    type: 1,
-    key: 'ks',
-    name: '快手',
-    iconWidth: 93,
-    iconHeight: 100,
-    color: '#8F5B31',
-    desColor: '#DEC2AA',
-  },
-  {
-    type: 2,
-    key: 'sph',
-    name: '视频号',
-    iconWidth: 97,
-    iconHeight: 75,
-    color: '#315D8F',
-    desColor: '#AEC3E0',
-  },
-  {
-    type: 3,
-    key: 'xhs',
-    name: '小红书',
-    iconWidth: 95,
-    iconHeight: 95,
-    color: '#8F3131',
-    desColor: '#E39C9C',
-  },
-  {
-    type: 4,
-    key: 'dy',
-    name: '抖音',
-    iconWidth: 97,
-    iconHeight: 95,
-    color: '#315D8F',
-    desColor: '#AEC3E0',
-  },
-  {
-    type: 5,
-    key: 'pdd',
-    name: '拼多多',
-    iconWidth: 87,
-    iconHeight: 76,
-    color: '#8F3131',
-    desColor: '#E39C9C',
-  },
-  {
-    type: 6,
-    key: 'zfb',
-    name: '支付宝',
-    iconWidth: 93,
-    iconHeight: 93,
-    color: '#315D8F',
-    desColor: '#AEC3E0',
-  },
-  {
-    type: 7,
-    key: 'mt',
-    name: '美团',
-    iconWidth: 92,
-    iconHeight: 92,
-    color: '#8F5B31',
-    desColor: '#DEC2AA',
-  },
-  {
-    type: 8,
-    key: 'jd',
-    name: '京东',
-    iconWidth: 93,
-    iconHeight: 92,
-    color: '#8F3131',
-    desColor: '#E39C9C',
-  },
-  {
-    type: 9,
-    key: 'tb',
-    name: '淘宝',
-    iconWidth: 93,
-    iconHeight: 90,
-    color: '#8F3131',
-    desColor: '#E39C9C',
-  },
-])
+const icon = ref(['ks', 'sph', 'xhs', 'dy', 'pdd', 'zfb', 'mt', 'jd', 'tb'])
+
+onShow(() => {
+  list.value = []
+  sjLiveList({ page: 1, size: 3 }).then((res) => {
+    list.value = res.data.list
+  })
+})
 
 const onclick = (item) => {
-  if ([ 5, 6, 7, 8, 9].includes(item.type)) {
+  if ([5, 6, 7, 8, 9].includes(item.type)) {
     uni.showToast({ title: '正在开发中,请期待!', icon: 'none' })
   } else {
     realTime.setType(item.type)
@@ -135,6 +87,17 @@ const onclick = (item) => {
       url: '/pagesub/living/create',
     })
   }
+}
+
+const toLive = (item) => {
+  uni.navigateTo({
+    url: '/pagesub/living/live?roomId=' + item.id
+  })
+}
+const toHistory = () => {
+  uni.navigateTo({
+    url: '/pagesub/living/history',
+  })
 }
 </script>
 
@@ -249,6 +212,92 @@ const onclick = (item) => {
           .des {
             margin-top: 15rpx;
             font-size: 16rpx;
+          }
+        }
+      }
+    }
+
+    .history-box {
+      width: 100%;
+      min-height: 300rpx;
+      padding: 30rpx;
+      box-sizing: border-box;
+
+      .title {
+        width: 100%;
+        padding: 5rpx;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 24rpx;
+        color: #666666;
+
+        .tit {
+          font-size: 28rpx;
+          font-weight: bold;
+          color: #333333;
+          letter-spacing: 2.8rpx;
+        }
+      }
+
+      .item {
+        width: 100%;
+        height: 100rpx;
+        background: #ffffff;
+        border-radius: 20rpx;
+        padding: 16rpx 25rpx 16rpx 18rpx;
+        box-sizing: border-box;
+        margin-top: 25rpx;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .left-box {
+          display: flex;
+          align-items: center;
+          font-size: 18rpx;
+          font-weight: 400;
+          color: #666666;
+          letter-spacing: 1.8rpx;
+
+          .title {
+            width: 300rpx;
+            font-size: 26rpx;
+            font-weight: bold;
+            color: #585858;
+          }
+
+          .icon {
+            width: 66rpx;
+            height: 66rpx;
+            flex-shrink: 0;
+            margin-right: 20rpx;
+          }
+        }
+
+        .btn-box {
+          display: flex;
+          align-items: center;
+
+          .btn {
+            display: flex;
+            align-items: center;
+            height: 46rpx;
+            padding: 0 12rpx;
+            background: #ffffff;
+            font-size: 22rpx;
+            font-weight: bold;
+            color: #2281fe;
+            border: 1rpx solid #2281fe;
+            border-radius: 10rpx;
+            box-sizing: border-box;
+            margin-left: 25rpx;
+          }
+
+          .btn1 {
+            background: #2281fe;
+            color: #ffffff;
           }
         }
       }
