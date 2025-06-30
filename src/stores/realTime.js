@@ -18,6 +18,15 @@ export const useRealTimeStore = defineStore('realTime', {
     },
     menuList: [
       {
+        type: 4,
+        key: 'dy',
+        name: '抖音',
+        iconWidth: 97,
+        iconHeight: 95,
+        color: '#315D8F',
+        desColor: '#AEC3E0',
+      },
+      {
         type: 1,
         key: 'ks',
         name: '快手',
@@ -43,15 +52,6 @@ export const useRealTimeStore = defineStore('realTime', {
         iconHeight: 95,
         color: '#8F3131',
         desColor: '#E39C9C',
-      },
-      {
-        type: 4,
-        key: 'dy',
-        name: '抖音',
-        iconWidth: 97,
-        iconHeight: 95,
-        color: '#315D8F',
-        desColor: '#AEC3E0',
       },
       {
         type: 5,

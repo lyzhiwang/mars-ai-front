@@ -190,9 +190,9 @@ const getLiveInfo = (roomId) => {
       startCountdown(res.data.live_room.close_time)
       liveInfo.value = res.data
       const { live_room, live_room_relation } = res.data
-      // platform.value = live_room.platform
+      platform.value = live_room.platform
       live_title.value = live_room_relation.live_title
-      platform_info.value = realTime.menuList[platform.value - 1]
+      platform_info.value = realTime.menuList.find(item => item.type === platform.value)
       if (platform.value === 2) return getSphCode() //视频号
       //小红书
       if (platform.value === 3) {
