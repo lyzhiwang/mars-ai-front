@@ -147,11 +147,26 @@ onPlayEnd((url) => {
 onAllEnded(() => {
   // 队列全部播放完成,触发随机获取
   setTimeout(() => {
-    if (lastUser.value && !isGetVoice.value) {
+    let arr = Array.from(liveUser)
+    if (arr.length < 5) arr.push(
+      "张小白",
+      "王可乐",
+      "小明今天不想写代码",
+      "南山以南",
+      "阿斌啊",
+      "芒果味的夏天",
+      "李不言",
+      "橘子汽水",
+      "风吹裤衩凉",
+      "静静子"
+    );
+    console.log('arrarrarrarrarr', arr)
+    if (arr.length && !isGetVoice.value) {
+      const randomItem = arr[Math.floor(Math.random() * arr.length)];
       isGetVoice.value = true
       const params = {
         live_room_id: liveInfo.value.live_room.id,
-        name: lastUser.value,
+        name: randomItem,
         voice: liveInfo.value.live_room_relation.broadcast_voice,
       }
       interactiveAudioCreate(params).then((res) => {
@@ -177,7 +192,8 @@ onLoad((options) => {
 const logs = ref([]) // 直播日志
 const vocieList = ref([]) // 语音生成记录
 const liveInfo = ref({}) // 直播间信息
-const lastUser = ref('')
+// const lastUser = ref('')
+const liveUser = new Set() // 直播历史用户列表
 const isGetVoice = ref(false) // 当前是否获取语音
 const live_title = ref('实时直播')
 const platform_info = ref({})
@@ -270,7 +286,9 @@ const handleMessage = (msg) => {
   else if (platform.value === 4) {
     // 点赞每个用户每分钟只触发一次
     if (msg.giftId === 'like') {
-      if (canTrigger(msg.user.nickname)) return handleDouyin(msg, params);
+      if (canTrigger(msg.user.nickname)) {
+        handleDouyin(msg, params);
+      }
     } else {
       handleDouyin(msg, params);
     }
@@ -279,6 +297,7 @@ const handleMessage = (msg) => {
 
   // 发送语音请求
   if (Object.keys(params).length > 1) { // 确保有有效参数
+    console.log('发送语音请求', params)
     currentRequests++
     sjliveVoiceKz(params).then((res) => {
       if (res.data?.url) {
@@ -312,7 +331,7 @@ const handleKuaishou = (msg, params) => {
   }
 
   if (msg.MessageType !== '在线人数') {
-    lastUser.value = msg.NickName;
+    liveUser.add(msg.NickName)
   }
 };
 
@@ -341,7 +360,7 @@ const handleXhs = (msg, params) => {
   }
 
   if (['互动', '点赞', '礼物', '进入'].includes(msg.MessageType) && msg.NickName) {
-    lastUser.value = msg.NickName;
+    liveUser.add(msg.NickName)
   }
 };
 
@@ -357,12 +376,12 @@ const handleSph = (msg, params) => {
   else if (msg.msgType === 10005) {
     params.text = `${msg.nickname}${voice_controller[3].detail}`;
     addLog(`用户: ${msg.nickname}`, '进入');
-    lastUser.value = msg.nickname;
+    liveUser.add(msg.nickname)
   }
   else if (msg.msgType === "gift") {
     params.text = `${msg.nickname}${voice_controller[2].detail}`;
     addLog(`用户: ${msg.nickname}`, '礼物');
-    lastUser.value = msg.nickname;
+    liveUser.add(msg.nickname)
   }
 };
 
@@ -378,22 +397,22 @@ const handleDouyin = (msg, params) => {
   else if (msg.common?.method === 'WebcastMemberMessage') {
     params.text = `${msg.user.nickname}${voice_controller[3].detail}`;
     addLog(`用户: ${msg.user.nickname}`, '进入');
-    lastUser.value = msg.user.nickname;
+    liveUser.add(msg.user.nickname)
   }
   else if (msg.giftId === 'social' && msg.user?.nickname) {
     params.text = `${msg.user.nickname}${voice_controller[0].detail}`;
     addLog(`用户: ${msg.user.nickname}`, '关注');
-    lastUser.value = msg.user.nickname;
+    liveUser.add(msg.user.nickname)
   }
   else if (msg.giftId === 'like' && msg.user?.nickname) {
     params.text = `${msg.user.nickname}${voice_controller[1].detail}`;
     addLog(`用户: ${msg.user.nickname}`, '点赞');
-    lastUser.value = msg.user.nickname;
+    liveUser.add(msg.user.nickname)
   }
   else if (msg.giftId && msg.user?.nickname) {
     params.text = `${msg.user.nickname}${voice_controller[2].detail}`;
     addLog(`用户: ${msg.user.nickname}`, '礼物');
-    lastUser.value = msg.user.nickname;
+    liveUser.add(msg.user.nickname)
   }
 };
 

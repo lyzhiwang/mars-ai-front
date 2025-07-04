@@ -33,6 +33,8 @@
     <view class="footer-box">
       <view class="btn" @click="star">开启直播</view>
     </view>
+    <ProgressBox :show="showProgress" :text="progressText" :currentProgress="currentProgress" :intervalSpeed="speed">
+    </ProgressBox>
   </view>
 </template>
 
@@ -40,6 +42,7 @@
 import { onBackPress, onLoad, onShow } from '@dcloudio/uni-app'
 import { useConfigStore, useRealTimeStore } from '@/stores'
 import { calculateCharacterCount } from '@/utils/helper'
+import ProgressBox from '@/components/living/ProgressBox'
 import {
   sjliveDesc,
   liveResult,
@@ -52,9 +55,6 @@ onLoad(() => {
   shouldContinuePolling.value = true
 })
 
-onShow(() => {
-  shouldContinuePolling.value = true
-})
 
 const count = computed(() => {
   let count = 0
@@ -71,6 +71,10 @@ let isNavigatingBack = false
 const list = ref([])
 const shouldContinuePolling = ref(true)
 const isLoading = ref(false)
+const showProgress = ref(false) // 进度条显示
+const progressText = ref('文本规范化处理中...')
+const currentProgress = ref(0)
+const speed = ref(100)
 
 const changeText = (item, index) => {
   if (item.content.length === 0) list.value.splice(index, 1)
@@ -121,6 +125,7 @@ const pollLiveResult = (conversation_id, retry = 0, maxRetry = 100) => {
     })
 }
 const star = () => {
+  shouldContinuePolling.value = true
   if (count.value === 0)
     return uni.showToast({
       title: '请生成文案后开启直播!',
@@ -145,10 +150,14 @@ const star = () => {
     cancelText: '取消',
     success: (res) => {
       if (res.confirm) {
-        uni.showLoading({
-          title: '生成中...',
-          mask: true
-        })
+        // uni.showLoading({
+        //   title: '生成中...',
+        //   mask: true
+        // })
+        speed.value = 300
+        currentProgress.value = 20
+        showProgress.value = true
+        progressText.value = "文本规范化处理"
         sjliveDescSubmit({
           live_room_id: realTime.liveInfo.live_room_id,
           data: list.value,
@@ -157,7 +166,7 @@ const star = () => {
             pollliveVoiceStatus()
           })
           .catch((err) => {
-            uni.hideLoading()
+            closeProgress()
             console.log(err)
           })
       }
@@ -171,15 +180,49 @@ const star = () => {
 
 // 获取合成语音状态
 const pollliveVoiceStatus = (retry = 0, maxRetry = 1000) => {
-  if (!shouldContinuePolling.value) return uni.hideLoading();
+  if (!shouldContinuePolling.value) return closeProgress()
   if (retry >= maxRetry) {
-    uni.hideLoading()
+    closeProgress()
     return uni.showToast({ title: '生成超时，请重试', icon: 'none' })
+  }
+  if (retry === 20) {
+    speed.value = 900
+    currentProgress.value = 30
+    progressText.value = "音素转换引擎启动"
+  }
+  if (retry === 45) {
+    speed.value = 1000
+    currentProgress.value = 40
+    progressText.value = "韵律特征分析"
+  }
+  if (retry === 70) {
+    currentProgress.value = 60
+    progressText.value = "声学模型加载"
+  }
+  if (retry === 90) {
+    speed.value = 1100
+    currentProgress.value = 80
+    progressText.value = "神经网络推理"
+  }
+  if (retry === 110) {
+    speed.value = 1300
+    currentProgress.value = 96
+    progressText.value = "音频波形合成"
+  }
+
+  if (retry === 125) {
+    speed.value = 10000
+    currentProgress.value = 99
+    progressText.value = "音频即将合成,耐心一点哦"
   }
   sjliveVoiceStatus({ live_room_id: realTime.liveInfo.live_room_id })
     .then((res) => {
       if (res.data.length) {
-        uni.hideLoading()
+        speed.value = 0
+        currentProgress.value = 100
+        progressText.value = "音频合成成功!"
+
+        closeProgress()
         uni.showToast({ title: '生成成功', icon: 'success' })
         uni.redirectTo({
           url: '/pagesub/living/live?roomId=' + realTime.liveInfo.live_room_id
@@ -212,6 +255,7 @@ function confirmBack () {
     success: (res) => {
       if (res.confirm) {
         // 用户点击确定 -> 返回上一页
+        closeProgress()
         shouldContinuePolling.value = false
         isNavigatingBack = true
         uni.navigateBack()
@@ -219,6 +263,12 @@ function confirmBack () {
       // 用户点击取消 -> 不做处理，留在当前页
     },
   })
+}
+const closeProgress = () => {
+  showProgress.value = false
+  speed.value = 100
+  progressText.value = ""
+  currentProgress.value = 0
 }
 
 onBackPress(() => {

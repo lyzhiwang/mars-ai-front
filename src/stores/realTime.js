@@ -4,6 +4,9 @@ export const useRealTimeStore = defineStore('realTime', {
   persist: {
     enabled: true,
     detached: true, // 设置订阅与组件分离
+	strategies: [
+	  { paths: ['type','liveInfo'] }
+	],
   },
   state: () => ({
     type: null,

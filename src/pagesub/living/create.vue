@@ -206,6 +206,8 @@
     </FieldControl>
     <CountDown :show="showCountDown" v-model:closeTime="form.close_time" :closeTime="form.close_time"
       @close="showCountDown = false" @save="saveCountDown"></CountDown>
+    <ProgressBox :show="showProgress" :text="progressText" :currentProgress="currentProgress" :intervalSpeed="speed">
+    </ProgressBox>
   </view>
 </template>
 
@@ -213,6 +215,7 @@
 import { onLoad, onShow, onHide, onUnload } from '@dcloudio/uni-app'
 import FieldControl from '@/components/living/FieldControl'
 import CountDown from '@/components/living/CountDown'
+import ProgressBox from '@/components/living/ProgressBox'
 import { useRealTimeStore } from '@/stores'
 import {
   createSjLive,
@@ -229,15 +232,15 @@ onLoad(() => {
   getList()
 })
 
-onShow(() => {
-  shouldContinuePolling.value = true
-})
-
 const innerAudioContext = ref(null)
 const realTime = useRealTimeStore()
 const voice_live = ref(realTime.voice_live)
 const showControl = ref(false) // 场控显示
 const showCountDown = ref(false)
+const showProgress = ref(false) // 进度条显示
+const progressText = ref('正在创建智能体,请耐心等待...')
+const currentProgress = ref(0)
+const speed = ref(300)
 const Industry = ref([
   { key: 1, value: '实体店播' },
   { key: 2, value: '直播带货' },
@@ -366,6 +369,8 @@ const saveControl = (list) => {
 
 // 下一步
 const next = () => {
+  shouldContinuePolling.value = true
+
   let obj = { ...form.value }
 
   // 表单校验
@@ -399,8 +404,12 @@ const next = () => {
       return uni.showToast({ title: '请填写货源厂家的优势', icon: 'none' })
   }
 
-  uni.showLoading({ title: '提交中,请勿退出...', mask: true })
-
+  // uni.showLoading({ title: '提交中,请勿退出...', mask: true })
+  // 开始进度并设置25%
+  speed.value = 500
+  currentProgress.value = 25
+  showProgress.value = true
+  progressText.value = "正在创建智能体,请耐心等待..."
   // 提交直播信息
   createSjLive(obj)
     .then((res) => {
@@ -408,25 +417,31 @@ const next = () => {
       if (!liveRoom.id) throw new Error('liveRoom.id 不存在')
       realTime.setliveInfo('live_room_id', liveRoom.id)
       // 第一步：轮询直播状态
+      speed.value = 780
+      currentProgress.value = 50
+      progressText.value = "智能体文案上传中..."
       pollLiveFileStatus(liveRoom.id)
     })
     .catch((err) => {
       console.error('提交失败:', err)
-      uni.hideLoading()
+      closeProgress()
     })
 }
 
 // 轮询直播文件状态，直到 status = true
 const pollLiveFileStatus = (liveRoomId, retry = 0, maxRetry = 500) => {
-  if (!shouldContinuePolling.value) return uni.hideLoading();
+  if (!shouldContinuePolling.value) return closeProgress()
   if (retry >= maxRetry) {
-    uni.hideLoading()
+    closeProgress()
     return uni.showToast({ title: '状态超时，请重试', icon: 'none' })
   }
 
   liveFileStatus({ live_room_id: liveRoomId })
     .then((res) => {
       if (res.data.status) {
+        speed.value = 1500
+        currentProgress.value = 99
+        progressText.value = "智能体正在生成直播场控文字..."
         // 成功后继续取 conversation_id
         sjliveDesc({ live_room_id: liveRoomId }).then((res) => {
           const { conversation_id } = res.data
@@ -434,7 +449,7 @@ const pollLiveFileStatus = (liveRoomId, retry = 0, maxRetry = 500) => {
             // 第二步：轮询获取生成文字
             pollLiveResult(conversation_id)
           } else {
-            uni.hideLoading()
+            closeProgress()
             uni.showToast({ title: 'conversation_id 获取失败', icon: 'none' })
           }
         })
@@ -456,20 +471,23 @@ const pollLiveFileStatus = (liveRoomId, retry = 0, maxRetry = 500) => {
 
 // 轮询获取生成结果，直到 detail 存在
 const pollLiveResult = (conversation_id, retry = 0, maxRetry = 500) => {
-  if (!shouldContinuePolling.value) return uni.hideLoading();
+  if (!shouldContinuePolling.value) return closeProgress()
   if (retry >= maxRetry) {
-    uni.hideLoading()
+    closeProgress()
     return uni.showToast({ title: '生成超时，请重试', icon: 'none' })
   }
 
   liveResult({ conversation_id })
     .then((res) => {
       if (res.data) {
+        speed.value = 0
+        currentProgress.value = 100
+        progressText.value = "直播场控文字生成成功!"
         let obj = { conversation_id, content: res.data }
         let arr = [obj]
         realTime.setliveInfo('detail', arr)
-        uni.hideLoading()
-        uni.showToast({ title: '提交成功', icon: 'success' })
+        closeProgress()
+        uni.showToast({ title: '直播场控文字生成成功', icon: 'success' })
         uni.navigateTo({ url: '/pagesub/living/star' })
       } else {
         setTimeout(
@@ -496,8 +514,14 @@ function ProhibitedWords () {
 const toClone = () => {
   uni.navigateTo({ url: '/pagesub/living/clone' })
 }
+
+const closeProgress = () => {
+  speed.value = 300
+  showProgress.value = false
+  progressText.value = ""
+  currentProgress.value = 0
+}
 onHide(() => {
-  shouldContinuePolling.value = false
   if (innerAudioContext.value) {
     innerAudioContext.value.destroy()
     innerAudioContext.value = null
@@ -505,6 +529,7 @@ onHide(() => {
 })
 
 onUnload(() => {
+  closeProgress()
   shouldContinuePolling.value = false
   if (innerAudioContext.value) {
     innerAudioContext.value.destroy()

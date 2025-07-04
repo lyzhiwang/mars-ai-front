@@ -75,11 +75,11 @@ const closeAdd = () => {
   form.value = { key: '', value: '', time: '' }
 }
 const pushItem = () => {
-  if (form.value.key === '' || form.value.value === '') {
+  if (!form.value.key || !form.value.value) {
     uni.showToast({ title: '请填写完整', icon: 'none' })
     return
   }
-  if (form.value.time === '') {
+  if (!form.value.time) {
     form.value.time = '0'
   }
   list.value.push(form.value)
