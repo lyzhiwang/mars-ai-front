@@ -72,18 +72,18 @@ const close = () => {
 
 const closeAdd = () => {
   is_show.value = false
-  form.value = { key: '', value: '', time: '' }
+  form.value = { name: '', detail: '', interval_time: '' }
 }
 const pushItem = () => {
-  if (!form.value.key || !form.value.value) {
+  if (!form.value.name || !form.value.detail) {
     uni.showToast({ title: '请填写完整', icon: 'none' })
     return
   }
-  if (!form.value.time) {
-    form.value.time = '0'
+  if (!form.value.interval_time) {
+    form.value.interval_time = '0'
   }
   list.value.push(form.value)
-  form.value = { key: '', value: '', time: '' }
+  form.value = { name: '', detail: '', interval_time: '' }
   is_show.value = false
 }
 const delItem = (index) => {
