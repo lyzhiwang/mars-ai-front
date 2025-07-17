@@ -10,7 +10,7 @@
           </view>
         </view>
         <view class="btn-box">
-          <!-- <view class="btn" v-if="[1, 4].includes(item.platform)" >编辑</view> -->
+          <view class="btn" v-if="[1, 4].includes(item.platform)" @click="edit(item)">编辑</view>
           <view class="btn btn1" @click="toLive(item)">重新开播</view>
         </view>
       </view>
@@ -21,14 +21,15 @@
     <u-empty v-else mode="data" text="暂无记录!" :marginTop="160" iconSize="160" textSize="28"
       style="width: 100%;"></u-empty>
 
-
+    <edit-living :show="showEdit" :list="row" @close="close" @save="updataLiving"></edit-living>
   </view>
 </template>
 
 <script setup>
 import { onShow, onReachBottom } from '@dcloudio/uni-app'
 import { ref, reactive } from 'vue'
-import { sjLiveList } from '@/api/index'
+import { sjLiveList, sjStoreUpdate } from '@/api/index'
+import EditLiving from '@/components/living/EditLiving.vue'
 
 onShow(() => {
   list.value = []
@@ -44,6 +45,7 @@ const params = ref({
   page: 1,
   size: 10
 })
+const showEdit = ref(false)
 
 const getList = () => {
   status.value = 'loading'
@@ -68,6 +70,38 @@ const toLive = (item) => {
     url: '/pagesub/living/live?roomId=' + item.id
   })
 }
+
+const row = ref({})
+const edit = (item) => {
+  row.value = item
+  console.log(row.value)
+  showEdit.value = true
+}
+
+const close = () => {
+  showEdit.value = false
+}
+
+const updataLiving = value => {
+  console.log('value', value)
+  showEdit.value = false
+  const living_params = {
+    live_room_id: value.id,
+    live_title: value.live_title,
+    live_url: value.live_url,
+  }
+  sjStoreUpdate(living_params).then(res => {
+    uni.showToast({
+      title: '修改成功',
+      icon: 'success',
+      duration: 2000
+    })
+    list.value = []
+    params.value.page = 1
+    getList()
+  })
+}
+
 // 页面触底加载下一页
 onReachBottom(() => {
   if (list.value.length < total.value) {

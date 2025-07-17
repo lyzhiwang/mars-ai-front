@@ -787,3 +787,11 @@ export function sjLiveList (params) {
     params,
   })
 }
+
+export function sjStoreUpdate (data) {
+  return request({
+    url: '/v1/sj/store',
+    method: 'put',
+    data,
+  })
+}

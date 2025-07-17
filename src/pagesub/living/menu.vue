@@ -50,33 +50,40 @@
           </view>
 
           <view class="btn-box">
-            <!-- <view class="btn">编辑</view> -->
+            <view class="btn" v-if="[1, 4].includes(item.platform)" @click="edit(item)">编辑</view>
             <view class="btn btn1" @click="toLive(item)">重新开播</view>
           </view>
         </view>
       </view>
     </view>
+    <edit-living :show="showEdit" :list="row" @close="close" @save="updataLiving"></edit-living>
   </view>
 </template>
 
 <script setup>
 import { useConfigStore, useRealTimeStore } from '@/stores'
-import { sjLiveList } from '@/api/index'
+import { sjLiveList, sjStoreUpdate } from '@/api/index'
 import { onShow } from '@dcloudio/uni-app'
-
+import EditLiving from '@/components/living/EditLiving.vue'
 
 
 const list = ref([])
 const config = useConfigStore()
 const realTime = useRealTimeStore()
 const icon = ref(['ks', 'sph', 'xhs', 'dy', 'pdd', 'zfb', 'mt', 'jd', 'tb'])
+const showEdit = ref(false)
 
 onShow(() => {
+  getList()
+})
+
+const getList = () => {
   list.value = []
   sjLiveList({ page: 1, size: 3 }).then((res) => {
     list.value = res.data.list
   })
-})
+}
+
 
 const onclick = (item) => {
   if ([5, 6, 7, 8, 9].includes(item.type)) {
@@ -94,11 +101,41 @@ const toLive = (item) => {
     url: '/pagesub/living/live?roomId=' + item.id
   })
 }
+
+const row = ref({})
+const edit = (item) => {
+  row.value = item
+  console.log(row.value)
+  showEdit.value = true
+}
 const toHistory = () => {
   uni.navigateTo({
     url: '/pagesub/living/history',
   })
 }
+
+const close = () => {
+  showEdit.value = false
+}
+
+const updataLiving = list => {
+  console.log('list', list)
+  showEdit.value = false
+  const params = {
+    live_room_id: list.id,
+    live_title: list.live_title,
+    live_url: list.live_url,
+  }
+  sjStoreUpdate(params).then(res => {
+    uni.showToast({
+      title: '修改成功',
+      icon: 'success',
+      duration: 2000
+    })
+    getList()
+  })
+}
+
 </script>
 
 <style lang="scss" scoped>
